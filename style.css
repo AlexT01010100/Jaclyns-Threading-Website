@@ -1,0 +1,291 @@
+body {
+  background-color: #373434;
+  width: 101%;
+  margin: 0;
+  
+}
+.header{
+  background-image: linear-gradient(to left, #9a3c5d, #a10c2a);
+  color:  black;
+  font-size: 20px;
+  text-align: center;
+  padding: 20px
+}
+
+.he1 {
+  border-style: double;
+  border-width: 17px;
+  border-block-color: #ecdb7e;
+}
+
+.booking_button{
+  position: absolute;
+  top: 43%;
+  left: 43%;
+  background-color: #0f0f0f;
+  color: white;
+  height: 100px;
+  width: 200px;
+  font-size: 25px;
+  font-family: times;
+  z-index: 1;
+}
+
+.booking_button:hover {
+  background-color: #c1b46c;
+  transition: 0.7s;
+}
+
+.booking_button:focus {
+  outline-color: transparent;
+  outline-style: solid;
+  box-shadow: 0 0 0 4px black;
+  transition: 0.9s;
+}
+
+.booking_button:active {
+  background-color: #baa94a; 
+}
+
+.section{
+  width: 300px;
+  float: left;
+  padding: 10px;
+}
+
+/.footer {
+  position: absolute;
+  width: 1420px;
+  height: 50px;
+  background-color: #696969;
+  color: white;
+  clear: both;
+  text-align: center;
+  padding: 50px;
+  bottom: 0;
+}
+
+.image {
+  position: absolute;
+}
+
+.image2{
+  position: absolute;
+  left: 510px;
+}
+
+.image3{
+  position: absolute;
+  left: 503px;
+  top: 0px;
+}
+
+.body_text {
+  font-size: 23px;
+  font-family: 'Trebuchet MS', sans-serif;;
+  position: absolute;
+  color: white;
+  z-index: 1;
+  top: 550px;
+}
+.Social_media_icons {
+  position: absolute;
+  z-index: 1;
+}
+
+.why_jaclyn {
+  position: absolute;
+  top: 450px;
+  left: -550px;
+  width: 1420px;
+  background-color: white;
+  color:  black;
+  font-size: 20px;
+  text-align: center;
+  padding: 70px
+}
+
+.jtext1 {
+  color: #d04416;
+  font-size: 29px;
+}
+
+.jtext {
+  color: black;
+  font-size: 60px;
+  font-family:'Times New Roman', Times, serif;
+}
+
+.jmtext {
+  color: grey;
+}
+
+.ideal {
+  position: absolute;
+  background-color: white;
+  top: 960px;
+  text-align: center;
+  font-size: 20px;
+  width: 740px;
+  height: 500px;
+  left: 230px;
+}
+
+.ideal1 {
+  color: #d04416;
+  font-size: 29px;
+}
+.ideal2 {
+  color: black;
+  font-size: 50px;
+  font-family:'Times New Roman', Times, serif;
+}
+
+.ideal3 {
+  color: grey;
+}
+
+.ideal_image {
+  position: absolute;
+  left: -475px;
+  top: 961px;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+.ideal_image2 {
+  position: absolute;
+  top: 1550px;
+  left: 340px;
+}
+
+.ideal_text2 {
+  position: absolute;
+  background-color: white;
+  top: 1550px;
+  text-align: center;
+  font-size: 20px;
+  width: 740px;
+  height: 500px;
+  left: -475px;
+}
+
+.ideal_text2-0 {
+  color: #d04416;
+  font-size: 29px;
+}
+.ideal_text2-1 {
+  color: black;
+  font-size: 50px;
+  font-family:'Times New Roman', Times, serif;
+}
+
+.ideal_text2-2 {
+  position: absolute;
+  background-color: white;
+  top: 1550px;
+  text-align: center;
+  font-size: 20px;
+  width: 740px;
+  height: 500px;
+  left: -475px;
+}
+
+.a1 {
+  position: absolute;
+  color: black;
+  text-decoration: none;
+  left: 150px;
+  top: 70px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.a2 {
+  position: absolute;
+  color: black;
+  text-decoration: none;
+  top: 70px;
+  left: 350px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.a3 {
+  position: absolute;
+  color: black;
+  text-decoration: none;
+  top: 70px;
+  left: 1050px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.a4 {
+  position: absolute;
+  color: black;
+  text-decoration: none;
+  top: 70px;
+  left: 1250px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.booking_button1{
+  position: absolute;
+  top: 390px;
+  left: 270px;
+  background-color: #0f0f0f;
+  color: white;
+  height: 80px;  
+  width: 200px;
+  font-size: 25px;
+  font-family: times;
+  z-index: 15;
+}
+
+.booking_button1:hover {
+  background-color: #c1b46c;
+  transition: 0.7s;
+}
+
+.booking_button1:focus {
+  outline-color: transparent;
+  outline-style: solid;
+  box-shadow: 0 0 0 4px black;
+  transition: 0.9s;
+}
+
+.booking_button1:active {
+  background-color: #baa94a; 
+}
+
+.booking_button2{
+  position: absolute;
+  top: -200px;
+  left: 990px;
+  background-color: #0f0f0f;
+  color: white;
+  height: 80px;
+  width: 200px;
+  font-size: 25px;
+  font-family: times;
+  z-index: 15;
+}
+
+.booking_button2:hover {
+  background-color: #c1b46c;
+  transition: 0.7s;
+}
+
+.booking_button2:focus {
+  outline-color: transparent;
+  outline-style: solid;
+  box-shadow: 0 0 0 4px black;
+  transition: 0.9s;
+}
+
+.booking_button2:active {
+  background-color: #baa94a; 
+}
+
