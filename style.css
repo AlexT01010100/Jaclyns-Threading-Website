@@ -313,7 +313,7 @@ body {
   overflow-x: hidden;
   width: 104vw;
   height: 500px;
-  top: -30vw;
+  top: 6vw;
   right: 30vw;
   position: relative;
   scroll-snap-type: x mandatory;
@@ -352,5 +352,10 @@ body {
 
 .slider-nav a.active {
   background-color: #333;
+}
+
+.google-map {
+  position: relative;
+  top: 103vw;
 }
 
