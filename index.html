@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-     <link rel="stylesheet" href="style.css">
-  </head>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<!-- set up and imports-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jaclyn's Threading</title>
+
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
   
   <body>
+
+  <header class="header">
+    <a href="#" class="logo">Jaclyn's Threading</a>
+
+    <i class='bx bx-menu' id="menu-icon"></i>
+
+    <nav class="navbar">
+      <a href="#photos">Photos</a>
+      <a href="#about">About Me</a>
+      <a href="#contact">Contact</a>
+      <a href="#information">Information</a>
+    </nav>
+  </header>
     
    <a href= "link goes here"> 
     <button type="button" class="booking_button"> Book Now </button>
    </a>
     
-  <div class="header">
-    
-  <h1 class="he1">Jaclyn's Threading</h1>
-  <p>The place where beauty comes to life</p>
-    <a class="a1" href="link goes here">About</a>
-    <a class="a2" href="link goes here">Photos</a>
-    <a class="a3" href="link goes here">Contact</a>
-    <a class="a4" href=https://Jaclyns-Threading-Information.alex01010100.repl.co>Information</a>
-</div>
-    
   <div class="nav">
   </div>
 
-  <div class="Social_media_icons"
-    <img src="https://png.pngtree.com/png-vector/20210225/ourmid/pngtree-three-dimensional-white-phone-icon-free-pictures-png-image_2953488.jpg" height="100" width="100">
-    </div>
+
 
     <div class="body_text">
       <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;716-400-1627 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Buffalo, NY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JaclynsThreading@gmail.com</p>
@@ -107,5 +120,25 @@
       <div style="position: relative; top: 30px;" class ="map">
          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2924.2315010840894!2d-78.73588738458895!3d42.86795767915609!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d30b5bcbed3015%3A0xa66087199c506ff2!2sJaclyn&#39;s%20Threading%20Salon%20%26%20Microblading!5e0!3m2!1sen!2sus!4v1675580716639!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>"
       </div>
+
+<!--   Sliding image for the front page   -->
+
+  <section class="sliding-image-container">
+    <div class="slider-wrapper">
+      <div class="slider">
+        <img id="slide-1" src="slider-image-1.png">
+        <img id="slide-2" src="slider-image-2.png">
+        <img id="slide-3" src="slider-image-3.png">
+      </div>
+      <div class="slider-nav">
+        <a href="#slider-1"></a>
+        <a href="#slider-2"></a>
+        <a href="#slider-3"></a>
+      </div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+
   </body>
 </html>
