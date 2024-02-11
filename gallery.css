@@ -1,0 +1,73 @@
+
+.gallery {
+    position: relative;
+    top: 10rem;
+    max-width: 1400px; /* Set a maximum width for the gallery if needed */
+    margin: 0 auto; /* Center the gallery */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px;
+    background: white; /* Adjust the background properties as needed */
+}
+
+.gallery-item {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 2s ease-in-out, transform 0.8s ease-in-out;
+    transform: scale(0.2);
+}
+
+.gallery-item.fade-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.gallery-item:hover {
+    transform: scale(1.1); /* Increase the size on hover */
+    box-shadow: 0 8px 24px #baa94a; /* Add a subtle box shadow for the glow effect */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Add transitions for smooth animation */
+}
+
+.gallery-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.contact-me-container-gallery {
+    position: relative;
+    top: 25rem;
+    background: linear-gradient(to top, black, rgba(255, 255, 255, 0.4)), url("microblading-footer.jpg") no-repeat center center;
+    background-size: cover; /* or 'contain' based on your preference */
+    background-position: 70%; /* Adjust the percentage to shift the image down */
+    height: 40rem;
+}
+
+
+.contact-me-container-gallery h1 {
+    position: relative;
+    top: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 10rem;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.contact-me-container-gallery p {
+    position: relative;
+    top: 30rem;
+    left: 18rem;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
