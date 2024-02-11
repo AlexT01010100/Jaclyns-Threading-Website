@@ -13,7 +13,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1;
+  z-index: 2;
 }
 
 .header.sticky {
@@ -28,6 +28,10 @@ body {
   justify-content: center;
 
 }
+.navbar {
+  white-space: nowrap; /* Prevent items from wrapping to the next line */
+  overflow-x: auto; /* Enable horizontal scrolling */
+}
 
 .navbar a {
   font-size: 1.7rem;
@@ -35,6 +39,7 @@ body {
   margin-left: 4rem;
   transition: .3s;
 }
+
 
 .he1 {
   border-style: double;
@@ -44,12 +49,12 @@ body {
 
 .booking-button-homepage{
   position: absolute;
-  top: 43%;
-  left: 43%;
+  top: 50rem;
+  left: 41.5rem;
   background-color: #0f0f0f;
   color: white;
-  height: 100px;
-  width: 200px;
+  height: 7rem;
+  width: 12rem;
   font-size: 25px;
   font-family: times, serif;
   z-index: 1;
@@ -79,15 +84,15 @@ body {
 .why-jaclyn {
   position: absolute;
   top: 32.16vw;
+  height: 29vw;
   background-color: white;
   color:  black;
   font-size: 20px;
   text-align: center;
-  padding: 70px
 }
 
 .why-jaclyn h1 {
-  color: #d04416;
+  color: #c2a76b;
   font-size: 29px;
 }
 
@@ -109,11 +114,11 @@ body {
   width: 49vw;
   height: 34vw;
   top: 63vw;
-  left: 48vw;
+  left: 49.2vw;
 }
 
 .who-can-benefit-information h1 {
-  color: #d04416;
+  color: #c2a76b;
   font-size: 29px;
 }
 .who-can-benefit-information h2 {
@@ -123,25 +128,29 @@ body {
 }
 
 .who-can-benefit-information p {
+  position: absolute;
   color: grey;
+  top: 14vw;
+  left: 1rem;
+  width: 47vw;
 }
 
 .who-can-benefit-information img {
   position: absolute;
-  right: 55vw;
-  top: 0.75vw;
+  right: 55rem;
+  top: 0.75rem;
   image-rendering: pixelated;
   -ms-interpolation-mode: nearest-neighbor;
 }
 
 .who-can-benefit-information .learn-more-button{
   position: absolute;
-  top: 43%;
-  left: 43%;
+  top: 24.4rem;
+  left: 18.3rem;
   background-color: #0f0f0f;
   color: white;
-  height: 100px;
-  width: 200px;
+  height: 7rem;
+  width: 12rem;
   font-size: 25px;
   font-family: times, serif;
   z-index: 1;
@@ -167,7 +176,7 @@ body {
   position: absolute;
   background-color: white;
   top: 100vw;
-  left: 2vw;
+  left: 0.95vw;
   text-align: center;
   font-size: 20px;
   width: 740px;
@@ -175,7 +184,7 @@ body {
 }
 
 .healing-process-information h1 {
-  color: #d04416;
+  color: #c2a76b;
   font-size: 29px;
 }
 
@@ -187,19 +196,49 @@ body {
 
 .healing-process-information p {
   position: absolute;
+  color: grey;
   background-color: white;
-  top: 1550px;
+  top: 10rem;
+  left: 1vw;
   text-align: center;
   font-size: 20px;
-  width: 740px;
-  height: 500px;
-  left: -475px;
+  width: 43.5rem;
+  height: 10rem;
 }
 
 .healing-process-information img {
   position: absolute;
   top: 0.5vw;
   left: 53vw;
+}
+
+.healing-process-information .learn-more-button{
+  position: absolute;
+  top: 23rem;
+  left: 17.3rem;
+  background-color: #0f0f0f;
+  color: white;
+  height: 7rem;
+  width: 12rem;
+  font-size: 25px;
+  font-family: times, serif;
+  z-index: 1;
+}
+
+.healing-process-information .learn-more-button:hover {
+  background-color: #c1b46c;
+  transition: 0.7s;
+}
+
+.healing-process-information .learn-more-button:focus {
+  outline-color: transparent;
+  outline-style: solid;
+  box-shadow: 0 0 0 4px black;
+  transition: 0.9s;
+}
+
+.healing-process-information .learn-more-button:active {
+  background-color: #baa94a;
 }
 
 .a1 {
@@ -242,66 +281,6 @@ body {
   font-weight: 700;
 }
 
-
-.who-can-benefit-information .learn-more-button{
-  position: absolute;
-  top: 43%;
-  left: 43%;
-  background-color: #0f0f0f;
-  color: white;
-  height: 100px;
-  width: 200px;
-  font-size: 25px;
-  font-family: times, serif;
-  z-index: 1;
-}
-
-.who-can-benefit-information .learn-more-button:hover {
-  background-color: #c1b46c;
-  transition: 0.7s;
-}
-
-.who-can-benefit-information .learn-more-button:focus {
-  outline-color: transparent;
-  outline-style: solid;
-  box-shadow: 0 0 0 4px black;
-  transition: 0.9s;
-}
-
-.who-can-benefit-information .learn-more-button:active {
-  background-color: #baa94a;
-}
-
-
-.healing-process-information .learn-more-button{
-  position: absolute;
-  top: 43%;
-  left: 43%;
-  background-color: #0f0f0f;
-  color: white;
-  height: 100px;
-  width: 200px;
-  font-size: 25px;
-  font-family: times, serif;
-  z-index: 1;
-}
-
-.healing-process-information .learn-more-button:hover {
-  background-color: #c1b46c;
-  transition: 0.7s;
-}
-
-.healing-process-information .learn-more-button:focus {
-  outline-color: transparent;
-  outline-style: solid;
-  box-shadow: 0 0 0 4px black;
-  transition: 0.9s;
-}
-
-.healing-process-information .learn-more-button:active {
-  background-color: #baa94a;
-}
-
 .slider-wrapper {
   position: relative;
   max-width: 48rem;
@@ -312,7 +291,7 @@ body {
   display: flex;
   overflow-x: hidden;
   width: 104vw;
-  height: 500px;
+  height: 50vw;
   top: 6vw;
   right: 30vw;
   position: relative;
@@ -354,8 +333,32 @@ body {
   background-color: #333;
 }
 
-.google-map {
+.contact-me-container {
   position: relative;
-  top: 103vw;
+  top: 100rem;
+  background: linear-gradient(to top, lightgrey, rgba(255, 255, 255, 0.4)), url("microblading-footer.jpg") no-repeat center center;
+  background-size: cover; /* or 'contain' based on your preference */
+  background-position: 70%; /* Adjust the percentage to shift the image down */
+  height: 40rem;
 }
 
+
+.contact-me-container h1 {
+  position: relative;
+  top: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-me-container p {
+  position: relative;
+  top: 30rem;
+  left: 18rem;
+  max-width: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
