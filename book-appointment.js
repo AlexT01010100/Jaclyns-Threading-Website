@@ -156,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 toggleSlotSelection(slotId, dateInput.value); // Mark slot as booked
             } else {
                 console.error("No slot selected");
+                //publishing branch
             }
         });
     }
