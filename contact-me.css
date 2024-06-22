@@ -1,0 +1,54 @@
+.contact {
+    position: relative;
+    top: 10rem;
+}
+
+.contact h2 {
+    position: relative;
+    top: 6rem;
+    color: yellow;
+    font-family: 'Spectral', serif;font-size: 22px;
+}
+
+.contact form {
+    background-color: white;
+    max-width: 70rem;
+    text-align: center;
+    margin: 1rem auto; /* Adjusted margin */
+}
+
+.contact form .input-box {
+    display: flex;
+    flex-wrap: wrap;
+    color: black;
+}
+
+.contact form .input-box input,
+.contact form textarea {
+    padding: 1.5rem;
+    font-size: 1.6rem;
+    background: gray;
+    color: black;
+    border-radius: .8rem;
+    margin: .7rem 0;
+}
+
+.contact form .input-box input {
+    width: 49%;
+}
+
+.contact form textarea {
+    position: relative;
+    right: 10rem;
+    resize: none;
+    width: 40rem;
+}
+
+.contact form .btn {
+    margin-top: 2rem;
+    cursor: pointer;
+}
+
+.contact {
+    overflow: hidden;
+}
