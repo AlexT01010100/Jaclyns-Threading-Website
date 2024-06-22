@@ -29,6 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    let selectedDate = null; // Variable to store selected date
+    let availableSlots = []; // Array to store available slots
+
     // Function to fetch available slots for a specific date
     async function fetchAvailableSlotsForDate(selectedDate) {
         console.log("Fetching available slots for date:", selectedDate);
@@ -66,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Display available slots based on selected date
     dateInput.addEventListener("change", async function () {
-        const selectedDate = dateInput.value;
+        selectedDate = dateInput.value;
         console.log("Date input changed, selected date:", selectedDate);
 
         if (!selectedDate) {
@@ -75,10 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const availableSlots = await fetchAvailableSlotsForDate(selectedDate);
+            availableSlots = await fetchAvailableSlotsForDate(selectedDate);
 
             if (availableSlots.length > 0) {
-                renderSlots(availableSlots, selectedDate);
+                renderSlots(availableSlots);
             } else {
                 timeSlotsContainer.innerHTML = "<p>No available slots for selected date.</p>";
             }
@@ -89,32 +92,52 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to render available slots
-    function renderSlots(slots, selectedDate) {
+    function renderSlots(slots) {
         timeSlotsContainer.innerHTML = "";
 
         slots.forEach(slot => {
-            const slotElement = document.createElement("div");
-            slotElement.classList.add("slot-item");
+            if (slot.id !== 'booked') { // Check if slot is not already booked
+                const slotElement = document.createElement("div");
+                slotElement.classList.add("slot-item");
 
-            // Display slot.time initially
-            slotElement.innerHTML = `
-                <p><strong>Time:</strong> ${slot.time}</p>
-                <button class="select-button" data-slot-id="${slot.id}">Select Slot</button> <!-- Add a button to select the slot -->
-                <hr>
-            `;
+                // Display slot.time initially
+                slotElement.innerHTML = `
+                    <p><strong>Time:</strong> ${slot.time}</p>
+                    <button class="select-button" data-slot-id="${slot.id}">Select Slot</button> <!-- Add a button to select the slot -->
+                    <hr>
+                `;
 
-            // Add event listener to select button
-            const selectButton = slotElement.querySelector('.select-button');
-            selectButton.addEventListener('click', () => toggleSlotSelection(slot.id, selectedDate)); // Call toggleSlotSelection function on click
+                // Add event listener to select button
+                const selectButton = slotElement.querySelector('.select-button');
+                selectButton.addEventListener('click', () => toggleSlotSelection(slot.id)); // Call toggleSlotSelection function on click
 
-            timeSlotsContainer.appendChild(slotElement);
+                timeSlotsContainer.appendChild(slotElement);
+            }
         });
     }
 
     // Function to toggle slot selection
-    async function toggleSlotSelection(slotId, selectedDate) {
+    function toggleSlotSelection(slotId) {
+        try {
+            const slotIndex = availableSlots.findIndex(slot => slot.id === slotId);
+            if (slotIndex !== -1) {
+                const slotTime = availableSlots[slotIndex].time;
+
+                // Mark slot as booked in Firestore
+                bookSlot(slotId, slotTime);
+            } else {
+                console.error(`Slot with ID ${slotId} not found in availableSlots array.`);
+            }
+        } catch (error) {
+            console.error("Error toggling slot selection:", error);
+        }
+    }
+
+    // Function to book a slot
+    async function bookSlot(slotId, slotTime) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate); // Replace with the correct document ID
+
             const slotDoc = await getDoc(availabilityRef);
             const availableSlots = slotDoc.data().availableSlots;
 
@@ -131,11 +154,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(`Slot ${slotId} marked as booked and old entry deleted.`);
 
                 // Optionally, re-fetch and re-render slots after update
-                const updatedSlotsArray = Object.keys(updatedSlots).map(slotId => ({
-                    id: slotId,
-                    time: updatedSlots[slotId]
-                }));
-                renderSlots(updatedSlotsArray, selectedDate);
+                availableSlots.splice(slotIndex, 1); // Remove booked slot from availableSlots array
+                renderSlots(availableSlots);
             } else {
                 console.log(`Slot ${slotId} is already booked.`);
             }
@@ -153,10 +173,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const selectedSlot = timeSlotsContainer.querySelector('.slot-item.selected');
             if (selectedSlot) {
                 const slotId = selectedSlot.querySelector('.select-button').dataset.slotId;
-                toggleSlotSelection(slotId, dateInput.value); // Mark slot as booked
+                const slotIndex = availableSlots.findIndex(slot => slot.id === slotId);
+                if (slotIndex !== -1) {
+                    const slotTime = availableSlots[slotIndex].time;
+
+                    // Mark slot as booked in Firestore
+                    bookSlot(slotId, slotTime);
+                } else {
+                    console.error(`Slot with ID ${slotId} not found in availableSlots array.`);
+                }
             } else {
                 console.error("No slot selected");
-                //publishing branch
             }
         });
     }
