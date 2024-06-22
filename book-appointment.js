@@ -7,8 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("appointment-form");
     const timeSlotsContainer = document.getElementById("time-slots");
     const dateInput = document.getElementById("date");
+    const messageDiv = document.getElementById("message");
 
-    if (!form || !timeSlotsContainer || !dateInput) {
+    if (!form || !timeSlotsContainer || !dateInput || !messageDiv) {
         console.error("One or more elements not found in the DOM");
         return;
     }
@@ -31,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let selectedDate = null; // Variable to store selected date
     let availableSlots = []; // Array to store available slots
+    let selectedSlotId = null; // Variable to store selected slot ID
 
     // Function to fetch available slots for a specific date
     async function fetchAvailableSlotsForDate(selectedDate) {
@@ -42,13 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const docSnapshot = await getDoc(availabilityRef);
 
             if (docSnapshot.exists()) {
-                const availableSlots = docSnapshot.data().availableSlots;
+                const availableSlotsData = docSnapshot.data().availableSlots;
 
-                if (availableSlots) {
+                if (availableSlotsData) {
                     // Convert availableSlots object into an array of objects
-                    const slotsArray = Object.keys(availableSlots).map(slotId => ({
+                    const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
                         id: slotId,
-                        time: availableSlots[slotId]
+                        time: availableSlotsData[slotId]
                     }));
 
                     console.log("Available Slots:", slotsArray);
@@ -109,7 +111,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Add event listener to select button
                 const selectButton = slotElement.querySelector('.select-button');
-                selectButton.addEventListener('click', () => toggleSlotSelection(slot.id)); // Call toggleSlotSelection function on click
+                selectButton.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent form submission
+                    selectedSlotId = slot.id; // Update selected slot ID
+                    toggleSlotSelection(slot.id); // Call toggleSlotSelection function on click
+                });
 
                 timeSlotsContainer.appendChild(slotElement);
             }
@@ -118,34 +124,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to toggle slot selection
     function toggleSlotSelection(slotId) {
-        try {
-            const slotIndex = availableSlots.findIndex(slot => slot.id === slotId);
-            if (slotIndex !== -1) {
-                const slotTime = availableSlots[slotIndex].time;
+        const selectedSlot = timeSlotsContainer.querySelector('.slot-item.selected');
+        if (selectedSlot) {
+            selectedSlot.classList.remove('selected');
+        }
 
-                // Mark slot as booked in Firestore
-                bookSlot(slotId, slotTime);
-            } else {
-                console.error(`Slot with ID ${slotId} not found in availableSlots array.`);
-            }
-        } catch (error) {
-            console.error("Error toggling slot selection:", error);
+        const slotElement = timeSlotsContainer.querySelector(`[data-slot-id="${slotId}"]`);
+        if (slotElement) {
+            slotElement.classList.add('selected');
         }
     }
 
     // Function to book a slot
-    async function bookSlot(slotId, slotTime) {
+    async function bookSlot(slotId) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate); // Replace with the correct document ID
 
             const slotDoc = await getDoc(availabilityRef);
-            const availableSlots = slotDoc.data().availableSlots;
+            const availableSlotsData = slotDoc.data().availableSlots;
 
-            // Check if slotId exists in availableSlots
-            if (availableSlots[slotId]) {
+            // Check if slotId exists in availableSlotsData
+            if (availableSlotsData[slotId]) {
                 // Create a new object with 'booked' as key and slotTime as value
-                const updatedSlots = { ...availableSlots }; // Create a copy of availableSlots
-                updatedSlots.booked = updatedSlots[slotId]; // Set 'booked' key
+                const updatedSlots = { ...availableSlotsData }; // Create a copy of availableSlotsData
+                updatedSlots.booked = availableSlotsData[slotId]; // Set 'booked' key
                 delete updatedSlots[slotId]; // Delete the old slotId key
 
                 // Update Firestore document with updated object
@@ -154,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(`Slot ${slotId} marked as booked and old entry deleted.`);
 
                 // Optionally, re-fetch and re-render slots after update
-                availableSlots.splice(slotIndex, 1); // Remove booked slot from availableSlots array
+                availableSlots = availableSlots.filter(slot => slot.id !== slotId); // Remove booked slot from availableSlots array
                 renderSlots(availableSlots);
             } else {
                 console.log(`Slot ${slotId} is already booked.`);
@@ -164,28 +166,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Handle form submission (optional, if you have a form)
-    if (form) {
-        form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent form submission
+    // Handle form submission
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent form submission
 
-            // Find selected slot and book it
-            const selectedSlot = timeSlotsContainer.querySelector('.slot-item.selected');
-            if (selectedSlot) {
-                const slotId = selectedSlot.querySelector('.select-button').dataset.slotId;
-                const slotIndex = availableSlots.findIndex(slot => slot.id === slotId);
-                if (slotIndex !== -1) {
-                    const slotTime = availableSlots[slotIndex].time;
-
-                    // Mark slot as booked in Firestore
-                    bookSlot(slotId, slotTime);
-                } else {
-                    console.error(`Slot with ID ${slotId} not found in availableSlots array.`);
-                }
-            } else {
-                console.error("No slot selected");
-            }
-        });
-    }
+        // Ensure a slot is selected
+        if (selectedSlotId) {
+            await bookSlot(selectedSlotId);
+            messageDiv.textContent = `Appointment booked for slot ${selectedSlotId}.`;
+        } else {
+            console.error("No slot selected");
+            messageDiv.textContent = "Please select a time slot.";
+        }
+    });
 
 });
