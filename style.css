@@ -343,68 +343,6 @@ body {
   background-color: #333;
 }
 
-.contact-me-container {
-  position: relative;
-  top: 100rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
-  background-size: cover;
-  background-position: 70%;
-  height: 40rem;
-  color: white;
-  text-align: center;
-  padding: 2rem 1rem;
-}
-
-/* Footer Heading */
-.contact-me-container h1 {
-  position: relative;
-  top: 5rem;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-/* Footer Paragraph */
-.contact-me-container p {
-  position: relative;
-  top: 10rem;
-  font-size: 1.2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  line-height: 1.6;
-  padding: 0 2rem;
-}
-
-/* Horizontal Line */
-.contact-me-container hr {
-  border: 0;
-  border-top: 1px solid #c2a76b;
-  margin: 2rem auto;
-  width: 80%;
-}
-
-/* Social Media Icons Container */
-.contact-me-container .social-media {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.contact-me-container .social-media a {
-  color: white;
-  font-size: 2rem;
-  transition: color 0.3s ease;
-}
-
-.contact-me-container .social-media a:hover {
-  color: #c2a76b;
-}
-
 .reviews {
    display: flex;
    justify-content: space-between;
@@ -515,6 +453,68 @@ body {
 
 .map-container {
   margin-bottom: 10px;
+}
+
+.contact-me-container {
+  position: relative;
+  top: 100rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
+  background-size: cover;
+  background-position: 70%;
+  height: 40rem;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/* Footer Heading */
+.contact-me-container h1 {
+  position: relative;
+  top: 5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Footer Paragraph */
+.contact-me-container p {
+  position: relative;
+  top: 10rem;
+  font-size: 1.2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  line-height: 1.6;
+  padding: 0 2rem;
+}
+
+/* Horizontal Line */
+.contact-me-container hr {
+  border: 0;
+  border-top: 1px solid #c2a76b;
+  margin: 2rem auto;
+  width: 80%;
+}
+
+/* Social Media Icons Container */
+.contact-me-container .social-media {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.contact-me-container .social-media a {
+  color: white;
+  font-size: 2rem;
+  transition: color 0.3s ease;
+}
+
+.contact-me-container .social-media a:hover {
+  color: #c2a76b;
 }
 
 .contact-info {
