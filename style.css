@@ -1,8 +1,8 @@
 body {
   background-color: #373434;
-  width: 101%;
+  width: 100%;
   margin: 0;
-
+  overflow-x: hidden;
 }
 
 .header{
@@ -28,6 +28,7 @@ body {
   justify-content: center;
 
 }
+
 .navbar {
   white-space: nowrap; /* Prevent items from wrapping to the next line */
   overflow-x: auto; /* Enable horizontal scrolling */
@@ -332,7 +333,7 @@ body {
 .slider-nav a.active {
   background-color: #333;
 }
-/* Footer Container */
+
 .contact-me-container {
   position: relative;
   top: 100rem;
@@ -393,7 +394,9 @@ body {
 
 .contact-me-container .social-media a:hover {
   color: #c2a76b;
-}.reviews {
+}
+
+.reviews {
    display: flex;
    justify-content: space-between;
    position: relative;
@@ -412,7 +415,7 @@ body {
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Deeper shadow for better contrast */
   transition: transform 0.2s ease-in-out;
-  min-height: 250px; /* Set minimum height */
+  min-height: 300px; /* Set minimum height */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -441,39 +444,42 @@ body {
   color: #333;
 }
 
+.review-text {
+  color: grey;
+}
+
 .review-rating {
   display: flex;
   align-items: center;
-  color: #ffc107; /* Yellow star color */
+  color: #ffc107;
   margin-bottom: 8px;
 }
 
 .review-rating .fa-star {
-  font-size: 20px; /* Adjust star size */
-  color: #ccc; /* Unchecked star color */
-  margin-right: 5px; /* Space between stars */
+  font-size: 20px;
+  color: #ccc;
+  margin-right: 5px;
 }
 
 .review-rating .fa-star.checked {
-  color: #ffc107; /* Checked star color */
+  color: #ffc107;
 }
 
 .review-text {
   font-size: 14px;
   line-height: 1.5;
-  color: #666;
+  color: #665;
   margin-top: 10px;
-  flex-grow: 1; /* Ensure review text takes available space */
+  flex-grow: 1;
 }
-
 
 
 .contact-location {
   background-color: #ffffff;
   padding: 20px 0;
   position: relative;
-  top: 1400px; /* Adjust this value based on your layout */
-  color: black; /* Text color */
+  top: 1400px;
+  color: black;
 }
 
 .contact-location .container {
@@ -481,8 +487,8 @@ body {
   margin: 0 auto;
   text-align: center;
   padding: 20px;
-  color: black; /* Text color */
-  background-color: #f3f3f3; /* Background color */
+  color: black;
+  background-color: #f3f3f3;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
