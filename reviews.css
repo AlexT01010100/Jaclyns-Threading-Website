@@ -6,39 +6,61 @@ body {
     padding: 0;
 }
 
-.header{
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* Import a stylish font */
+
+/* Other CSS code remains the same */
+
+.header {
     position: fixed;
     width: 100%;
-    padding: 2rem 9%;
+    padding: 1.5rem 5%;
     background: #404040;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 2;
+    box-sizing: border-box;
 }
 
 .header.sticky {
-    border-bottom: 1rem solid rgb(123, 123, 123, 1);;
+    border-bottom: 1rem solid rgb(123, 123, 123);
 }
 
-.logo{
+.logo {
     font-size: 2.5rem;
     color: white;
     cursor: default;
-    align-items: center;
-    justify-content: center;
+    font-family: 'Playfair Display', serif; /* Use the imported font */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a text shadow */
+    transition: transform 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
 
+.logo:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+    color: #c2a76b; /* Change color on hover */
 }
 
 .navbar {
-    white-space: nowrap; /* Prevent items from wrapping to the next line */
+    display: flex;
+    gap: 2rem;
+    flex-wrap: nowrap; /* Ensures items don't wrap to the next line */
+    overflow-x: auto; /* Allows horizontal scrolling if items overflow */
+    white-space: nowrap; /* Prevents items from wrapping to the next line */
+    box-sizing: border-box;
 }
 
 .navbar a {
     font-size: 1.7rem;
     color: white;
-    margin-left: 4rem;
     transition: .3s;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none; /* Ensures links are underlined for clarity */
+    box-sizing: border-box;
+}
+
+.navbar a:hover {
+    background-color: #575757;
 }
 
 .reviews {
