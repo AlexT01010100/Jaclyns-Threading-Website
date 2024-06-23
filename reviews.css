@@ -1,14 +1,9 @@
 body {
     background-color: #373434;
-    font-family: Arial, sans-serif;
-    color: #fff;
+    width: 100%;
     margin: 0;
-    padding: 0;
+    overflow-x: hidden;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* Import a stylish font */
-
-/* Other CSS code remains the same */
 
 .header {
     position: fixed;
@@ -24,20 +19,6 @@ body {
 
 .header.sticky {
     border-bottom: 1rem solid rgb(123, 123, 123);
-}
-
-.logo {
-    font-size: 2.5rem;
-    color: white;
-    cursor: default;
-    font-family: 'Playfair Display', serif; /* Use the imported font */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a text shadow */
-    transition: transform 0.3s, color 0.3s; /* Smooth transition for hover effects */
-}
-
-.logo:hover {
-    transform: scale(1.1); /* Slightly enlarge the logo on hover */
-    color: #c2a76b; /* Change color on hover */
 }
 
 .navbar {
@@ -63,13 +44,30 @@ body {
     background-color: #575757;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* Import a stylish font */
+
+.logo {
+    font-size: 2.5rem;
+    color: white;
+    cursor: default;
+    font-family: 'Playfair Display', serif; /* Use the imported font */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a text shadow */
+    transition: transform 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+    color: #c2a76b; /* Change color on hover */
+}
+
 .reviews {
+    padding: 120px 5% 20px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     overflow-x: auto;
-    padding: 20px;
     gap: 20px;
+    box-sizing: border-box;
 }
 
 .review-card {
@@ -83,7 +81,7 @@ body {
     min-height: 300px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start; /* Change to align items at the top */
 }
 
 .review-card:hover {
@@ -104,10 +102,18 @@ body {
     border: 2px solid #c2a76b;
 }
 
+.review-info {
+    flex-grow: 1; /* Allow the review info to expand to fill the space */
+}
+
 .review-info h3 {
     font-size: 18px;
     margin: 0;
-    color: #c2a76b;
+    color: white; /* Change text color to white */
+}
+
+.review-text {
+    color: white; /* Change text color to white */
 }
 
 .review-rating {
