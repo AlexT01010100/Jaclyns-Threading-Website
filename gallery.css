@@ -46,7 +46,7 @@
     text-align: center;
     padding: 4rem 1rem; /* Increased padding for better spacing */
     margin-top: 12rem; /* Adjust margin to separate from gallery */
-    clear: both; /* Ensures it clears floats */
+    clear: both;
 }
 
 .contact-me-container-gallery h1 {
