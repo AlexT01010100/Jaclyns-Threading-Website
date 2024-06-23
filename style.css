@@ -393,33 +393,46 @@ body {
 
 .contact-me-container .social-media a:hover {
   color: #c2a76b;
-}
-.reviews {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  top: 1300px; /* Adjust position as needed */
-  align-items: flex-start;
-  overflow-x: auto;
-  padding: 20px 0;
-}
+}.reviews {
+   display: flex;
+   justify-content: space-between;
+   position: relative;
+   top: 1300px; /* Adjust position as needed */
+   align-items: flex-start;
+   overflow-x: auto;
+   padding: 20px 0;
+   gap: 20px; /* Add spacing between cards */
+ }
 
 .review-card {
-  background-color: #f9f9f9;
+  background-color: #ffffff; /* Slightly darker background for contrast */
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: calc(30% - 20px); /* Adjust width to make cards wider */
+  width: 30%; /* Adjust width to make cards wider */
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-right: 20px; /* Adjust spacing between review cards */
-  height: 300px; /* Adjust height to make cards taller */
-  margin-bottom: 20px; /* Adjust margin to separate review cards */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Deeper shadow for better contrast */
+  transition: transform 0.2s ease-in-out;
+  min-height: 250px; /* Set minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
 }
 
 .review-header {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+}
+
+.review-header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
 }
 
 .review-info h3 {
@@ -429,7 +442,6 @@ body {
 }
 
 .review-rating {
-  font-size: 20px;
   display: flex;
   align-items: center;
   color: #ffc107; /* Yellow star color */
@@ -439,10 +451,10 @@ body {
 .review-rating .fa-star {
   font-size: 20px; /* Adjust star size */
   color: #ccc; /* Unchecked star color */
-  transition: color 0.2s ease-in-out;
+  margin-right: 5px; /* Space between stars */
 }
 
-.checked .fa-star {
+.review-rating .fa-star.checked {
   color: #ffc107; /* Checked star color */
 }
 
@@ -450,7 +462,10 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: #666;
+  margin-top: 10px;
+  flex-grow: 1; /* Ensure review text takes available space */
 }
+
 
 
 .contact-location {
