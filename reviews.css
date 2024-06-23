@@ -99,7 +99,7 @@ body {
     padding: 20px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     transition: transform 0.2s ease-in-out;
-    min-height: 300px;
+    min-height: 390px; /* Increase min-height to make cards longer */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -144,6 +144,12 @@ body {
     font-size: 24px;
     color: gold; /* Gold color for stars */
     margin-right: 8px;
+}
+
+.review-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-top: 0; /* Adjust top margin to move text up */
 }
 
 .review-year {
