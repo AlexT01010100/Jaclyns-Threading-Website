@@ -40,22 +40,28 @@
 
 /* Contact Section */
 .contact-me-container-gallery {
+    position: relative;
+    top: 12rem;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
     background-size: cover;
+    background-position: 70%;
+    height: 40rem;
     color: white;
     text-align: center;
-    padding: 4rem 1rem; /* Increased padding for better spacing */
-    margin-top: 12rem; /* Adjust margin to separate from gallery */
-    clear: both;
+    padding: 2rem 1rem;
 }
-
 .contact-me-container-gallery h1 {
+    position: relative;
+    top: 5rem;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
 }
 
+/* Footer Paragraph */
 .contact-me-container-gallery p {
+    position: relative;
+    top: 10rem;
     font-size: 1.2rem;
     max-width: 1000px;
     margin: 0 auto;
@@ -63,6 +69,7 @@
     padding: 0 2rem;
 }
 
+/* Horizontal Line */
 .contact-me-container-gallery hr {
     border: 0;
     border-top: 1px solid #c2a76b;
@@ -70,11 +77,16 @@
     width: 80%;
 }
 
+/* Social Media Icons Container */
 .contact-me-container-gallery .social-media-gallery {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
     display: flex;
     justify-content: center;
     gap: 2rem;
-    margin-top: 2rem; /* Adjust as needed */
 }
 
 .contact-me-container-gallery .social-media-gallery a {
@@ -86,7 +98,6 @@
 .contact-me-container-gallery .social-media-gallery a:hover {
     color: #c2a76b;
 }
-
 .contact-button-footer-gallery{
     position: relative;
     left: 42rem;
