@@ -111,6 +111,13 @@ body {
     transform: translateY(-8px);
 }
 
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
 .review-header img {
     width: 60px;
     height: 60px;
@@ -119,18 +126,28 @@ body {
     border: 3px solid #c2a76b;
 }
 
+.review-info {
+    flex-grow: 1;
+}
+
 .review-info h3 {
     font-size: 20px;
     margin-bottom: 5px;
 }
 
-.review-text {
-    font-size: 16px;
-    line-height: 1.6;
+.review-rating {
+    display: flex;
+    align-items: center;
 }
 
 .review-rating .fa-star {
     font-size: 24px;
     color: gold; /* Gold color for stars */
     margin-right: 8px;
+}
+
+.review-year {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 10px;
 }
