@@ -2,7 +2,7 @@ body {
   background-color: #373434;
   width: 101%;
   margin: 0;
-  
+
 }
 
 .header{
@@ -332,33 +332,214 @@ body {
 .slider-nav a.active {
   background-color: #333;
 }
-
+/* Footer Container */
 .contact-me-container {
   position: relative;
   top: 100rem;
-  background: linear-gradient(to top, lightgrey, rgba(255, 255, 255, 0.4)), url("microblading-footer.jpg") no-repeat center center;
-  background-size: cover; /* or 'contain' based on your preference */
-  background-position: 70%; /* Adjust the percentage to shift the image down */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
+  background-size: cover;
+  background-position: 70%;
   height: 40rem;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
 }
 
-
+/* Footer Heading */
 .contact-me-container h1 {
   position: relative;
-  top: 10rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  top: 5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
+/* Footer Paragraph */
 .contact-me-container p {
   position: relative;
-  top: 30rem;
-  left: 18rem;
+  top: 10rem;
+  font-size: 1.2rem;
   max-width: 1000px;
+  margin: 0 auto;
+  line-height: 1.6;
+  padding: 0 2rem;
+}
+
+/* Horizontal Line */
+.contact-me-container hr {
+  border: 0;
+  border-top: 1px solid #c2a76b;
+  margin: 2rem auto;
+  width: 80%;
+}
+
+/* Social Media Icons Container */
+.contact-me-container .social-media {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.contact-me-container .social-media a {
+  color: white;
+  font-size: 2rem;
+  transition: color 0.3s ease;
+}
+
+.contact-me-container .social-media a:hover {
+  color: #c2a76b;
+}
+.reviews {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  top: 1300px; /* Adjust position as needed */
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 20px 0;
+}
+
+.review-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: calc(30% - 20px); /* Adjust width to make cards wider */
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-right: 20px; /* Adjust spacing between review cards */
+  height: 300px; /* Adjust height to make cards taller */
+  margin-bottom: 20px; /* Adjust margin to separate review cards */
+}
+
+.review-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  margin-bottom: 15px;
 }
+
+.review-info h3 {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+}
+
+.review-rating {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  color: #ffc107; /* Yellow star color */
+  margin-bottom: 8px;
+}
+
+.review-rating .fa-star {
+  font-size: 20px; /* Adjust star size */
+  color: #ccc; /* Unchecked star color */
+  transition: color 0.2s ease-in-out;
+}
+
+.checked .fa-star {
+  color: #ffc107; /* Checked star color */
+}
+
+.review-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+
+.contact-location {
+  background-color: #ffffff;
+  padding: 20px 0;
+  position: relative;
+  top: 1400px; /* Adjust this value based on your layout */
+  color: black; /* Text color */
+}
+
+.contact-location .container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20px;
+  color: black; /* Text color */
+  background-color: #f3f3f3; /* Background color */
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-location h1 {
+  color: #c2a76b;
+  font-size: 29px;
+}
+
+.contact-location h2 {
+  color: black;
+  font-size: 50px;
+  font-family:'Times New Roman', Times, serif;
+}
+
+.map-container {
+  margin-bottom: 10px;
+}
+
+.contact-info {
+  font-size: 16px;
+  color: black; /* Text color */
+}
+
+.contact-info p {
+  margin-bottom: 5px;
+}
+
+.contact-info i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.contact-info i {
+  font-size: 18px;
+}
+
+
+.contact-button-footer{
+  position: relative;
+  top: 83rem;
+  left: 42rem;
+  background-color: #0f0f0f;
+  color: white;
+  height: 7rem;
+  width: 12rem;
+  font-size: 25px;
+  font-family: times, serif;
+  z-index: 1;
+}
+
+.contact-button-footer:hover {
+  background-color: #c1b46c;
+  transition: 0.7s;
+}
+
+.contact-button-footer:focus {
+  outline-color: transparent;
+  outline-style: solid;
+  box-shadow: 0 0 0 4px black;
+  transition: 0.9s;
+}
+
+.contact-button-footer:active {
+  background-color: #baa94a;
+}
+
+footer p {
+  position: absolute;
+  bottom: -3210px; /* Adjust the distance from the bottom as needed */
+  right: 20px; /* Adjust the distance from the right as needed */
+  color: white; /* Gold text color */
+  font-size: 14px;
+}
+
