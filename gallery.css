@@ -70,20 +70,20 @@
     width: 80%;
 }
 
-.contact-me-container-gallery .social-media {
+.contact-me-container-gallery .social-media-gallery {
     display: flex;
     justify-content: center;
     gap: 2rem;
     margin-top: 2rem; /* Adjust as needed */
 }
 
-.contact-me-container-gallery .social-media a {
+.contact-me-container-gallery .social-media-gallery a {
     color: white;
     font-size: 2rem;
     transition: color 0.3s ease;
 }
 
-.contact-me-container-gallery .social-media a:hover {
+.contact-me-container-gallery .social-media-gallery a:hover {
     color: #c2a76b;
 }
 
