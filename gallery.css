@@ -101,6 +101,7 @@
 .contact-button-footer-gallery{
     position: relative;
     left: 42rem;
+    top: -5rem;
     background-color: #0f0f0f;
     color: white;
     height: 7rem;
@@ -128,7 +129,7 @@
 
 .copyright-text-gallery {
     position: absolute;
-    bottom: -1050px; /* Adjust the distance from the bottom as needed */
+    bottom: -1250px; /* Adjust the distance from the bottom as needed */
     right: 20px; /* Adjust the distance from the right as needed */
     color: white; /* Gold text color */
     font-size: 14px;

@@ -122,40 +122,71 @@ body {
     overflow: hidden;
 }
 
-/* Additional Classes */
-.contact-me-container {
+/* Contact Section */
+.contact-me-container-contact {
     position: relative;
-    top: 100rem;
-    background: linear-gradient(to top, lightgrey, rgba(255, 255, 255, 0.4)), url("microblading-footer.jpg") no-repeat center center;
+    top: 12rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
     background-size: cover;
     background-position: 70%;
     height: 40rem;
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
 }
 
-.contact-me-container h1 {
+.contact-me-container-contact h1 {
+    position: relative;
+    top: 5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Footer Paragraph */
+.contact-me-container-contact p {
     position: relative;
     top: 10rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.contact-me-container p {
-    position: relative;
-    top: 30rem;
-    left: 18rem;
+    font-size: 1.2rem;
     max-width: 1000px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    margin: 0 auto;
+    line-height: 1.6;
+    padding: 0 2rem;
 }
 
-.contact-button-footer{
+/* Horizontal Line */
+.contact-me-container-contact hr {
+    border: 0;
+    border-top: 1px solid #c2a76b;
+    margin: 2rem auto;
+    width: 80%;
+}
+
+/* Social Media Icons Container */
+.contact-me-container-contact .social-media-contact {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.contact-me-container-contact .social-media-contact a {
+    color: white;
+    font-size: 2rem;
+    transition: color 0.3s ease;
+}
+
+.contact-me-container-contact .social-media-contact a:hover {
+    color: #c2a76b;
+}
+.booking-button-footer{
     position: relative;
-    top: 83rem;
     left: 42rem;
+    top: -5rem;
     background-color: #0f0f0f;
     color: white;
     height: 7rem;
@@ -165,29 +196,28 @@ body {
     z-index: 1;
 }
 
-.contact-button-footer:hover {
+.booking-button-footer:hover {
     background-color: #c1b46c;
     transition: 0.7s;
 }
 
-.contact-button-footer:focus {
+.booking-button-footer:focus {
     outline-color: transparent;
     outline-style: solid;
     box-shadow: 0 0 0 4px black;
     transition: 0.9s;
 }
 
-.contact-button-footer:active {
+.booking-button-footer:active {
     background-color: #baa94a;
 }
 
-footer p {
+.copyright-text-contact {
     position: absolute;
-    bottom: -3075px; /* Adjust the distance from the bottom as needed */
+    bottom: -795px; /* Adjust the distance from the bottom as needed */
     right: 20px; /* Adjust the distance from the right as needed */
     color: white; /* Gold text color */
     font-size: 14px;
 }
-
 
 
