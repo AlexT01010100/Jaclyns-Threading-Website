@@ -1,14 +1,14 @@
-
+/* Gallery */
 .gallery {
     position: relative;
     top: 10rem;
-    max-width: 1400px; /* Set a maximum width for the gallery if needed */
-    margin: 0 auto; /* Center the gallery */
+    max-width: 1400px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
     padding: 20px;
-    background: white; /* Adjust the background properties as needed */
+    background: white;
 }
 
 .gallery-item {
@@ -26,9 +26,9 @@
 }
 
 .gallery-item:hover {
-    transform: scale(1.1); /* Increase the size on hover */
-    box-shadow: 0 8px 24px #baa94a; /* Add a subtle box shadow for the glow effect */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Add transitions for smooth animation */
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px #baa94a;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .gallery-item img {
@@ -38,32 +38,24 @@
     border-radius: 8px;
 }
 
-/* Footer Container */
-.contact-me-container {
-    position: relative;
-    top: 100rem;
+/* Contact Section */
+.contact-me-container-gallery {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
     background-size: cover;
-    background-position: 70%;
-    height: 40rem;
     color: white;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 4rem 1rem; /* Increased padding for better spacing */
+    margin-top: 12rem; /* Adjust margin to separate from gallery */
+    clear: both; /* Ensures it clears floats */
 }
 
-/* Footer Heading */
-.contact-me-container h1 {
-    position: relative;
-    top: 5rem;
+.contact-me-container-gallery h1 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
 }
 
-/* Footer Paragraph */
-.contact-me-container p {
-    position: relative;
-    top: 10rem;
+.contact-me-container-gallery p {
     font-size: 1.2rem;
     max-width: 1000px;
     margin: 0 auto;
@@ -71,39 +63,32 @@
     padding: 0 2rem;
 }
 
-/* Horizontal Line */
-.contact-me-container hr {
+.contact-me-container-gallery hr {
     border: 0;
     border-top: 1px solid #c2a76b;
     margin: 2rem auto;
     width: 80%;
 }
 
-/* Social Media Icons Container */
-.contact-me-container .social-media {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
+.contact-me-container-gallery .social-media {
     display: flex;
     justify-content: center;
     gap: 2rem;
+    margin-top: 2rem; /* Adjust as needed */
 }
 
-.contact-me-container .social-media a {
+.contact-me-container-gallery .social-media a {
     color: white;
     font-size: 2rem;
     transition: color 0.3s ease;
 }
 
-.contact-me-container .social-media a:hover {
+.contact-me-container-gallery .social-media a:hover {
     color: #c2a76b;
 }
 
-.contact-button-footer{
+.contact-button-footer-gallery{
     position: relative;
-    top: 80rem;
     left: 42rem;
     background-color: #0f0f0f;
     color: white;
@@ -114,18 +99,26 @@
     z-index: 1;
 }
 
-.contact-button-footer:hover {
+.contact-button-footer-gallery:hover {
     background-color: #c1b46c;
     transition: 0.7s;
 }
 
-.contact-button-footer:focus {
+.contact-button-footer-gallery:focus {
     outline-color: transparent;
     outline-style: solid;
     box-shadow: 0 0 0 4px black;
     transition: 0.9s;
 }
 
-.contact-button-footer:active {
+.contact-button-footer-gallery:active {
     background-color: #baa94a;
+}
+
+.copyright-text-gallery {
+    position: absolute;
+    bottom: -1050px; /* Adjust the distance from the bottom as needed */
+    right: 20px; /* Adjust the distance from the right as needed */
+    color: white; /* Gold text color */
+    font-size: 14px;
 }
