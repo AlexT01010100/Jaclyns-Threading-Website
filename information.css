@@ -124,61 +124,102 @@ body {
     line-height: 1.6;
 }
 
-.footer {
-    background-color: #404040;
-    color: #fff;
-    padding: 20px 5%;
+/* Contact Section */
+.contact-me-container-information {
+    position: relative;
+    top: 12rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
+    background-size: cover;
+    background-position: 70%;
+    height: 40rem;
+    color: white;
     text-align: center;
-    margin-top: 20px;
+    padding: 2rem 1rem;
 }
 
-.contact-me-container {
-    max-width: 800px;
+.contact-me-container-information h1 {
+    position: relative;
+    top: 5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Footer Paragraph */
+.contact-me-container-information p {
+    position: relative;
+    top: 10rem;
+    font-size: 1.2rem;
+    max-width: 1000px;
     margin: 0 auto;
+    line-height: 1.6;
+    padding: 0 2rem;
 }
 
-.contact-me-container h1 {
+/* Horizontal Line */
+.contact-me-container-information hr {
+    border: 0;
+    border-top: 1px solid #c2a76b;
+    margin: 2rem auto;
+    width: 80%;
+}
+
+/* Social Media Icons Container */
+.contact-me-container-information .social-media-information {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.contact-me-container-information .social-media-information a {
+    color: white;
     font-size: 2rem;
-    margin-bottom: 10px;
+    transition: color 0.3s ease;
 }
 
-.contact-me-container p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-.social-media {
-    margin-bottom: 20px;
-}
-
-.social-media a {
-    font-size: 1.5rem;
-    color: #fff;
-    margin: 0 10px;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.social-media a:hover {
+.contact-me-container-information .social-media-information a:hover {
     color: #c2a76b;
 }
-
-.contact-button-footer {
-    display: inline-block;
-    background-color: #c2a76b;
-    color: #404040;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
+.contact-button-footer-information{
+    position: relative;
+    left: 42rem;
+    top: -5rem;
+    background-color: #0f0f0f;
+    color: white;
+    height: 7rem;
+    width: 12rem;
+    font-size: 25px;
+    font-family: times, serif;
+    z-index: 1;
 }
 
-.contact-button-footer:hover {
-    background-color: #404040;
-    color: #fff;
+.contact-button-footer-information:hover {
+    background-color: #c1b46c;
+    transition: 0.7s;
 }
 
-.footer .copyright-text {
-    margin-top: 20px;
-    font-size: 0.9rem;
+.contact-button-footer-information:focus {
+    outline-color: transparent;
+    outline-style: solid;
+    box-shadow: 0 0 0 4px black;
+    transition: 0.9s;
 }
+
+.contact-button-footer-information:active {
+    background-color: #baa94a;
+}
+
+.copyright-text-information {
+    position: absolute;
+    bottom: -795px; /* Adjust the distance from the bottom as needed */
+    right: 20px; /* Adjust the distance from the right as needed */
+    color: white; /* Gold text color */
+    font-size: 14px;
+}
+
+
