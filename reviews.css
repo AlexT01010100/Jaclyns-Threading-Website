@@ -157,7 +157,6 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin-top: 10px;
 }
-
 /* Contact Section */
 .contact-me-container-reviews {
     position: relative;
@@ -170,7 +169,6 @@ body {
     text-align: center;
     padding: 2rem 1rem;
 }
-
 .contact-me-container-reviews h1 {
     position: relative;
     top: 5rem;
@@ -250,11 +248,8 @@ body {
 
 .copyright-text-reviews {
     position: absolute;
-    bottom: -795px; /* Adjust the distance from the bottom as needed */
+    bottom: -1327px; /* Adjust the distance from the bottom as needed */
     right: 20px; /* Adjust the distance from the right as needed */
     color: white; /* Gold text color */
     font-size: 14px;
 }
-
-
-
