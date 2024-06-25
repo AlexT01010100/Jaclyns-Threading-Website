@@ -1,0 +1,184 @@
+/* Global styles */
+body {
+    background-color: #f8f8f8;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Header styles */
+.header {
+    position: fixed;
+    width: 100%;
+    padding: 1rem 5%;
+    background: #404040;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+.logo {
+    font-size: 2.5rem;
+    color: white;
+    cursor: default;
+    font-family: 'Playfair Display', serif; /* Use the imported font */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a text shadow */
+    transition: transform 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+    color: #c2a76b; /* Change color on hover */
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: nowrap; /* Ensures items don't wrap to the next line */
+    overflow-x: auto; /* Allows horizontal scrolling if items overflow */
+    white-space: nowrap; /* Prevents items from wrapping to the next line */
+    box-sizing: border-box;
+}
+
+.navbar a {
+    font-size: 1.7rem;
+    color: white;
+    transition: .3s;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none; /* Ensures links are underlined for clarity */
+    box-sizing: border-box;
+}
+
+.navbar a:hover {
+    background-color: #575757;
+}
+
+/* Main content styles */
+.main-content {
+    padding-top: 120px; /* Adjust padding-top to match header height */
+}
+
+.information {
+    padding: 40px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: justify; /* Justify text for better readability */
+}
+
+.information h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.information p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 20px 5%;
+    box-sizing: border-box;
+}
+
+.service-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    flex: 1;
+    max-width: calc(50% - 30px);
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.service-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.service-card h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.service-card p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.footer {
+    background-color: #404040;
+    color: #fff;
+    padding: 20px 5%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.contact-me-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.contact-me-container h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.contact-me-container p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.social-media {
+    margin-bottom: 20px;
+}
+
+.social-media a {
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.social-media a:hover {
+    color: #c2a76b;
+}
+
+.contact-button-footer {
+    display: inline-block;
+    background-color: #c2a76b;
+    color: #404040;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.contact-button-footer:hover {
+    background-color: #404040;
+    color: #fff;
+}
+
+.footer .copyright-text {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
