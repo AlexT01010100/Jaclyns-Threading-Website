@@ -192,17 +192,35 @@ body {
 }
 
 .booking-button-footer {
-    position: relative;
+    position: absolute;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    top: -5rem;
+    transform: translate(-50%, -50%);
     background-color: #0f0f0f;
     color: white;
-    height: 7rem;
-    width: 12rem;
-    font-size: 25px;
+    height: 3rem;
+    width: 8rem;
+    font-size: 16px;
     font-family: times, serif;
     z-index: 1;
+    padding: 0.5rem 1rem;
+}
+
+
+.contact-me-container-contact hr {
+    margin-bottom: 8rem;
+}
+
+@media screen and (max-width: 768px) {
+    .booking-button-footer {
+        position: relative;
+        left: auto;
+        transform: none;
+    }
+
+    .contact-me-container-contact .social-media-contact {
+        margin-top: 4rem; /* Increase margin to push down social icons */
+    }
 }
 
 .booking-button-footer:hover {
@@ -310,6 +328,7 @@ footer p {
         height: 4rem;
         width: 10rem;
         font-size: 18px;
+        margin-bottom: 2rem;
     }
 }
 
@@ -352,11 +371,11 @@ footer p {
 
     .contact-me-container-contact hr {
         position: relative;
-        top: -2rem;
+        top: -1rem;
     }
 
     .contact-me-container-contact .social-media-contact {
-        top: 16rem;
+        top: 16.4rem;
     }
 
     footer p {
@@ -364,14 +383,14 @@ footer p {
     }
 
     .booking-button-footer {
-        height: 3rem;
-        width: 8rem;
-        font-size: 16px;
-        top: -2.8rem;
+        position: relative;
+        margin-top: -4rem; /* Adjust as needed to raise the button */
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     /* adjust background size */
     .contact-me-container-contact {
-        height: 24rem;
+        height: 26rem;
     }
 }
