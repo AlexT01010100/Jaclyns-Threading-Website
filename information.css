@@ -153,18 +153,15 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Footer Paragraph */
 .contact-me-container-information p {
     position: relative;
     top: 10rem;
     font-size: 1.2rem;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 1rem auto;
     line-height: 1.6;
-    padding: 0 2rem;
 }
 
-/* Horizontal Line */
 .contact-me-container-information hr {
     border: 0;
     border-top: 1px solid #c2a76b;
@@ -172,9 +169,9 @@ body {
     width: 80%;
 }
 
-/* Social Media Icons Container */
 .contact-me-container-information .social-media-information {
     position: absolute;
+    margin: 0 auto;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -193,17 +190,31 @@ body {
 .contact-me-container-information .social-media-information a:hover {
     color: #c2a76b;
 }
-.contact-button-footer-information{
+
+.contact-button-footer-information {
     position: relative;
-    left: 42rem;
-    top: -5rem;
+    margin-top: 2rem; /* Adjust as needed to raise the button */
+    left: 50%;
+    transform: translate(-51%, -155%);
     background-color: #0f0f0f;
     color: white;
-    height: 7rem;
+    height: 5rem;
     width: 12rem;
-    font-size: 25px;
+    font-size: 16px;
     font-family: times, serif;
     z-index: 1;
+    padding: 0.5rem 1rem;
+}
+
+
+.contact-me-container-information hr {
+    margin-bottom: 8rem;
+}
+
+@media screen and (max-width: 768px) {
+    .contact-me-container-information .social-media-information {
+        margin-top: 4rem; /* Increase margin to push down social icons */
+    }
 }
 
 .contact-button-footer-information:hover {
@@ -222,12 +233,162 @@ body {
     background-color: #baa94a;
 }
 
-.copyright-text-information {
-    position: absolute;
-    bottom: -1505px; /* Adjust the distance from the bottom as needed */
-    right: 20px; /* Adjust the distance from the right as needed */
-    color: white; /* Gold text color */
+footer p {
+    position: relative;
+    color: white;
+    top: 154px;
     font-size: 14px;
+    text-align: right; /* Align text to the right */
 }
 
+@media screen and (min-width: 769px) and (max-width: 830px) {
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        font-size: 2rem;
+    }
+
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+
+    .contact-me-container-information h1 {
+        font-size: 1.8rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-information p {
+        font-size: 0.9rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-information hr {
+        position: relative;
+        top: -1rem;
+    }
+
+    .contact-me-container-information .social-media-contact {
+        top: 300px;
+    }
+
+    .contact-me-container-information .social-media-information {
+        top: 16.4rem;
+    }
+
+    footer p {
+        top: 10.4rem;
+    }
+
+    .contact-button-footer-information {
+        position: relative;
+        margin-top: 2rem; /* Adjust as needed to raise the button */
+        left: 50%;
+        transform: translate(-51%, -75%);
+        height: 4rem;
+        width: 10rem;
+    }
+
+    /* adjust background size */
+    .contact-me-container-information{
+        height: 26rem;
+    }
+}
 
