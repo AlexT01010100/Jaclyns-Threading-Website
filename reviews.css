@@ -81,6 +81,13 @@ body {
     text-decoration: underline;
 }
 
+.page-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #c2a76b; /* Gold color */
+    margin-bottom: 1rem;
+    font-family: 'Spectral', serif; /* Using Spectral font */
+}
 
 .review-row {
     display: flex;
@@ -92,7 +99,6 @@ body {
 }
 
 .review-card {
-    background-color: #444;
     border: 1px solid #c2a76b;
     border-radius: 12px;
     width: calc(25% - 20px); /* Adjust width to fit 4 cards per row */
@@ -103,9 +109,10 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    background: linear-gradient(to bottom right, #505050, #333); /* Gradient background */
+    background: linear-gradient(to bottom right, #1e1e1e, #444); /* Updated gradient background */
     color: white;
 }
+
 
 .review-card:hover {
     transform: translateY(-8px);
@@ -157,7 +164,6 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin-top: 10px;
 }
-
 /* Contact Section */
 .contact-me-container-reviews {
     position: relative;
@@ -170,7 +176,6 @@ body {
     text-align: center;
     padding: 2rem 1rem;
 }
-
 .contact-me-container-reviews h1 {
     position: relative;
     top: 5rem;
@@ -250,11 +255,8 @@ body {
 
 .copyright-text-reviews {
     position: absolute;
-    bottom: -795px; /* Adjust the distance from the bottom as needed */
+    bottom: -1427px; /* Adjust the distance from the bottom as needed */
     right: 20px; /* Adjust the distance from the right as needed */
     color: white; /* Gold text color */
     font-size: 14px;
 }
-
-
-
