@@ -95,6 +95,8 @@ body {
     font-size: 1.2rem;
     line-height: 1.8;
     margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
     color: white;
 }
 
@@ -138,6 +140,33 @@ body {
     color: #666;
     line-height: 1.6;
 }
+
+@media screen and (max-width: 768px) {
+    .services {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 2%;
+        gap: 20px;
+    }
+
+    .service-card {
+        max-width: 90%;
+        margin-bottom: 20px;
+    }
+
+    .service-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .service-card p {
+        font-size: 0.9rem;
+    }
+
+    .service-card:last-child {
+        margin: 0;
+    }
+}
+
 
 /* Footer Section */
 .contact-me-container-information {
