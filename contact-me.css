@@ -240,6 +240,59 @@ footer p {
     text-align: right; /* Align text to the right */
 }
 
+@media screen and (min-width: 769px) and (max-width: 830px) {
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .logo {
         font-size: 2rem;
