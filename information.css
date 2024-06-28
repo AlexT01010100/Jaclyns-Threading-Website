@@ -74,14 +74,14 @@ body {
 
 /* Main content styles */
 .main-content {
-    padding-top: 120px; /* Adjust padding-top to match header height */
+    padding-top: 120px;
 }
 
 .information {
     padding: 40px 5%;
     max-width: 1200px;
     margin: 0 auto;
-    text-align: justify; /* Justify text for better readability */
+    text-align: justify;
 }
 
 .information h1 {
@@ -139,7 +139,7 @@ body {
     line-height: 1.6;
 }
 
-/* Contact Section */
+/* Footer Section */
 .contact-me-container-information {
     position: relative;
     top: 12rem;
@@ -200,7 +200,7 @@ body {
 
 .contact-button-footer-information {
     position: relative;
-    margin-top: 2rem; /* Adjust as needed to raise the button */
+    margin-top: 0.5rem; /* Adjust as needed to raise the button */
     left: 50%;
     transform: translate(-51%, -155%);
     background-color: #0f0f0f;
@@ -372,23 +372,19 @@ footer p {
         top: -1rem;
     }
 
-    .contact-me-container-information .social-media-contact {
-        top: 300px;
-    }
-
     .contact-me-container-information .social-media-information {
-        top: 16.4rem;
+        top: 19.5rem;
     }
 
     footer p {
-        top: 10.4rem;
+        top: 9.4rem;
     }
 
     .contact-button-footer-information {
         position: relative;
         margin-top: 2rem; /* Adjust as needed to raise the button */
         left: 50%;
-        transform: translate(-51%, -75%);
+        transform: translate(-51%, -165%);
         height: 4rem;
         width: 10rem;
     }
