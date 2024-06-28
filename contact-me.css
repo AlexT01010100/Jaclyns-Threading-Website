@@ -159,7 +159,6 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     line-height: 1.6;
-    padding: 0 2rem;
 }
 
 .contact-me-container-contact hr {
@@ -192,10 +191,10 @@ body {
 }
 
 .booking-button-footer {
-    position: absolute;
-    top: 50%;
+    position: relative;
+    margin-top: -30rem; /* Positioning the button 3rem below the <hr> */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background-color: #0f0f0f;
     color: white;
     height: 3rem;
@@ -212,12 +211,6 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-    .booking-button-footer {
-        position: relative;
-        left: auto;
-        transform: none;
-    }
-
     .contact-me-container-contact .social-media-contact {
         margin-top: 4rem; /* Increase margin to push down social icons */
     }
@@ -245,9 +238,6 @@ footer p {
     top: 130px;
     font-size: 14px;
     text-align: right; /* Align text to the right */
-    padding: 1rem; /* Adjust padding as needed */
-    margin-right: 0; /* Create space from the right edge */
-    margin-top: 1rem; /* Adjust vertical margin to move text down */
 }
 
 @media screen and (min-width: 768px) {
@@ -322,14 +312,6 @@ footer p {
         top: 0;
         font-size: 1rem;
     }
-
-    .booking-button-footer {
-        top: 0;
-        height: 4rem;
-        width: 10rem;
-        font-size: 18px;
-        margin-bottom: 2rem;
-    }
 }
 
 @media screen and (max-width: 480px) {
@@ -379,12 +361,12 @@ footer p {
     }
 
     footer p {
-        top: 8.4rem;
+        top: 10.4rem;
     }
 
     .booking-button-footer {
         position: relative;
-        margin-top: -4rem; /* Adjust as needed to raise the button */
+        margin-top: 2rem; /* Adjust as needed to raise the button */
         left: 50%;
         transform: translate(-50%, -50%);
     }
