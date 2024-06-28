@@ -247,6 +247,7 @@ footer p {
 
     .navbar-menu a {
         font-size: 1.5rem;
+        text-decoration: none;
     }
 
     /* Adjusted styles for the dropdown menu on small screens */
@@ -255,6 +256,7 @@ footer p {
         font-size: 2rem;
         color: white;
         cursor: pointer;
+        text-decoration: none;
     }
 
     .navbar-menu {
