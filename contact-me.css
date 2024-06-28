@@ -157,7 +157,7 @@ body {
     top: 10rem;
     font-size: 1.2rem;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 1rem auto;
     line-height: 1.6;
 }
 
@@ -170,7 +170,7 @@ body {
 
 .contact-me-container-contact .social-media-contact {
     position: absolute;
-    margin-top: 2rem;
+    margin: 0 auto;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -192,13 +192,13 @@ body {
 
 .booking-button-footer {
     position: relative;
-    margin-top: -30rem; /* Positioning the button 3rem below the <hr> */
+    margin-top: 2rem; /* Adjust as needed to raise the button */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-51%, -115%);
     background-color: #0f0f0f;
     color: white;
-    height: 3rem;
-    width: 8rem;
+    height: 5rem;
+    width: 12rem;
     font-size: 16px;
     font-family: times, serif;
     z-index: 1;
@@ -235,19 +235,20 @@ body {
 footer p {
     position: relative;
     color: white;
-    top: 130px;
+    top: 170px;
     font-size: 14px;
     text-align: right; /* Align text to the right */
 }
 
-@media screen and (min-width: 768px) {
-    .header {
-        overflow: hidden;
-    }
-}
-
-/* Responsive Design */
 @media screen and (max-width: 768px) {
+    .logo {
+        font-size: 2rem;
+    }
+
+    .navbar-menu a {
+        font-size: 1.5rem;
+    }
+
     /* Adjusted styles for the dropdown menu on small screens */
     .navbar .icon {
         display: block;
@@ -293,36 +294,6 @@ footer p {
         background-color: #575757;
     }
 
-    .contact {
-        margin: 2rem 1rem;
-        max-width: none;
-    }
-
-    .contact-me-container-contact {
-        height: auto;
-        padding: 4rem 1rem;
-    }
-
-    .contact-me-container-contact h1 {
-        top: 0;
-        font-size: 2rem;
-    }
-
-    .contact-me-container-contact p {
-        top: 0;
-        font-size: 1rem;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .logo {
-        font-size: 2rem;
-    }
-
-    .navbar-menu a {
-        font-size: 1.5rem;
-    }
-
     .contact h2 {
         font-size: 1.5rem;
     }
@@ -343,12 +314,12 @@ footer p {
 
     .contact-me-container-contact h1 {
         font-size: 1.8rem;
-        top: -2rem;
+        top: -1rem;
     }
 
     .contact-me-container-contact p {
         font-size: 0.9rem;
-        top: -2rem;
+        top: -1rem;
     }
 
     .contact-me-container-contact hr {
@@ -368,7 +339,9 @@ footer p {
         position: relative;
         margin-top: 2rem; /* Adjust as needed to raise the button */
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-51%, -75%);
+        height: 4rem;
+        width: 10rem;
     }
 
     /* adjust background size */
