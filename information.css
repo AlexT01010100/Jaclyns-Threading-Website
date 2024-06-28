@@ -27,24 +27,31 @@ body {
 
 .navbar {
     display: flex;
-    gap: 2rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    white-space: nowrap;
-    box-sizing: border-box;
+    align-items: center;
 }
 
-.navbar a {
+.navbar .icon {
+    display: none;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar-menu a {
     font-size: 1.7rem;
     color: white;
     transition: .3s;
     padding: 0.5rem 1rem;
     border-radius: 5px;
     text-decoration: none;
-    box-sizing: border-box;
 }
 
-.navbar a:hover {
+.navbar-menu a:hover {
     background-color: #575757;
 }
 
