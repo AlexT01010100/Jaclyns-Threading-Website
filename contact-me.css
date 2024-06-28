@@ -360,13 +360,18 @@ footer p {
     }
 
     footer p {
-        top: 12.5rem;
+        top: 8.4rem;
     }
 
     .booking-button-footer {
         height: 3rem;
         width: 8rem;
         font-size: 16px;
-        top: 2rem;
+        top: -2.8rem;
+    }
+
+    /* adjust background size */
+    .contact-me-container-contact {
+        height: 24rem;
     }
 }
