@@ -1,13 +1,70 @@
-.he1 {
-  border-style: double;
-  border-width: 17px;
-  border-block-color: #ecdb7e;
+.slider-nav {
+  display: flex;
+  column-gap: 1rem;
+  position: relative;
+  top: -2900px;
+  left: 600px;
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
-.booking-button-homepage{
+.slider-nav a {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #fff;
+  opacity: 0.75;
+  transition: opacity ease 250ms;
+  cursor: pointer;
+}
+
+.slider-nav a:hover {
+  opacity: 1;
+}
+
+.slider-nav a.active {
+  background-color: #333;
+}
+
+.why-jaclyn {
+  position: relative;
+  top: -30vh;
+  height: auto;
+  background-color: white;
+  color: black;
+  font-size: 2vh;
+  text-align: center;
+  padding: 2rem; /* Added padding for spacing */
+  max-width: 100%; /* Limits the width to prevent overflow */
+  margin: 0 auto; /* Centers the content */
+}
+
+@media (max-width: 768px) {
+  .why-jaclyn {
+    padding: 1.5rem;
+  }
+}
+
+.why-jaclyn h1 {
+  position: relative;
+  bottom: 2rem;
+  color: #c2a76b;
+  font-size: 29px;
+}
+
+.why-jaclyn h2 {
+  position: relative;
+  bottom: 5rem;
+  color: black;
+  font-size: 60px;
+  font-family:'Times New Roman', Times, serif;
+}
+
+.booking-button-homepage {
   position: absolute;
-  top: 50rem;
-  left: 41.5rem;
+  top: 17rem;
+  left: 50%;
+  transform: translate(-50%, -100%);
   background-color: #0f0f0f;
   color: white;
   height: 7rem;
@@ -33,36 +90,6 @@
   background-color: #baa94a;
 }
 
-.Social_media_icons {
-  position: absolute;
-  z-index: 1;
-}
-
-.why-jaclyn {
-  position: absolute;
-  top: 32.16vw;
-  height: 29vw;
-  background-color: white;
-  color:  black;
-  font-size: 20px;
-  text-align: center;
-}
-
-.why-jaclyn h1 {
-  color: #c2a76b;
-  font-size: 29px;
-}
-
-.why-jaclyn h2 {
-  color: black;
-  font-size: 60px;
-  font-family:'Times New Roman', Times, serif;
-}
-
-.why-jaclyn p {
-  color: grey;
-}
-
 .who-can-benefit-information {
   position: absolute;
   background-color: white;
@@ -72,6 +99,13 @@
   height: 34vw;
   top: 63vw;
   left: 49.2vw;
+}
+
+.why-jaclyn p {
+  color: grey;
+  line-height: 1.6;
+  font-size: 3vh;
+  word-wrap: break-word;
 }
 
 .who-can-benefit-information h1 {
@@ -238,68 +272,16 @@
   font-weight: 700;
 }
 
-.slider-wrapper {
-  position: relative;
-  max-width: 48rem;
-  margin: 0 auto;
-}
-
-.slider {
-  display: flex;
-  overflow-x: hidden;
-  width: 104vw;
-  height: 50vw;
-  top: 6vw;
-  right: 30vw;
-  position: relative;
-  scroll-snap-type: x mandatory;
-  box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
-}
-
-.slider img {
-  flex: 1 0 100%;
-  scroll-snap-align: start;
-  object-fit: cover;
-}
-
-.slider-nav {
-  display: flex;
-  column-gap: 1rem;
-  position: relative;
-  top: -2900px;
-  left: 600px;
-  transform: translateX(-50%);
-  z-index: 1;
-}
-
-.slider-nav a {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background-color: #fff;
-  opacity: 0.75;
-  transition: opacity ease 250ms;
-  cursor: pointer;
-}
-
-.slider-nav a:hover {
-  opacity: 1;
-}
-
-.slider-nav a.active {
-  background-color: #333;
-}
-
 .reviews {
-   display: flex;
-   justify-content: space-between;
-   position: relative;
-   top: 1300px; /* Adjust position as needed */
-   align-items: flex-start;
-   overflow-x: auto;
-   padding: 20px 0;
-   gap: 20px; /* Add spacing between cards */
- }
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  top: 1300px; /* Adjust position as needed */
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 20px 0;
+  gap: 20px; /* Add spacing between cards */
+}
 
 .review-card {
   background-color: #ffffff; /* Slightly darker background for contrast */
@@ -367,6 +349,30 @@
   flex-grow: 1;
 }
 
+
+.slider-wrapper {
+  position: relative;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.slider {
+  display: flex;
+  overflow-x: hidden;
+  width: 104vw;
+  height: 50vw;
+  top: 6vw;
+  right: 30vw;
+  position: relative;
+  scroll-snap-type: x mandatory;
+  box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
+}
+
+.slider img {
+  flex: 1 0 100%;
+  scroll-snap-align: start;
+  object-fit: cover;
+}
 
 .contact-location {
   background-color: #ffffff;
