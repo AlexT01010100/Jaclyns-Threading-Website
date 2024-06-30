@@ -146,68 +146,80 @@ body {
   margin-top: 10px;
 }
 
-/* Info sections */
-.info-section {
+/* General styles for info sections */
+.info-section, .info-section-reversed {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  flex-direction: column; /* Stack items vertically on smaller screens */
+  align-items: center;
   background-color: white;
+  text-align: center;
   font-size: 20px;
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 20px; /* Adjust margin as needed */
 }
 
-.info-section h1,
-.info-section h2,
-.info-section p {
-  text-align: left;
-  max-width: 80%;
+.info-section h1, .info-section h2, .info-section p,
+.info-section-reversed h1, .info-section-reversed h2, .info-section-reversed p {
+  text-align: left; /* Align text to the left within info sections */
 }
 
-.info-section h1 {
+.info-section h1, .info-section-reversed h1 {
   color: #c2a76b;
   font-size: 29px;
 }
 
-.info-section h2 {
+.info-section h2, .info-section-reversed h2 {
   color: black;
   font-size: 50px;
   font-family: 'Times New Roman', Times, serif;
-  margin-top: 20px;
+  margin-top: 20px; /* Add margin to separate from image */
 }
 
-.info-section p {
+.info-section p, .info-section-reversed p {
   color: grey;
   line-height: 1.6;
-  font-size: 16px; 
-  margin-top: 10px;
+  font-size: 16px; /* Adjusted font size for readability */
+  margin-top: 10px; /* Added margin to separate from heading */
 }
 
-.info-section img {
-  max-width: 100%;
+.info-section .text-content, .info-section-reversed .text-content-reversed {
+  padding-right: 20px; /* Add padding for spacing */
+  padding-left: 20px; /* Add padding for spacing */
+  text-align: center;
+}
+
+.info-section img, .info-section-reversed img {
+  max-width: 100%; /* Ensure image scales with container */
   height: auto;
   display: block;
-  margin-top: 20px;
+  margin: 0 auto;
+  margin-top: 20px; /* Added margin to separate from content */
 }
 
-@media (max-width: 768px) {
-  .info-section {
-    flex-direction: column;
-    text-align: center;
+/* Media query for larger screens */
+@media (min-width: 769px) {
+  .info-section, .info-section-reversed {
+    flex-direction: row; /* Align items side by side on larger screens */
+    justify-content: space-between; /* Space items evenly between text and image */
   }
 
-  .info-section img {
-    order: -1;
-    margin-top: 20px;
+  .info-section-reversed {
+    flex-direction: row-reverse; /* Reverse flex direction for reversed info-section */
   }
 
-  .learn-more-button {
-    margin-top: 10px;
+  .info-section .text-content, .info-section-reversed .text-content-reversed {
+    padding-left: 20px; /* Adjust padding for proper spacing */
+    padding-right: 20px; /* Adjust padding for proper spacing */
+    text-align: left; /* Align text to the left on larger screens */
+  }
+
+  .info-section img, .info-section-reversed img {
+    margin-top: 0; /* Remove margin top for images on larger screens */
   }
 }
 
 /* Button styles */
-.learn-more-button {
+.learn-more-button, .learn-more-button-reversed {
   display: inline-block;
   background-color: #0f0f0f;
   color: white;
@@ -215,28 +227,27 @@ body {
   width: 12rem;
   font-size: 25px;
   font-family: times, serif;
+  margin-top: 20px; /* Adjust margin as needed */
   text-align: center;
-  line-height: 7rem;
-  text-decoration: none;
+  line-height: 7rem; /* Vertically center button text */
+  text-decoration: none; /* Remove underline */
   transition: background-color 0.7s;
   border-radius: 5px;
 }
 
-.learn-more-button:hover {
+.learn-more-button:hover, .learn-more-button-reversed:hover {
   background-color: #c1b46c;
 }
 
-.learn-more-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px black;
+.learn-more-button:focus, .learn-more-button-reversed:focus {
+  outline: none; /* Remove focus outline */
+  box-shadow: 0 0 0 4px black; /* Custom focus style */
   transition: box-shadow 0.9s;
 }
 
-.learn-more-button:active {
+.learn-more-button:active, .learn-more-button-reversed:active {
   background-color: #baa94a;
 }
-
-
 
 .a1 {
   position: absolute;
