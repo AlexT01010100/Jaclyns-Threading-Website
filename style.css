@@ -78,14 +78,14 @@ html, body {
   margin-bottom: -10rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .why-jaclyn {
     padding: 1.5rem;
   }
 }
 
 /* Center everything but reviews on small screens */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   /* Center Why Jaclyn section */
   .why-jaclyn {
     text-align: center;
@@ -286,7 +286,7 @@ html, body {
 }
 
 /* Media query for larger screens */
-@media (min-width: 769px) {
+@media (min-width: 1000px) {
   .info-section, .info-section-reversed {
     flex-direction: row; /* Align items side by side on larger screens */
     justify-content: space-between; /* Space items evenly between text and image */
@@ -388,8 +388,8 @@ html, body {
 }
 .reviews {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   overflow-x: auto;
   padding: 20px 0;
   gap: 20px;
@@ -399,7 +399,7 @@ html, body {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: 30%; /* Initial width for larger screens */
+  width: 29%;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
@@ -457,18 +457,20 @@ html, body {
   color: #ffc107;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .reviews {
     flex-wrap: nowrap;
+    justify-content: flex-start;
     overflow-x: auto;
     padding-bottom: 20px;
   }
 
   .review-card {
-    width: calc(50% - 10px);
-    max-width: calc(50% - 10px);
+    width: calc(60% - 10px);
+    min-width: calc(60% - 10px);
     margin-right: 20px; /* Add space between cards */
     margin-bottom: 0;
+
   }
 }
 
