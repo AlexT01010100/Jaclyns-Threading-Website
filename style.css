@@ -1,38 +1,36 @@
-body, html {
+body {
+  background-color: #373434;
   width: 100%;
-  min-width: 100%;
   margin: 0;
-  padding: 0;
+  overflow-x: hidden;
 }
 
-.slider {
+.sliding-image-container {
   display: flex;
-  overflow-x: hidden;
-  width: 100%;
-  height: 50vw; /* Adjust height as needed */
-  top: 6vw;
-  right: 30vw;
-  position: relative;
+  overflow-x: scroll;
+  width: 100vw;
+  height: 55vw; /* Adjust height as needed */
   scroll-snap-type: x mandatory;
   box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
+  position: relative;
 }
 
-.slider img {
-  flex: 1 0 100%;
+.sliding-image-container img {
+  flex: 0 0 100%;
   scroll-snap-align: start;
-  object-fit: cover; /* Ensure the image covers the container */
-  width: 100%; /* Ensure image takes full width of its parent */
-  height: 100%; /* Ensure image takes full height of its parent */
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
-
 
 .slider-nav {
   display: flex;
-  top: 6vw;
-  column-gap: 1rem;
-  position: relative;
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
   transform: translateX(-50%);
-  z-index: 2;
+  column-gap: 1rem;
+  z-index: 1;
 }
 
 .slider-nav a {
@@ -41,7 +39,7 @@ body, html {
   border-radius: 50%;
   background-color: #fff;
   opacity: 0.75;
-  transition: opacity ease 250ms;
+  transition: opacity 250ms ease;
   cursor: pointer;
 }
 
