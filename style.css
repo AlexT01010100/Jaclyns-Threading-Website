@@ -1,7 +1,7 @@
-body {
-  background-color: #373434;
-  width: 100%;
+html, body {
+  height: 100%;
   margin: 0;
+  padding: 0;
   overflow-x: hidden;
 }
 
@@ -75,7 +75,7 @@ body {
   text-align: center;
   padding: 2rem;
   max-width: 100%; /* prevent overflow */
-  margin: 0 auto;
+  margin-bottom: -10rem;
 }
 
 @media (max-width: 768px) {
@@ -230,7 +230,7 @@ body {
 .why-jaclyn p {
   color: grey;
   line-height: 1.6;
-  font-size: 16px;
+  font-size: 22px;
   margin-top: 10px;
 }
 
@@ -242,14 +242,18 @@ body {
   align-items: center; /* Center items horizontally */
   text-align: center; /* Center text within the section */
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 130px;
   background: white;
+}
+
+.info-section-reversed {
+  margin-bottom: 5rem;
 }
 
 .info-section h1,
 .info-section-reversed h1 {
   color: #c2a76b;
-  font-size: 29px; /* Adjusted font size */
+  font-size: 30px; /* Adjusted font size */
 }
 
 .info-section h2,
@@ -263,7 +267,7 @@ body {
 .info-section p, .info-section-reversed p {
   color: grey;
   line-height: 1.6;
-  font-size: 16px; /* Adjusted font size for readability */
+  font-size: 22px; /* Adjusted font size for readability */
   margin-top: 10px; /* Added margin to separate from heading */
 }
 
@@ -455,20 +459,18 @@ body {
 
 @media (max-width: 768px) {
   .reviews {
-    flex-wrap: nowrap; /* Prevent wrapping */
-    overflow-x: auto; /* Enable horizontal scrolling */
-    padding-bottom: 20px; /* Add some space at the bottom */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 20px;
   }
 
   .review-card {
-    width: calc(50% - 10px); /* Adjusted width for smaller screens */
-    max-width: calc(50% - 10px); /* Ensure cards do not exceed container */
+    width: calc(50% - 10px);
+    max-width: calc(50% - 10px);
     margin-right: 20px; /* Add space between cards */
-    margin-bottom: 0; /* Remove bottom margin */
+    margin-bottom: 0;
   }
 }
-
-
 
 .slider-wrapper {
   position: relative;
@@ -480,7 +482,7 @@ body {
   background-color: #ffffff;
   padding: 20px 0;
   position: relative;
-  top: 1400px;
+  margin-top: 6rem;
   color: black;
 }
 
@@ -520,13 +522,13 @@ body {
 }
 
 #homepage-footer-container {
-  top: 97rem;
+  top: 9rem;
 }
 
 #homepage-footer-button {
-  top: 85rem;
+  top: -3rem;
 }
 
 #homepage-footer-copyright-text {
-  top: 94.5rem;
+  top: 6.5rem;
 }
