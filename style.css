@@ -8,8 +8,8 @@ body {
 .sliding-image-container {
   display: flex;
   overflow-x: scroll;
-  width: 100vw;
-  height: 55vw; /* Adjust height as needed */
+  width: 100%;
+  height: calc(100vw * 0.55); /* 55% of the viewport width */
   scroll-snap-type: x mandatory;
   box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
   position: relative;
