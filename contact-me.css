@@ -1,28 +1,38 @@
-/* General Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    background-color: #373434;
-    margin: 0;
-    font-family: 'Spectral', serif;
-    color: white;
-}
 
-/* Contact Section */
 .contact {
     position: relative;
     top: 8rem;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
     padding: 2rem 1rem;
     background-color: #404040;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 50rem;
-    margin: 2rem auto;
     border-radius: 8px;
 }
+
+@media screen and (max-width: 768px) {
+    .contact {
+        position: relative; /* Ensure relative positioning */
+        left: 50%; /* Move left by half of its own width */
+        transform: translateX(-50%); /* Center horizontally */
+        width: 70%; /* Adjust width as needed */
+        padding: 2rem; /* Adjust padding for smaller screens */
+        max-width: 100%; /* Ensure it stretches to the viewport */
+    }
+
+    .contact form .input-box input {
+        flex: 1 1 100%; /* Full width for input on smaller screens */
+        margin-bottom: 1rem; /* Increase spacing between fields */
+    }
+
+    .contact form textarea {
+        height: 80px; /* Adjusted height for smaller screens */
+        margin-top: 1.5rem; /* Increased spacing from above input */
+    }
+}
+
 
 .contact h2 {
     color: #c2a76b;
@@ -56,12 +66,12 @@ body {
 }
 
 .contact form .input-box input {
-    flex: 1 1 calc(50% - 0.5rem);
+    flex: 1 1 calc(50% - 0.5rem); /* Maintain current width calculation */
 }
 
 .contact form textarea {
-    flex: 1 1 100%;
-    resize: none;
+    width: 95.5%; /* Maintain current width calculation */
+    margin-top: 1rem; /* Increase spacing from above input */
 }
 
 .contact form .btn {
@@ -77,5 +87,9 @@ body {
 
 .contact form .btn:hover {
     background-color: #e0c490;
+}
+
+#contact-footer-copyright-text {
+    top: 9.5rem;
 }
 
