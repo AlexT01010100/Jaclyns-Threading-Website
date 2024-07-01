@@ -93,7 +93,7 @@ body::-webkit-scrollbar-thumb {
   }
 }
 
-/* Center everything but reviews on small screens */
+
 @media (max-width: 1000px) {
   /* Center Why Jaclyn section */
   .why-jaclyn {
@@ -102,19 +102,19 @@ body::-webkit-scrollbar-thumb {
   }
 
   .why-jaclyn h1 {
-    font-size: 24px; /* Adjusted font size for smaller screens */
-    bottom: 1.5rem; /* Adjusted position */
-    text-align: center; /* Center text */
+    font-size: 24px;
+    bottom: 1.5rem;
+    text-align: center;
   }
 
   .why-jaclyn h2 {
-    font-size: 40px; /* Adjusted font size for smaller screens */
-    bottom: 4.5rem; /* Adjusted position */
-    text-align: center; /* Center text */
+    font-size: 40px;
+    bottom: 4.5rem;
+    text-align: center;
   }
 
   .why-jaclyn p {
-    font-size: 14px; /* Adjusted font size for smaller screens */
+    font-size: 14px;
   }
 
   /* Center info sections */
@@ -140,13 +140,13 @@ body::-webkit-scrollbar-thumb {
 
   .info-section p,
   .info-section-reversed p {
-    font-size: 14px; /* Adjusted font size for smaller screens */
-    margin-top: 10px; /* Added margin to separate from heading */
+    font-size: 14px;
+    margin-top: 10px;
   }
 
   .info-section img,
   .info-section-reversed img {
-    margin-top: 20px; /* Added margin to separate from content */
+    margin-top: 20px;
   }
 
   /* Center contact location section */
@@ -156,8 +156,8 @@ body::-webkit-scrollbar-thumb {
   }
 
   .contact-location h2 {
-    font-size: 40px; /* Adjusted font size for smaller screens */
-    text-align: center; /* Center text */
+    font-size: 40px;
+    text-align: center;
   }
 }
 
@@ -170,9 +170,9 @@ body::-webkit-scrollbar-thumb {
 
 .why-jaclyn h2 {
   color: black;
-  font-size: 40px; /* Adjusted font size */
+  font-size: 40px;
   font-family: 'Times New Roman', Times, serif;
-  margin-top: 10px; /* Add margin to separate from image */
+  margin-top: 10px;
 }
 
 .why-jaclyn a {
@@ -216,7 +216,7 @@ body::-webkit-scrollbar-thumb {
   font-size: 3vh;
   word-wrap: break-word;
 }
-/* Why Jaclyn? */
+
 .why-jaclyn {
   background-color: #f0f0f0;
   padding: 20px;
@@ -224,7 +224,7 @@ body::-webkit-scrollbar-thumb {
 
 .why-jaclyn h1 {
   color: #c2a76b;
-  font-size: 29px; /* Adjusted font size */
+  font-size: 29px;
 }
 
 .why-jaclyn h2 {
@@ -246,8 +246,8 @@ body::-webkit-scrollbar-thumb {
 .info-section-reversed {
   display: flex;
   flex-direction: column; /* Stack items vertically on smaller screens */
-  align-items: center; /* Center items horizontally */
-  text-align: center; /* Center text within the section */
+  align-items: center;
+  text-align: center;
   padding: 20px;
   margin-top: 130px;
   background: white;
@@ -260,61 +260,61 @@ body::-webkit-scrollbar-thumb {
 .info-section h1,
 .info-section-reversed h1 {
   color: #c2a76b;
-  font-size: 30px; /* Adjusted font size */
+  font-size: 30px;
 }
 
 .info-section h2,
 .info-section-reversed h2 {
   color: black;
-  font-size: 40px; /* Adjusted font size */
+  font-size: 40px;
   font-family: 'Times New Roman', Times, serif;
-  margin-top: 20px; /* Add margin to separate from image */
+  margin-top: 20px;
 }
 
 .info-section p, .info-section-reversed p {
   color: grey;
   line-height: 1.6;
-  font-size: 22px; /* Adjusted font size for readability */
-  margin-top: 10px; /* Added margin to separate from heading */
+  font-size: 22px;
+  margin-top: 10px;
 }
 
 .info-section .text-content, .info-section-reversed .text-content-reversed {
-  padding-right: 20px; /* Add padding for spacing */
-  padding-left: 20px; /* Add padding for spacing */
+  padding-right: 20px;
+  padding-left: 20px;
   text-align: center;
 }
 
 .info-section img, .info-section-reversed img {
-  max-width: 100%; /* Ensure image scales with container */
+  max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
-  margin-top: 20px; /* Added margin to separate from content */
+  margin-top: 20px;
 }
 
-/* Media query for larger screens */
+
 @media (min-width: 1000px) {
   .info-section, .info-section-reversed {
-    flex-direction: row; /* Align items side by side on larger screens */
-    justify-content: space-between; /* Space items evenly between text and image */
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .info-section-reversed {
-    flex-direction: row-reverse; /* Reverse flex direction for reversed info-section */
+    flex-direction: row-reverse;
   }
 
   .info-section .text-content, .info-section-reversed .text-content-reversed {
-    padding-left: 20px; /* Adjust padding for proper spacing */
-    padding-right: 20px; /* Adjust padding for proper spacing */
-    text-align: left; /* Align text to the left on larger screens */
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: left;
   }
 
   .info-section img, .info-section-reversed img {
-    margin-top: 0; /* Remove margin top for images on larger screens */
+    margin-top: 0;
   }
 }
 
-/* Button styles */
+
 .learn-more-button, .learn-more-button-reversed {
   display: inline-block;
   background-color: #0f0f0f;
@@ -323,10 +323,10 @@ body::-webkit-scrollbar-thumb {
   width: 12rem;
   font-size: 25px;
   font-family: times, serif;
-  margin-top: 20px; /* Adjust margin as needed */
+  margin-top: 20px;
   text-align: center;
-  line-height: 7rem; /* Vertically center button text */
-  text-decoration: none; /* Remove underline */
+  line-height: 7rem;
+  text-decoration: none;
   transition: background-color 0.7s;
   border-radius: 5px;
 }
@@ -336,8 +336,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 .learn-more-button:focus, .learn-more-button-reversed:focus {
-  outline: none; /* Remove focus outline */
-  box-shadow: 0 0 0 4px black; /* Custom focus style */
+  outline: none;
+  box-shadow: 0 0 0 4px black;
   transition: box-shadow 0.9s;
 }
 
@@ -387,19 +387,19 @@ body::-webkit-scrollbar-thumb {
 
 .reviews {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  overflow-x: auto;
-  padding: 20px 0;
-  gap: 20px;
-}
-.reviews {
-  display: flex;
   justify-content: center;
   align-items: center;
   overflow-x: auto;
   padding: 20px 0;
   gap: 20px;
+}
+
+.review-title {
+  color: #c2a76b;
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .review-card {
@@ -442,7 +442,7 @@ body::-webkit-scrollbar-thumb {
 .review-text {
   font-size: 22px;
   line-height: 1.5;
-  color: #666;
+  color: grey;
   margin-top: 10px;
   flex-grow: 1;
 }
@@ -475,7 +475,7 @@ body::-webkit-scrollbar-thumb {
   .review-card {
     width: calc(60% - 10px);
     min-width: calc(60% - 10px);
-    margin-right: 20px; /* Add space between cards */
+    margin-right: 20px;
     margin-bottom: 0;
 
   }
