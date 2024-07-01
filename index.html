@@ -11,119 +11,121 @@
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href='https://fonts.googleapis.com/css?family=Spectral' rel='stylesheet'>
   <link rel="stylesheet" href="style.css">
+<!--gallery.css import is for navbar and footer-->
+  <link rel="stylesheet" href="gallery.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
 </head>
 
 <!--Navbar and header-->
 <body>
 
+<!-- Navbar and header -->
 <header class="header">
   <a href="index.html" class="logo">Jaclyn's Threading</a>
   <nav class="navbar">
-    <a href="gallery.html">Gallery</a>
-    <a href="information.html">Information</a>
-    <a href="reviews.html">Reviews</a>
-    <a href="contact-me.html">Contact</a>
+    <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">&#9776;</a>
+    <div class="navbar-menu" id="navbarMenu">
+      <a href="gallery.html">Gallery</a>
+      <a href="information.html">Information</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact-me.html">Contact</a>
+    </div>
   </nav>
 </header>
 
 <!--Sliding image for the front page-->
-<section class="sliding-image-container">
-  <div class="slider-wrapper">
-    <div class="slider">
-      <img id="slide-1" src="slider-image-1.png" alt="sliding image 1">
-      <img id="slide-2" src="slider-image-2.png" alt="sliding image 2">
-      <img id="slide-3" src="slider-image-3.png" alt="sliding image 3">
-    </div>
-
-    <div class="slider-nav">
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-    </div>
-  </div>
-</section>
-
-<!-- Booking button-->
-<a href="book-appointment.html"><button type="button" class="booking-button-homepage"> Book Now </button></a>
+<div class="sliding-image-container">
+  <img id="slide-1" src="slider-image-1.png" alt="sliding image 1">
+  <img id="slide-2" src="slider-image-2.png" alt="sliding image 2">
+  <img id="slide-3" src="slider-image-3.png" alt="sliding image 3">
+</div>
 
 <!-- Why Jaclyn?-->
 <div class="why-jaclyn">
   <h1> About Jaclyn</h1>
   <h2> Why Choose Jaclyn?</h2>
+  <a href="book-appointment.html"><button type="button" class="booking-button-homepage"> Book Now </button></a>
   <p> Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.
     Jaclyn truly cares about her customers and consistently exceeds their expectations. She specializes in microblading
     and believes that everyone should live up their highest degree of beauty.</p>
 </div>
 
-<!--Who can benefit information-->
-<div class="who-can-benefit-information">
-  <h1> Information</h1>
-  <h2> Who Can Benefit From Microblading </h2>
-  <p> Anyone can benefit from microblading! Want to correct asymmetrical eyebrows? How about thin or fading brows? Bad inflammation? Well no problem, have beauty at your fingertips in less than 24 hours! </p>
+<!-- Who can benefit information -->
+<div class="info-section">
   <img src="https://laurentaylor.ink/wp-content/uploads/2020/12/IMG_4506-2048x2048.jpg" width="600" height="501" alt="eyebrow transformation img">
-  <a href="#"> <button type="button" class="learn-more-button"> Learn More </button></a>
+  <div class="text-content">
+    <h1>Information</h1>
+    <h2>Who Can Benefit From Microblading</h2>
+    <p>Anyone can benefit from microblading! Want to correct asymmetrical eyebrows? How about thin or fading brows? Bad inflammation? Well no problem, have beauty at your fingertips in less than 24 hours!</p>
+    <a href="#"><button type="button" class="learn-more-button">Learn More</button></a>
+  </div>
 </div>
 
-<!--Healing process information-->
-<div class="healing-process-information">
-  <h1>Information</h1>
-  <h2>The Healing Process</h2>
-  <p>The process is painless, quick, and simple! After your initial microblading session, your skin should heal in 25 to 30 days. A few weeks after the initial microblading appointment, your brows will be safe from water. From there, You can continue your normal skincare and makeup routines! </p>
+<!-- Healing process information -->
+<div class="info-section-reversed">
   <img src="https://amgbeautybar.com/wp-content/uploads/2020/07/image0.png" width="600" height="501" alt="healing process img">
-  <a href="#"> <button type="button" class="learn-more-button"> Learn More </button></a>
+  <div class="text-content-reversed">
+    <h1>Information</h1>
+    <h2>The Healing Process</h2>
+    <p>Experience the ease of microblading with our painless and quick procedure. After your initial session, expect your skin to heal within 25 to 30 days. By the second week, your brows will safely repel water, allowing you to resume your skincare and makeup routines. Enjoy the beauty of natural-looking brows that require minimal maintenance!</p>
+    <a href="#"><button type="button" class="learn-more-button-reversed">Learn More</button></a>
+  </div>
 </div>
 
-<!--Reviews--><section class="reviews">
-  <div class="review-card">
-    <div class="review-header">
-      <img src="profile1.jpg" alt="John Doe">
-      <div class="review-info">
-        <h3>John Doe</h3>
-        <div class="review-rating">
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star"></span>
+<!--Reviews-->
+<section class="reviews-section">
+  <h2 class="review-title">Reviews</h2>
+  <div class="reviews">
+    <div class="review-card">
+      <div class="review-header">
+        <img src="letter-j_9182902.png" alt="John Doe">
+        <div class="review-info">
+          <h3>John Doe</h3>
+          <div class="review-rating">
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star"></span>
+          </div>
         </div>
       </div>
+      <p class="review-text">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vehicula placerat ligula, sit amet facilisis justo dapibus nec."</p>
     </div>
-    <p class="review-text">"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vehicula placerat ligula, sit amet facilisis justo dapibus nec."</p>
-  </div>
 
-  <div class="review-card">
-    <div class="review-header">
-      <img src="profile2.jpg" alt="Jane Smith">
-      <div class="review-info">
-        <h3>Jane Smith</h3>
-        <div class="review-rating">
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
+    <div class="review-card">
+      <div class="review-header">
+        <img src="p-letter.svg" alt="Peter Smith">
+        <div class="review-info">
+          <h3>Peter Smith</h3>
+          <div class="review-rating">
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+          </div>
         </div>
       </div>
+      <p class="review-text">"Suspendisse potenti. Donec malesuada aliquam massa, at interdum lectus faucibus nec."</p>
     </div>
-    <p class="review-text">"Suspendisse potenti. Donec malesuada aliquam massa, at interdum lectus faucibus nec."</p>
-  </div>
 
-  <div class="review-card">
-    <div class="review-header">
-      <img src="profile3.jpg" alt="Emily Johnson">
-      <div class="review-info">
-        <h3>Emily Johnson</h3>
-        <div class="review-rating">
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star checked"></span>
-          <span class="fa fa-star"></span>
-          <span class="fa fa-star"></span>
+    <div class="review-card">
+      <div class="review-header">
+        <img src="32px-Icon-green-line-e-default.svg.png" alt="Emily Johnson">
+        <div class="review-info">
+          <h3>Emily Johnson</h3>
+          <div class="review-rating">
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star"></span>
+            <span class="fa fa-star"></span>
+          </div>
         </div>
       </div>
+      <p class="review-text">"Nullam feugiat, est eget maximus malesuada, arcu magna tristique erat, ac finibus libero sapien a arcu."</p>
     </div>
-    <p class="review-text">"Nullam feugiat, est eget maximus malesuada, arcu magna tristique erat, ac finibus libero sapien a arcu."</p>
   </div>
 </section>
 
@@ -145,16 +147,15 @@
 
 
 <!--Contact me-->
-<div class="contact-me-container">
+<div class="contact-me-container-gallery" id="homepage-footer-container">
   <h1>Get in touch!</h1>
-  <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.
-    Jaclyn truly cares about her customers and consistently exceeds their expectations. She specializes in microblading
-    and believes that everyone should live up their highest degree of beauty.</p>
+  <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.threading business and has been practicing for over 15 years.<p>
+
 
   <hr>
 
-<!--social media-->
-  <div class="social-media">
+
+  <div class="social-media-gallery">
     <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
     <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
     <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -162,10 +163,11 @@
 </div>
 
 <footer>
-  <p>&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
+  <p class="copyright-text-gallery" id="homepage-footer-copyright-text">&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
   <!-- Second booking button -->
-  <a href="contact-me.html"><button type="button" class="contact-button-footer"> Contact </button></a>
+  <a href="contact-me.html"><button type="button" class="contact-button-footer-gallery" id="homepage-footer-button"> Contact </button></a>
 </footer>
-
 </body>
+<script src="contact-me.js"></script>
+<script src="homepage.js"></script>
 </html>

@@ -1,70 +1,9 @@
-body {
-    background-color: #373434;
-    width: 100%;
-    margin: 0;
-    overflow-x: hidden;
-}
-
-.header {
-    position: fixed;
-    width: 100%;
-    padding: 1.5rem 5%;
-    background: #404040;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 2;
-    box-sizing: border-box;
-}
-
-.header.sticky {
-    border-bottom: 1rem solid rgb(123, 123, 123);
-}
-
-.navbar {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    white-space: nowrap;
-    box-sizing: border-box;
-}
-
-.navbar a {
-    font-size: 1.7rem;
-    color: white;
-    transition: .3s;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-    box-sizing: border-box;
-}
-
-.navbar a:hover {
-    background-color: #575757;
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-
-.logo {
-    font-size: 2.5rem;
-    color: white;
-    cursor: default;
-    font-family: 'Playfair Display', serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s, color 0.3s;
-}
-
-.logo:hover {
-    transform: scale(1.1);
-    color: #c2a76b;
-}
-
+/* Base styles for review cards */
 .reviews {
-    padding: 120px 5% 20px;
     display: flex;
-    flex-wrap: wrap; /* Ensures items wrap to the next line */
-    justify-content: space-between; /* Distribute rows evenly */
+    flex-wrap: wrap;
+    padding: 120px 5% 20px;
+    justify-content: space-between;
     gap: 20px;
     box-sizing: border-box;
 }
@@ -76,17 +15,24 @@ body {
     color: white;
 }
 
+/* Media query to adjust margin when navbar wraps */
+@media screen and (max-width: 1080px) and (min-width: 800px){
+    .leave-review {
+        padding-top: 70px;
+    }
+}
+
+.leave-review h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #c2a76b;
+    margin-bottom: 1rem;
+    font-family: 'Spectral', serif;
+}
+
 .leave-review a {
     color: #c2a76b;
     text-decoration: underline;
-}
-
-.page-title {
-    text-align: center;
-    font-size: 2.5rem;
-    color: #c2a76b; /* Gold color */
-    margin-bottom: 1rem;
-    font-family: 'Spectral', serif; /* Using Spectral font */
 }
 
 .review-row {
@@ -101,22 +47,74 @@ body {
 .review-card {
     border: 1px solid #c2a76b;
     border-radius: 12px;
-    width: calc(25% - 20px); /* Adjust width to fit 4 cards per row */
+    flex: 1 1 calc(25% - 20px); /* Four cards per row on larger screens */
     padding: 20px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease-in-out;
-    min-height: 390px; /* Increase min-height to make cards longer */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background: linear-gradient(to bottom right, #1e1e1e, #444); /* Updated gradient background */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    min-height: 390px;
+    background: linear-gradient(to bottom right, #1e1e1e, #444);
     color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
+.review-rating {
+    font-size: 32px; /* Larger font size for stars */
+}
+
+.star {
+    color: #ffd700; /* Gold color for stars */
+    margin-right: 8px; /* Adjust spacing between stars */
+}
 
 .review-card:hover {
     transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
 }
+
+/* Adding a subtle glow effect */
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+    transform: translateX(0) rotate(45deg);
+    transition: transform 0.4s ease-in-out;
+    opacity: 0;
+}
+
+.review-card:hover::before {
+    transform: translateX(50%) rotate(45deg);
+    opacity: 1;
+}
+
+/* Adding a decorative corner element */
+.review-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 40px solid rgba(255, 255, 255, 0.2);
+    border-left: 40px solid transparent;
+    transition: border-top-color 0.2s ease-in-out;
+}
+
+.review-card:hover::after {
+    border-top-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Adding a glow to the text on hover */
+.review-card:hover h3,
+.review-card:hover p {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
 
 .review-header {
     display: flex;
@@ -149,14 +147,14 @@ body {
 
 .review-rating .fa-star {
     font-size: 24px;
-    color: gold; /* Gold color for stars */
+    color: gold;
     margin-right: 8px;
 }
 
 .review-text {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.6;
-    margin-top: 0; /* Adjust top margin to move text up */
+    margin-top: 0;
 }
 
 .review-year {
@@ -164,99 +162,42 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin-top: 10px;
 }
-/* Contact Section */
-.contact-me-container-reviews {
-    position: relative;
-    top: 12rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
-    background-size: cover;
-    background-position: 70%;
-    height: 40rem;
-    color: white;
-    text-align: center;
-    padding: 2rem 1rem;
-}
-.contact-me-container-reviews h1 {
-    position: relative;
-    top: 5rem;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+
+/* Adjusted styles for medium screens */
+@media screen and (max-width: 1300px) {
+    .review-card {
+        flex: 1 1 calc(33% - 20px);
+        border: 1px solid #c2a76b;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        transition: transform 0.2s ease-in-out;
+        min-height: 390px;
+        background: linear-gradient(to bottom right, #1e1e1e, #444);
+        color: white;
+        margin-bottom: 20px;
+    }
+
+
+    .review-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
 }
 
-/* Footer Paragraph */
-.contact-me-container-reviews p {
-    position: relative;
-    top: 10rem;
-    font-size: 1.2rem;
-    max-width: 1000px;
-    margin: 0 auto;
-    line-height: 1.6;
-    padding: 0 2rem;
-}
+/* Adjusted styles for smaller screens */
+@media screen and (max-width: 469px) {
+    .review-card {
+        flex: 1 1 calc(100% - 20px); /* One card per row */
+    }
 
-/* Horizontal Line */
-.contact-me-container-reviews hr {
-    border: 0;
-    border-top: 1px solid #c2a76b;
-    margin: 2rem auto;
-    width: 80%;
-}
-
-/* Social Media Icons Container */
-.contact-me-container-reviews .social-media-reviews {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
-.contact-me-container-reviews .social-media-reviews a {
-    color: white;
-    font-size: 2rem;
-    transition: color 0.3s ease;
-}
-
-.contact-me-container-reviews .social-media-reviews a:hover {
-    color: #c2a76b;
-}
-.contact-button-footer-reviews{
-    position: relative;
-    left: 42rem;
-    top: -5rem;
-    background-color: #0f0f0f;
-    color: white;
-    height: 7rem;
-    width: 12rem;
-    font-size: 25px;
-    font-family: times, serif;
-    z-index: 1;
-}
-
-.contact-button-footer-reviews:hover {
-    background-color: #c1b46c;
-    transition: 0.7s;
-}
-
-.contact-button-footer-reviews:focus {
-    outline-color: transparent;
-    outline-style: solid;
-    box-shadow: 0 0 0 4px black;
-    transition: 0.9s;
-}
-
-.contact-button-footer-reviews:active {
-    background-color: #baa94a;
-}
-
-.copyright-text-reviews {
-    position: absolute;
-    bottom: -1427px; /* Adjust the distance from the bottom as needed */
-    right: 20px; /* Adjust the distance from the right as needed */
-    color: white; /* Gold text color */
-    font-size: 14px;
+    .review-row {
+        display: block;
+        gap: 0;
+        margin-bottom: 0;
+    }
 }
