@@ -1,6 +1,11 @@
+// Reviews container
 document.addEventListener("DOMContentLoaded", function () {
     const reviewsContainer = document.querySelector(".reviews");
     if (reviewsContainer) {
-        reviewsContainer.scrollLeft = 0; // Scrolls to the start
+        // Calculate the middle scroll position
+        const middleScroll = reviewsContainer.scrollWidth / 2 - reviewsContainer.clientWidth / 2;
+
+        // Scroll to the middle
+        reviewsContainer.scrollLeft = middleScroll;
     }
 });
