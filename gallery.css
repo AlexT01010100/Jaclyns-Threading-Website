@@ -108,10 +108,13 @@ body {
 .gallery-item {
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Increased shadow depth */
     opacity: 0;
-    transition: opacity 2s ease-in-out, transform 0.8s ease-in-out;
-    transform: scale(0.2);
+    transition: opacity 1s ease-in-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth transition */
+    transform: scale(0.9); /* Initial scale */
+    cursor: pointer; /* Cursor pointer for better usability */
+    pointer-events: auto; /* Enable pointer events */
+    position: relative; /* Ensure proper stacking context */
 }
 
 .gallery-item.fade-in {
@@ -119,11 +122,30 @@ body {
     transform: scale(1);
 }
 
-.gallery-item:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 24px #baa94a;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+.gallery-item.active {
+    position: fixed; /* Fixed position for modal effect */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%) scale(1); /* Center and scale up */
+    z-index: 1000; /* Ensure it appears above other content */
+    width: 50%; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 80%; /* Limit maximum height */
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3); /* Deep shadow for modal effect */
+    background-color: rgba(0, 0, 0, 0.9); /* Darken background */
+    border: 2px solid #fff; /* White border for contrast */
 }
+
+.gallery-item.active img {
+    width: 100%; /* Ensure image fills modal */
+    height: auto; /* Maintain aspect ratio */
+}
+
+body.modal-open {
+    overflow: hidden; /* Disable scrolling of background content */
+    pointer-events: none; /* Disable pointer events on body */
+}
+
 
 .gallery-item img {
     display: block;
