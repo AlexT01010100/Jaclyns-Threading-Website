@@ -394,6 +394,21 @@ body::-webkit-scrollbar-thumb {
   gap: 20px;
 }
 
+.reviews::-webkit-scrollbar {
+  width: 4px;
+  height: 5px;
+  z-index: 9999;
+}
+
+.reviews::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.reviews::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
 .review-title {
   color: #c2a76b;
   font-size: 40px;
