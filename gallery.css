@@ -126,7 +126,7 @@ body {
     top: 50%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%) scale(1); /* Center and scale up */
-    z-index: 1000; /* Ensure it appears above other content */
+    z-index: 2; /* Ensure it appears above other content */
     width: 50%; /* Adjust width as needed */
     height: auto; /* Maintain aspect ratio */
     max-height: 80vh; /* Limit maximum height relative to viewport height */
@@ -192,7 +192,6 @@ body {
     }
 
     body.modal-open {
-        overflow: hidden; /* Disable scrolling of background content */
         pointer-events: none; /* Disable pointer events on body */
     }
 }
