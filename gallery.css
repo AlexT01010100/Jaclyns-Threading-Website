@@ -1,14 +1,13 @@
+/* Global styles */
 body {
     background-color: #373434;
     font-family: Arial, sans-serif;
-    color: #fff;
+    overflow-x: hidden;
+    color: #333;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* Import a stylish font */
-
-/* Other CSS code remains the same */
 
 .header {
     position: fixed;
@@ -18,7 +17,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 2;
+    z-index: 3;
     box-sizing: border-box;
 }
 
@@ -26,41 +25,50 @@ body {
     border-bottom: 1rem solid rgb(123, 123, 123);
 }
 
-.logo {
-    font-size: 2.5rem;
-    color: white;
-    cursor: default;
-    font-family: 'Playfair Display', serif; /* Use the imported font */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a text shadow */
-    transition: transform 0.3s, color 0.3s; /* Smooth transition for hover effects */
-}
-
-.logo:hover {
-    transform: scale(1.1); /* Slightly enlarge the logo on hover */
-    color: #c2a76b; /* Change color on hover */
-}
-
 .navbar {
     display: flex;
-    gap: 2rem;
-    flex-wrap: nowrap; /* Ensures items don't wrap to the next line */
-    overflow-x: auto; /* Allows horizontal scrolling if items overflow */
-    white-space: nowrap; /* Prevents items from wrapping to the next line */
-    box-sizing: border-box;
+    align-items: center;
 }
 
-.navbar a {
+.navbar .icon {
+    display: none;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar-menu a {
     font-size: 1.7rem;
     color: white;
     transition: .3s;
     padding: 0.5rem 1rem;
     border-radius: 5px;
-    text-decoration: none; /* Ensures links are underlined for clarity */
-    box-sizing: border-box;
+    text-decoration: none;
 }
 
-.navbar a:hover {
+.navbar-menu a:hover {
     background-color: #575757;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+.logo {
+    font-size: 2.5rem;
+    color: white;
+    cursor: default;
+    font-family: 'Playfair Display', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, color 0.3s;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+    color: #c2a76b;
 }
 
 .page-title {
@@ -73,7 +81,18 @@ body {
     font-family: 'Spectral', serif;
 }
 
-/* Gallery */
+/* Media query to adjust margin when logo wraps */
+@media screen and (max-width: 1080px) and (min-width: 800px){
+    .page-title-container {
+        padding-top: 70px; /* Adjust as needed */
+    }
+}
+
+/* Gallery section*/
+.gallery-container {
+    padding-bottom: 100px;
+}
+
 .gallery {
     position: relative;
     top: 10rem;
@@ -85,14 +104,16 @@ body {
     padding: 20px;
     background: white;
 }
-
 .gallery-item {
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Increased shadow depth */
     opacity: 0;
-    transition: opacity 2s ease-in-out, transform 0.8s ease-in-out;
-    transform: scale(0.2);
+    transition: opacity 1s ease-in-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth transition */
+    transform: scale(0.9); /* Initial scale */
+    cursor: pointer; /* Cursor pointer for better usability */
+    pointer-events: auto; /* Enable pointer events */
+    position: relative; /* Ensure proper stacking context */
 }
 
 .gallery-item.fade-in {
@@ -100,10 +121,23 @@ body {
     transform: scale(1);
 }
 
-.gallery-item:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 24px #baa94a;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+.gallery-item.active {
+    position: fixed; /* Fixed position for modal effect */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%) scale(1); /* Center and scale up */
+    z-index: 2; /* Ensure it appears above other content */
+    width: 50%; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 80vh; /* Limit maximum height relative to viewport height */
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3); /* Deep shadow for modal effect */
+    background-color: rgba(0, 0, 0, 0.9); /* Darken background */
+    border: 2px solid #fff; /* White border for contrast */
+}
+
+.gallery-item.active img {
+    width: 100%; /* Ensure image fills modal */
+    height: auto; /* Maintain aspect ratio */
 }
 
 .gallery-item img {
@@ -113,7 +147,63 @@ body {
     border-radius: 8px;
 }
 
-/* Contact Section */
+body.modal-open {
+    overflow: hidden; /* Disable scrolling of background content */
+    pointer-events: none; /* Disable pointer events on body */
+}
+
+@media screen and (max-width: 768px) {
+    .gallery-item.active {
+        position: static; /* Disable fixed position on small screens */
+        transform: none; /* Remove transformation on small screens */
+        width: auto; /* Auto width for small screens */
+        max-width: 100%; /* Full width for small screens */
+        box-shadow: none; /* No box shadow on small screens */
+        background-color: transparent; /* Transparent background on small screens */
+        border: none; /* No border on small screens */
+    }
+
+    .gallery-item.active img {
+        width: 100%; /* Ensure image fills its container */
+        height: auto; /* Maintain aspect ratio */
+        max-height: 100vh; /* Limit height to viewport height */
+    }
+
+    .gallery-item {
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: opacity 2s ease-in-out, transform 0.8s ease-in-out;
+        transform: scale(0.2);
+    }
+
+    .gallery-item.fade-in {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .gallery-item:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 24px #baa94a;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .gallery-item img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+    }
+
+    body.modal-open {
+        overflow: scroll; /* Disable scrolling of background content */
+        pointer-events: none; /* Disable pointer events on body */
+    }
+}
+
+
+/* Footer Section */
 .contact-me-container-gallery {
     position: relative;
     top: 12rem;
@@ -125,6 +215,7 @@ body {
     text-align: center;
     padding: 2rem 1rem;
 }
+
 .contact-me-container-gallery h1 {
     position: relative;
     top: 5rem;
@@ -133,18 +224,15 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Footer Paragraph */
 .contact-me-container-gallery p {
     position: relative;
     top: 10rem;
     font-size: 1.2rem;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 1rem auto;
     line-height: 1.6;
-    padding: 0 2rem;
 }
 
-/* Horizontal Line */
 .contact-me-container-gallery hr {
     border: 0;
     border-top: 1px solid #c2a76b;
@@ -152,9 +240,9 @@ body {
     width: 80%;
 }
 
-/* Social Media Icons Container */
 .contact-me-container-gallery .social-media-gallery {
     position: absolute;
+    margin: 0 auto;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -173,17 +261,31 @@ body {
 .contact-me-container-gallery .social-media-gallery a:hover {
     color: #c2a76b;
 }
-.contact-button-footer-gallery{
+
+.contact-button-footer-gallery {
     position: relative;
-    left: 42rem;
-    top: -5rem;
+    margin-top: 0.5rem; /* Adjust as needed to raise the button */
+    left: 50%;
+    transform: translate(-51%, -155%);
     background-color: #0f0f0f;
     color: white;
-    height: 7rem;
+    height: 5rem;
     width: 12rem;
-    font-size: 25px;
+    font-size: 16px;
     font-family: times, serif;
     z-index: 1;
+    padding: 0.5rem 1rem;
+}
+
+
+.contact-me-container-gallery hr {
+    margin-bottom: 8rem;
+}
+
+@media screen and (max-width: 768px) {
+    .contact-me-container-gallery .social-media-gallery {
+        margin-top: 4rem; /* Increase margin to push down social icons */
+    }
 }
 
 .contact-button-footer-gallery:hover {
@@ -202,10 +304,163 @@ body {
     background-color: #baa94a;
 }
 
-.copyright-text-gallery {
-    position: absolute;
-    bottom: -1305px; /* Adjust the distance from the bottom as needed */
-    right: 20px; /* Adjust the distance from the right as needed */
-    color: white; /* Gold text color */
+footer p {
+    position: relative;
+    color: white;
+    top: 154px;
     font-size: 14px;
+    text-align: right; /* Align text to the right */
 }
+
+@media screen and (min-width: 769px) and (max-width: 870px) {
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        font-size: 2rem;
+    }
+
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+
+    .gallery p {
+        align-items: center;
+        text-align: center;
+    }
+
+    .contact-me-container-gallery h1 {
+        font-size: 1.8rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-gallery p {
+        font-size: 0.9rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-gallery hr {
+        position: relative;
+        top: -1rem;
+    }
+
+    .contact-me-container-gallery .social-media-gallery {
+        top: 19.5rem;
+    }
+
+    footer p {
+        top: 9.4rem;
+    }
+
+    .contact-button-footer-gallery {
+        position: relative;
+        margin-top: 2rem; /* Adjust as needed to raise the button */
+        left: 50%;
+        transform: translate(-51%, -160%);
+        height: 4rem;
+        width: 10rem;
+    }
+
+    /* adjust background size */
+    .contact-me-container-gallery{
+        height: 26rem;
+    }
+}
+
