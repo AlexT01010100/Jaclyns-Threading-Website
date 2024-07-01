@@ -113,10 +113,6 @@ body::-webkit-scrollbar-thumb {
     text-align: center; /* Center text */
   }
 
-  .booking-button-homepage {
-    top: 14rem; /* Adjusted position */
-  }
-
   .why-jaclyn p {
     font-size: 14px; /* Adjusted font size for smaller screens */
   }
@@ -186,6 +182,8 @@ body::-webkit-scrollbar-thumb {
 .booking-button-homepage {
   display: block;
   margin: 20px auto; /* Adjusts space above and below the button */
+  bottom: 20px;
+  position: relative;;
   background-color: #0f0f0f;
   color: white;
   height: 7rem;
