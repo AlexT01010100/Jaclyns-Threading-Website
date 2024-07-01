@@ -50,16 +50,62 @@
     flex: 1 1 calc(25% - 20px); /* Four cards per row on larger screens */
     padding: 20px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     min-height: 390px;
     background: linear-gradient(to bottom right, #1e1e1e, #444);
     color: white;
     margin-bottom: 20px;
+    position: relative; /* For positioning inner elements */
+    overflow: hidden;
 }
 
 .review-card:hover {
     transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
 }
+
+/* Adding a subtle glow effect */
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+    transform: translateX(0) rotate(45deg);
+    transition: transform 0.4s ease-in-out;
+    opacity: 0;
+}
+
+.review-card:hover::before {
+    transform: translateX(50%) rotate(45deg);
+    opacity: 1;
+}
+
+/* Adding a decorative corner element */
+.review-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 40px solid rgba(255, 255, 255, 0.2);
+    border-left: 40px solid transparent;
+    transition: border-top-color 0.2s ease-in-out;
+}
+
+.review-card:hover::after {
+    border-top-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Adding a glow to the text on hover */
+.review-card:hover h3,
+.review-card:hover p {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
 
 .review-header {
     display: flex;
