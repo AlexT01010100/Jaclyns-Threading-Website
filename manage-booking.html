@@ -8,22 +8,23 @@
     <title>Manage Time Slots</title>
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="manage-slots.css">
+    <link rel="stylesheet" href="gallery.css">
+    <link rel="stylesheet" href="manage-booking.css">
 </head>
 
 <body>
 
+<!-- Navbar and header -->
 <header class="header">
     <a href="index.html" class="logo">Jaclyn's Threading</a>
-
     <nav class="navbar">
-        <a href="#">Photos</a>
-        <a href="#">About Me</a>
-        <a href="contact-me.html">Contact</a>
-        <a href="gallery.html">Information</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="manage-slots.html">Manage Slots</a>
+        <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">&#9776;</a>
+        <div class="navbar-menu" id="navbarMenu">
+            <a href="gallery.html">Gallery</a>
+            <a href="information.html">Information</a>
+            <a href="reviews.html">Reviews</a>
+            <a href="contact-me.html">Contact</a>
+        </div>
     </nav>
 </header>
 
@@ -47,6 +48,30 @@
     </div>
 </section>
 
-<script src="manage-booking.js" type="module"></script>
+<!--Contact me-->
+<div class="contact-me-container-gallery">
+    <h1>Get in touch!</h1>
+    <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.threading business and has been practicing for over 15 years.<p>
+
+
+    <hr>
+
+
+    <div class="social-media-gallery">
+        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+    </div>
+</div>
+
+<footer>
+    <p class="copyright-text-gallery">&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
+    <!-- Second booking button -->
+    <a href="contact-me.html"><button type="button" class="contact-button-footer-gallery"> Contact </button></a>
+</footer>
+
 </body>
+<script src="gallery.js"></script>
+<script src="contact-me.js"></script>
+<script src="manage-booking.js" type="module"></script>
 </html>

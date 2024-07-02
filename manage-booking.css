@@ -1,16 +1,139 @@
-/* General Styles */
-body {
-    font-family: Arial, sans-serif;
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-/* Header Styles */
-.header {
-    background-color: #333;
+body::-webkit-scrollbar {
+    width: 8px;
+    z-index: 9999;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+/* Section styles */
+.manage-slots {
+    max-width: 800px;
+    margin: 40px auto; /* Add margin to center the section */
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px; /* Add padding to space the content inside */
+    top: 8.5rem;
+    position: relative;
+}
+
+.manage-slots .heading {
+    text-align: center;
+    font-size: 24px;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+/* Form styles */
+.slot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px; /* Add bottom margin for spacing */
+}
+
+.input-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-box label {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px; /* Adjust spacing between label and input */
+}
+
+.input-box input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.input-box input:focus {
+    border-color: #666;
+    outline: none;
+}
+
+.slot-form .btn {
+    padding: 12px 20px;
+    font-size: 16px;
     color: #fff;
-    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: center;
+}
+
+.slot-form .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Active slots styles */
+.active-slots {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Adjust top margin as needed */
+}
+
+.active-slots h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.slots-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.slot-item {
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.slot-item p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.slot-item .delete-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.slot-item .delete-button:hover {
+    background-color: #c82333;
 }
