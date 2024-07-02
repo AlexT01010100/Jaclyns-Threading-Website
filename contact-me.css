@@ -1,80 +1,38 @@
-/* General Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    background-color: #373434;
-    font-family: 'Spectral', serif;
-    color: white;
-}
 
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 1.5rem 5%;
-    background: #404040;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 2;
-}
-
-.header.sticky {
-    border-bottom: 1rem solid rgb(123, 123, 123);
-}
-
-.logo {
-    font-size: 2.5rem;
-    color: white;
-    cursor: default;
-}
-
-.navbar {
-    display: flex;
-    align-items: center;
-}
-
-.navbar .icon {
-    display: none;
-    font-size: 2rem;
-    color: white;
-    cursor: pointer;
-}
-
-.navbar-menu {
-    display: flex;
-    gap: 2rem;
-}
-
-.navbar-menu a {
-    font-size: 1.7rem;
-    color: white;
-    transition: .3s;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-.navbar-menu a:hover {
-    background-color: #575757;
-}
-
-/* Contact Section */
 .contact {
     position: relative;
     top: 8rem;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
     padding: 2rem 1rem;
     background-color: #404040;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 50rem;
-    margin: 2rem auto;
     border-radius: 8px;
 }
+
+@media screen and (max-width: 768px) {
+    .contact {
+        position: relative; /* Ensure relative positioning */
+        left: 50%; /* Move left by half of its own width */
+        transform: translateX(-50%); /* Center horizontally */
+        width: 70%; /* Adjust width as needed */
+        padding: 2rem; /* Adjust padding for smaller screens */
+        max-width: 100%; /* Ensure it stretches to the viewport */
+    }
+
+    .contact form .input-box input {
+        flex: 1 1 100%; /* Full width for input on smaller screens */
+        margin-bottom: 1rem; /* Increase spacing between fields */
+    }
+
+    .contact form textarea {
+        height: 80px; /* Adjusted height for smaller screens */
+        margin-top: 1.5rem; /* Increased spacing from above input */
+    }
+}
+
 
 .contact h2 {
     color: #c2a76b;
@@ -108,12 +66,12 @@ body {
 }
 
 .contact form .input-box input {
-    flex: 1 1 calc(50% - 0.5rem);
+    flex: 1 1 calc(50% - 0.5rem); /* Maintain current width calculation */
 }
 
 .contact form textarea {
-    flex: 1 1 100%;
-    resize: none;
+    width: 95.5%; /* Maintain current width calculation */
+    margin-top: 1rem; /* Increase spacing from above input */
 }
 
 .contact form .btn {
@@ -131,272 +89,7 @@ body {
     background-color: #e0c490;
 }
 
-/* Contact Section */
-.contact-me-container-contact {
-    position: relative;
-    top: 12rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
-    background-size: cover;
-    background-position: 70%;
-    height: 40rem;
-    color: white;
-    text-align: center;
-    padding: 2rem 1rem;
+#contact-footer-copyright-text {
+    top: 9.5rem;
 }
 
-.contact-me-container-contact h1 {
-    position: relative;
-    top: 5rem;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.contact-me-container-contact p {
-    position: relative;
-    top: 10rem;
-    font-size: 1.2rem;
-    max-width: 1000px;
-    margin: 1rem auto;
-    line-height: 1.6;
-}
-
-.contact-me-container-contact hr {
-    border: 0;
-    border-top: 1px solid #c2a76b;
-    margin: 2rem auto;
-    width: 80%;
-}
-
-.contact-me-container-contact .social-media-contact {
-    position: absolute;
-    margin: 0 auto;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
-.contact-me-container-contact .social-media-contact a {
-    color: white;
-    font-size: 2rem;
-    transition: color 0.3s ease;
-}
-
-.contact-me-container-contact .social-media-contact a:hover {
-    color: #c2a76b;
-}
-
-.booking-button-footer {
-    position: relative;
-    margin-top: 2rem; /* Adjust as needed to raise the button */
-    left: 50%;
-    transform: translate(-51%, -115%);
-    background-color: #0f0f0f;
-    color: white;
-    height: 5rem;
-    width: 12rem;
-    font-size: 16px;
-    font-family: times, serif;
-    z-index: 1;
-    padding: 0.5rem 1rem;
-}
-
-
-.contact-me-container-contact hr {
-    margin-bottom: 8rem;
-}
-
-@media screen and (max-width: 768px) {
-    .contact-me-container-contact .social-media-contact {
-        margin-top: 4rem; /* Increase margin to push down social icons */
-    }
-}
-
-.booking-button-footer:hover {
-    background-color: #c1b46c;
-    transition: 0.7s;
-}
-
-.booking-button-footer:focus {
-    outline-color: transparent;
-    outline-style: solid;
-    box-shadow: 0 0 0 4px black;
-    transition: 0.9s;
-}
-
-.booking-button-footer:active {
-    background-color: #baa94a;
-}
-
-footer p {
-    position: relative;
-    color: white;
-    top: 170px;
-    font-size: 14px;
-    text-align: right; /* Align text to the right */
-}
-
-@media screen and (min-width: 769px) and (max-width: 830px) {
-    .navbar-menu a {
-        font-size: 1.5rem;
-        text-decoration: none;
-    }
-
-    /* Adjusted styles for the dropdown menu on small screens */
-    .navbar .icon {
-        display: block;
-        font-size: 2rem;
-        color: white;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .navbar-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: #404040;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 10;
-        padding: 1rem 0;
-        border-radius: 8px;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateY(-20px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .navbar-menu.active {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .navbar-menu a {
-        display: block;
-        padding: 1rem 2rem;
-        font-size: 1.5rem;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.3s;
-    }
-
-    .navbar-menu a:hover {
-        background-color: #575757;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .logo {
-        font-size: 2rem;
-    }
-
-    .navbar-menu a {
-        font-size: 1.5rem;
-        text-decoration: none;
-    }
-
-    /* Adjusted styles for the dropdown menu on small screens */
-    .navbar .icon {
-        display: block;
-        font-size: 2rem;
-        color: white;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .navbar-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: #404040;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 10;
-        padding: 1rem 0;
-        border-radius: 8px;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateY(-20px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .navbar-menu.active {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .navbar-menu a {
-        display: block;
-        padding: 1rem 2rem;
-        font-size: 1.5rem;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.3s;
-    }
-
-    .navbar-menu a:hover {
-        background-color: #575757;
-    }
-
-    .contact h2 {
-        font-size: 1.5rem;
-    }
-
-    .contact form .input-box input,
-    .contact form textarea {
-        font-size: 0.9rem;
-    }
-
-    .contact form .btn {
-        font-size: 1rem;
-        padding: 0.8rem 1.5rem;
-    }
-
-    .contact-me-container-contact h1 {
-        font-size: 1.8rem;
-        top: -1rem;
-    }
-
-    .contact-me-container-contact p {
-        font-size: 0.9rem;
-        top: -1rem;
-    }
-
-    .contact-me-container-contact hr {
-        position: relative;
-        top: -1rem;
-    }
-
-    .contact-me-container-contact .social-media-contact {
-        top: 16.4rem;
-    }
-
-    footer p {
-        top: 10.4rem;
-    }
-
-    .booking-button-footer {
-        position: relative;
-        margin-top: 2rem; /* Adjust as needed to raise the button */
-        left: 50%;
-        transform: translate(-51%, -75%);
-        height: 4rem;
-        width: 10rem;
-    }
-
-    /* adjust background size */
-    .contact-me-container-contact {
-        height: 26rem;
-    }
-}
