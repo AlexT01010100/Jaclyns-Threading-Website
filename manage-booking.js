@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Set end date
-        const endDate = new Date("2032-12-31");
+        const endDate = new Date("2024-12-31");
 
         // Collect all future dates
         while (currentDate <= endDate) {
