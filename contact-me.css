@@ -1,62 +1,38 @@
-/* General Styles */
-body {
-    background-color: #373434;
-    width: 100%;
-    margin: 0;
-    font-family: 'Spectral', serif;
-    color: white;
-}
 
-.header {
-    position: fixed;
-    width: 100%;
-    padding: 2rem 9%;
-    background: #404040;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 2;
-}
 
-.header.sticky {
-    border-bottom: 1rem solid rgb(123, 123, 123, 1);
-}
-
-.logo {
-    font-size: 2.5rem;
-    color: white;
-    cursor: default;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar {
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-.navbar a {
-    font-size: 1.7rem;
-    color: white;
-    margin-left: 4rem;
-    transition: 0.3s;
-}
-
-.navbar a:hover {
-    color: #c2a76b;
-}
-
-/* Contact Section */
 .contact {
     position: relative;
     top: 8rem;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
     padding: 2rem 1rem;
     background-color: #404040;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 50rem;
-    margin: 2rem auto;
     border-radius: 8px;
 }
+
+@media screen and (max-width: 768px) {
+    .contact {
+        position: relative; /* Ensure relative positioning */
+        left: 50%; /* Move left by half of its own width */
+        transform: translateX(-50%); /* Center horizontally */
+        width: 70%; /* Adjust width as needed */
+        padding: 2rem; /* Adjust padding for smaller screens */
+        max-width: 100%; /* Ensure it stretches to the viewport */
+    }
+
+    .contact form .input-box input {
+        flex: 1 1 100%; /* Full width for input on smaller screens */
+        margin-bottom: 1rem; /* Increase spacing between fields */
+    }
+
+    .contact form textarea {
+        height: 80px; /* Adjusted height for smaller screens */
+        margin-top: 1.5rem; /* Increased spacing from above input */
+    }
+}
+
 
 .contact h2 {
     color: #c2a76b;
@@ -83,20 +59,19 @@ body {
     padding: 1rem;
     font-size: 1rem;
     background: white;
-    color: white;
+    color: black;
     border: 1px solid #c2a76b;
     border-radius: 8px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .contact form .input-box input {
-    flex: 1 1 calc(50% - 0.5rem);
+    flex: 1 1 calc(50% - 0.5rem); /* Maintain current width calculation */
 }
 
 .contact form textarea {
-    flex: 1 1 100%;
-    resize: none;
+    width: 95.5%; /* Maintain current width calculation */
+    margin-top: 1rem; /* Increase spacing from above input */
 }
 
 .contact form .btn {
@@ -114,76 +89,7 @@ body {
     background-color: #e0c490;
 }
 
-.contact {
-    overflow: hidden;
+#contact-footer-copyright-text {
+    top: 9.5rem;
 }
-
-/* Additional Classes */
-.contact-me-container {
-    position: relative;
-    top: 100rem;
-    background: linear-gradient(to top, lightgrey, rgba(255, 255, 255, 0.4)), url("microblading-footer.jpg") no-repeat center center;
-    background-size: cover;
-    background-position: 70%;
-    height: 40rem;
-}
-
-.contact-me-container h1 {
-    position: relative;
-    top: 10rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.contact-me-container p {
-    position: relative;
-    top: 30rem;
-    left: 18rem;
-    max-width: 1000px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.contact-button-footer{
-    position: relative;
-    top: 83rem;
-    left: 42rem;
-    background-color: #0f0f0f;
-    color: white;
-    height: 7rem;
-    width: 12rem;
-    font-size: 25px;
-    font-family: times, serif;
-    z-index: 1;
-}
-
-.contact-button-footer:hover {
-    background-color: #c1b46c;
-    transition: 0.7s;
-}
-
-.contact-button-footer:focus {
-    outline-color: transparent;
-    outline-style: solid;
-    box-shadow: 0 0 0 4px black;
-    transition: 0.9s;
-}
-
-.contact-button-footer:active {
-    background-color: #baa94a;
-}
-
-footer p {
-    position: absolute;
-    bottom: -3075px; /* Adjust the distance from the bottom as needed */
-    right: 20px; /* Adjust the distance from the right as needed */
-    color: white; /* Gold text color */
-    font-size: 14px;
-}
-
-
 
