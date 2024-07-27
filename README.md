@@ -1,5 +1,5 @@
 Project Overview
-This project involves the development of a full-stack web application for a local microblading business. It integrates both front-end and back-end components to provide a comprehensive solution. The application features a live database using Firebase Firestore and an interactive booking management system. The goal is to deliver a dynamic and user-friendly platform that showcases services, manages appointments, and interacts with clients effectively.
+- This project involves the development of a full-stack web application for a local microblading business. It integrates both front-end and back-end components to provide a comprehensive solution. The application features a live database using Firebase Firestore and an interactive booking management system. The goal is to deliver a dynamic and user-friendly platform that showcases services, manages appointments, and interacts with clients effectively.
 
 Project Objectives
 
