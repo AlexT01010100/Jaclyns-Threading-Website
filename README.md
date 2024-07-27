@@ -15,8 +15,8 @@ Interactive Booking Management System:
 - Implementing a robust booking system that allows users to select available time slots and schedule appointments.
 - Providing administrative functionality for managing available slots, viewing booked appointments, and updating availability.
 
-Learning Outcomes
-
+**Learning Outcomes
+**
 Full-Stack Development Skills:
 - Gaining proficiency in both front-end and back-end development through the use of HTML, CSS, JavaScript, and PHP.
 - Learning to integrate live databases using Firebase Firestore for real-time data management.
