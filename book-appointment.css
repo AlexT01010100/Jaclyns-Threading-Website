@@ -39,7 +39,8 @@ label {
 
 input[type="text"],
 input[type="email"],
-input[type="date"] {
+input[type="date"],
+select {
     width: 100%;
     padding: 12px;
     border: 1px solid #dddddd;
@@ -48,13 +49,21 @@ input[type="date"] {
     color: #333333;
     box-sizing: border-box;
     margin-top: 5px;
+    background-color: #ffffff; /* Ensures consistent background */
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="date"]:focus {
+input[type="date"]:focus,
+select:focus {
     outline: none;
     border-color: #5b9bd5;
+}
+
+select {
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
 }
 
 .time-slots {

@@ -7,14 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("appointment-form");
     const timeSlotsContainer = document.getElementById("time-slots");
     const dateInput = document.getElementById("date");
+    const serviceSelect = document.getElementById("service");
     const messageDiv = document.getElementById("message");
 
-    if (!form || !timeSlotsContainer || !dateInput || !messageDiv) {
+    if (!form || !timeSlotsContainer || !dateInput || !serviceSelect || !messageDiv) {
         console.error("One or more elements not found in the DOM");
         return;
     }
 
-    console.log("Form, timeSlotsContainer, and dateInput elements found");
+    console.log("Form, timeSlotsContainer, dateInput, serviceSelect elements found");
 
     // Initialize Firebase
     const firebaseConfig = {
@@ -170,10 +171,17 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent form submission
 
-        // Ensure a slot is selected
+        // Ensure a slot and service are selected
         if (selectedSlotId) {
+            const selectedService = serviceSelect.value;
+            if (!selectedService) {
+                console.error("No service selected");
+                messageDiv.textContent = "Please select a service.";
+                return;
+            }
+
             await bookSlot(selectedSlotId);
-            messageDiv.textContent = `Appointment booked for slot ${selectedSlotId}.`;
+            messageDiv.textContent = `Appointment booked for slot ${selectedSlotId} with service ${selectedService}.`;
         } else {
             console.error("No slot selected");
             messageDiv.textContent = "Please select a time slot.";
