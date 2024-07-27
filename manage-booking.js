@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Set end date
-        const endDate = new Date("2024-12-31");
+        const endDate = new Date("2032-12-31");
 
         // Collect all future dates
         while (currentDate <= endDate) {
@@ -270,6 +270,33 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Function to delete all slots for a specific date
+    async function deleteAllSlots(date) {
+        const availabilityRef = doc(db, "availability", date);
+
+        try {
+            // Check if the document exists
+            const slotDoc = await getDoc(availabilityRef);
+
+            if (slotDoc.exists()) {
+                // Clear the availableSlots field
+                await updateDoc(availabilityRef, {
+                    availableSlots: deleteField()
+                });
+
+                console.log(`All slots deleted for date ${date}.`);
+
+                // Optionally re-fetch and re-render slots after deletion
+                const activeSlots = await fetchActiveSlotsForDate(date);
+                renderSlots(activeSlots);
+            } else {
+                console.log(`No availability document found for date ${date}.`);
+            }
+        } catch (error) {
+            console.error("Error deleting all slots:", error);
+        }
+    }
+
     // Handle remember button click
     rememberButton.addEventListener("click", async () => {
         const selectedDate = slotDateInput.value;
@@ -277,11 +304,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (selectedDate) {
             try {
-                await saveAvailabilityForWeekday(selectedDate, selectedTimes);
-                alert("Availability has been remembered for all future occurrences until 2032.");
+                if (selectedTimes.length > 0) {
+                    // Save availability for future occurrences if times are selected
+                    await saveAvailabilityForWeekday(selectedDate, selectedTimes);
+                    alert("Availability has been remembered for all future occurrences until 2032.");
+                } else {
+                    // Delete all times for the selected weekday if no times are selected
+                    const weekday = getWeekday(selectedDate);
+                    const futureDates = await getAllFutureDates(new Date(selectedDate), weekday);
+
+                    for (const futureDate of futureDates) {
+                        await deleteAllSlots(futureDate);
+                    }
+
+                    alert("All times for the selected weekday have been deleted until 2032.");
+                }
             } catch (error) {
-                console.error("Error remembering availability:", error);
-                alert("An error occurred while remembering availability.");
+                console.error("Error handling availability:", error);
+                alert("An error occurred while processing availability.");
             }
         } else {
             alert("Please select a date.");
