@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Time Slots</title>
-
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="gallery.css">
     <link rel="stylesheet" href="manage-booking.css">
 </head>
-
 <body>
 
 <!-- Navbar and header -->
@@ -36,10 +33,13 @@
             <input type="date" id="slotDate" name="slotDate" required>
         </div>
         <div class="input-box">
-            <label for="slotTime">Add Time Slot:</label>
-            <input type="time" id="slotTime" name="slotTime" required>
+            <label for="timeSlots">Select Time Slots:</label>
+            <div id="timeSlots" class="time-slots">
+                <!-- Time slots will be dynamically added here -->
+            </div>
         </div>
-        <button type="submit" class="btn">Add Time Slot</button>
+        <button type="submit" class="btn">Add Selected Time Slots</button>
+        <button type="button" id="rememberButton" class="btn">Remember Availability for Weekdays</button>
     </form>
 
     <div id="active-slots" class="active-slots">
@@ -48,14 +48,12 @@
     </div>
 </section>
 
-<!--Contact me-->
+<!-- Contact me -->
 <div class="contact-me-container-gallery">
     <h1>Get in touch!</h1>
-    <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.threading business and has been practicing for over 15 years.<p>
-
+    <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.</p>
 
     <hr>
-
 
     <div class="social-media-gallery">
         <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
@@ -67,11 +65,11 @@
 <footer>
     <p class="copyright-text-gallery">&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
     <!-- Second booking button -->
-    <a href="contact-me.html"><button type="button" class="contact-button-footer-gallery"> Contact </button></a>
+    <a href="contact-me.html"><button type="button" class="contact-button-footer-gallery">Contact</button></a>
 </footer>
 
-</body>
 <script src="gallery.js"></script>
 <script src="contact-me.js"></script>
 <script src="manage-booking.js" type="module"></script>
+</body>
 </html>

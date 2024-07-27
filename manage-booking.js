@@ -1,21 +1,21 @@
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
 
     const slotForm = document.getElementById("slotForm");
     const slotDateInput = document.getElementById("slotDate");
-    const slotTimeInput = document.getElementById("slotTime");
     const slotsListContainer = document.getElementById("slotsList");
+    const timeSlotsContainer = document.getElementById("timeSlots");
+    const rememberButton = document.getElementById("rememberButton");
 
-    if (!slotForm || !slotDateInput || !slotTimeInput || !slotsListContainer) {
+    if (!slotForm || !slotDateInput || !slotsListContainer || !timeSlotsContainer || !rememberButton) {
         console.error("One or more elements not found in the DOM");
         return;
     }
 
-    console.log("slotForm, slotDateInput, slotTimeInput, and slotsListContainer elements found");
+    console.log("slotForm, slotDateInput, slotsListContainer, timeSlotsContainer, and rememberButton elements found");
 
     // Initialize Firebase
     const firebaseConfig = {
@@ -31,13 +31,38 @@ document.addEventListener("DOMContentLoaded", function () {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let selectedDate = null; // Variable to store selected date
+    // Function to generate time slots
+    function generateTimeSlots() {
+        const startTime = 8; // 8 AM
+        const endTime = 19; // 7 PM
+        const interval = 30; // 30 minutes
+
+        for (let hour = startTime; hour <= endTime; hour++) {
+            for (let minute = 0; minute < 60; minute += interval) {
+                let timeLabel = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                let timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.innerHTML = `
+                    <input type="checkbox" id="${timeLabel}" name="timeSlots" value="${timeLabel}">
+                    <label for="${timeLabel}">${timeLabel}</label>
+                `;
+                timeSlotsContainer.appendChild(timeSlot);
+            }
+        }
+    }
+
+    // Function to get the weekday from a date
+    function getWeekday(dateString) {
+        const date = new Date(dateString);
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return weekdays[date.getDay()];
+    }
 
     // Function to fetch active slots for a specific date
-    async function fetchActiveSlotsForDate(selectedDate) {
-        console.log("Fetching active slots for date:", selectedDate);
+    async function fetchActiveSlotsForDate(date) {
+        console.log("Fetching active slots for date:", date);
 
-        const availabilityRef = doc(db, "availability", selectedDate);
+        const availabilityRef = doc(db, "availability", date);
 
         try {
             const docSnapshot = await getDoc(availabilityRef);
@@ -46,31 +71,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 const availableSlotsData = docSnapshot.data().availableSlots;
 
                 if (availableSlotsData) {
-                    // Convert availableSlots object into an array of objects
                     const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
                         id: slotId,
                         time: availableSlotsData[slotId]
                     }));
 
-                    console.log("Active Slots:", slotsArray);
+                    console.log("Active Slots retrieved:", slotsArray);
                     return slotsArray;
                 } else {
-                    console.log("No active slots found for date:", selectedDate);
+                    console.log("No available slots data found for date:", date);
                     return [];
                 }
             } else {
-                console.log("Document does not exist for date:", selectedDate);
+                console.log("Document does not exist for date:", date);
                 return [];
             }
         } catch (error) {
             console.error("Error fetching document:", error);
-            throw error;
+            return []; // Return empty array in case of error
         }
     }
 
     // Display active slots based on selected date
     slotDateInput.addEventListener("change", async function () {
-        selectedDate = slotDateInput.value;
+        const selectedDate = slotDateInput.value;
         console.log("Date input changed, selected date:", selectedDate);
 
         if (!selectedDate) {
@@ -96,20 +120,26 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderSlots(slots) {
         slotsListContainer.innerHTML = "";
 
+        if (slots.length === 0) {
+            slotsListContainer.innerHTML = "<p>No active slots available.</p>";
+            return;
+        }
+
         slots.forEach(slot => {
             const slotElement = document.createElement("div");
             slotElement.classList.add("slot-item");
 
             slotElement.innerHTML = `
-                  <p><strong>Time:</strong> ${slot.time}</p>
-                  <button class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
-                  <hr>
-              `;
+                <p><strong>Time:</strong> ${slot.time}</p>
+                <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
+                <hr>
+            `;
 
             // Add event listener to delete button
             const deleteButton = slotElement.querySelector('.delete-button');
             deleteButton.addEventListener('click', async (event) => {
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); // Prevent form submission and page reload
+                console.log(`Delete button clicked for slot ${slot.id}`);
                 await deleteSlot(slot.id); // Call deleteSlot function on click
             });
 
@@ -117,71 +147,85 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to add a new time slot
-    slotForm.addEventListener('submit', async function (event) {
-        event.preventDefault(); // Prevent form submission
-
-        const slotDate = slotDateInput.value;
-        const slotTime = slotTimeInput.value;
-
-        if (slotDate && slotTime) {
-            try {
-                const availabilityRef = doc(db, "availability", slotDate);
-                const docSnapshot = await getDoc(availabilityRef);
-
-                if (docSnapshot.exists()) {
-                    const availableSlotsData = docSnapshot.data().availableSlots;
-
-                    // Generate a unique ID for the new slot
-                    const newSlotId = `slot_${Date.now()}`;
-
-                    // Add the new slot to the available slots
-                    availableSlotsData[newSlotId] = slotTime;
-
-                    await setDoc(availabilityRef, { availableSlots: availableSlotsData }, { merge: true });
-                } else {
-                    const availableSlotsData = {
-                        [`slot_${Date.now()}`]: slotTime
-                    };
-
-                    await setDoc(availabilityRef, { availableSlots: availableSlotsData });
-                }
-
-                console.log(`Time slot ${slotTime} added for date ${slotDate}.`);
-
-                // Optionally, re-fetch and re-render slots after adding new slot
-                const activeSlots = await fetchActiveSlotsForDate(slotDate);
-                renderSlots(activeSlots);
-            } catch (error) {
-                console.error("Error adding time slot:", error);
-            }
-        } else {
-            console.error("Date or time input is empty");
+    // Function to add or update individual time slots
+    async function addSlot(date, times) {
+        if (!date || !times || times.length === 0) {
+            console.error("Date or time slots input is empty");
+            return;
         }
-    });
+
+        const availabilityRef = doc(db, "availability", date);
+
+        try {
+            const docSnapshot = await getDoc(availabilityRef);
+            let availableSlotsData = docSnapshot.exists() ? docSnapshot.data().availableSlots || {} : {};
+
+            let newSlotsData = {};
+
+            // Check each time slot
+            times.forEach(time => {
+                // Generate a unique ID for the slot
+                const newSlotId = `slot_${time}_${Date.now()}`;
+
+                // Check if this time slot already exists
+                if (!Object.values(availableSlotsData).includes(time)) {
+                    newSlotsData[newSlotId] = time; // Add to new slots data if it doesn't exist
+                }
+            });
+
+            // Only update if there are new slots to add
+            if (Object.keys(newSlotsData).length > 0) {
+                // Merge new slots into the existing data
+                availableSlotsData = { ...availableSlotsData, ...newSlotsData };
+
+                await setDoc(availabilityRef, { availableSlots: availableSlotsData }, { merge: true });
+
+                console.log(`Time slots ${Object.values(newSlotsData).join(", ")} added for date ${date}.`);
+
+                // Re-fetch and re-render slots after addition
+                const activeSlots = await fetchActiveSlotsForDate(date);
+                renderSlots(activeSlots);
+            } else {
+                console.log("No new time slots to add.");
+            }
+        } catch (error) {
+            console.error("Error adding time slots:", error);
+        }
+    }
 
     // Function to delete a slot
     async function deleteSlot(slotId) {
+        const selectedDate = slotDateInput.value;
+        if (!selectedDate) {
+            console.error("No date selected");
+            return;
+        }
+
+        const availabilityRef = doc(db, "availability", selectedDate);
+
         try {
-            const availabilityRef = doc(db, "availability", selectedDate);
+            // Check if the document exists
             const slotDoc = await getDoc(availabilityRef);
 
             if (slotDoc.exists()) {
-                const availableSlotsData = slotDoc.data().availableSlots;
+                // Check if the slot exists in the document
+                const availableSlotsData = slotDoc.data().availableSlots || {};
 
-                // Check if slotId exists in availableSlotsData
                 if (availableSlotsData[slotId]) {
-                    delete availableSlotsData[slotId]; // Delete the slot from availableSlotsData
+                    console.log(`Deleting slot ${slotId} from document for date ${selectedDate}`);
 
-                    await setDoc(availabilityRef, { availableSlots: availableSlotsData }, { merge: true });
+                    // Use updateDoc to delete the slot field
+                    await updateDoc(availabilityRef, {
+                        [`availableSlots.${slotId}`]: deleteField()
+                    });
 
                     console.log(`Slot ${slotId} deleted.`);
 
-                    // Optionally, re-fetch and re-render slots after deletion
+                    // Re-fetch and re-render slots after deletion
                     const activeSlots = await fetchActiveSlotsForDate(selectedDate);
                     renderSlots(activeSlots);
                 } else {
-                    console.log(`Slot ${slotId} does not exist.`);
+                    console.log(`Slot ${slotId} does not exist in the document.`);
                 }
             } else {
                 console.log(`No availability document found for date ${selectedDate}.`);
@@ -190,4 +234,74 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting slot:", error);
         }
     }
+
+    // Function to generate all future dates for a specific weekday
+    async function getAllFutureDates(startDate, weekday) {
+        const dates = [];
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const weekdayIndex = weekdays.indexOf(weekday);
+
+        let currentDate = new Date(startDate);
+
+        // Move to the next occurrence of the desired weekday
+        while (currentDate.getDay() !== weekdayIndex) {
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Set end date
+        const endDate = new Date("2024-12-31");
+
+        // Collect all future dates
+        while (currentDate <= endDate) {
+            dates.push(currentDate.toISOString().split('T')[0]);
+            currentDate.setDate(currentDate.getDate() + 7); // Move to the same day next week
+        }
+
+        return dates;
+    }
+
+    // Function to save availability for a weekday
+    async function saveAvailabilityForWeekday(date, times) {
+        const weekday = getWeekday(date);
+        const futureDates = await getAllFutureDates(new Date(date), weekday);
+
+        for (const futureDate of futureDates) {
+            await addSlot(futureDate, times);
+        }
+    }
+
+    // Handle remember button click
+    rememberButton.addEventListener("click", async () => {
+        const selectedDate = slotDateInput.value;
+        const selectedTimes = Array.from(timeSlotsContainer.querySelectorAll('input[name="timeSlots"]:checked')).map(input => input.value);
+
+        if (selectedDate) {
+            try {
+                await saveAvailabilityForWeekday(selectedDate, selectedTimes);
+                alert("Availability has been remembered for all future occurrences until 2032.");
+            } catch (error) {
+                console.error("Error remembering availability:", error);
+                alert("An error occurred while remembering availability.");
+            }
+        } else {
+            alert("Please select a date.");
+        }
+    });
+
+    // Add slot on form submission
+    slotForm.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        const selectedDate = slotDateInput.value;
+        const selectedTimes = Array.from(timeSlotsContainer.querySelectorAll('input[name="timeSlots"]:checked')).map(input => input.value);
+
+        if (selectedDate && selectedTimes.length > 0) {
+            await addSlot(selectedDate, selectedTimes);
+        } else {
+            console.error("Date or no time slots selected.");
+        }
+    });
+
+    // Generate time slots on page load
+    generateTimeSlots();
 });
