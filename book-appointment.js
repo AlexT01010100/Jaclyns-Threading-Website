@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAvailableSlots();
     });
 
-    // Function to delete appointments based on service
+    // Function to delete or mark appointments based on service
     async function deleteAppointments(service) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
@@ -231,8 +231,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const availableSlotsData = slotDoc.data().availableSlots || {};
-
-            // Log available slots data for debugging
             console.log("Available Slots Data:", availableSlotsData);
 
             if (Object.keys(availableSlotsData).length === 0) {
@@ -242,58 +240,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const updates = {};
 
-            // If service is microblading, use the selectedSlotId's time to determine which slots to delete
-            if (service === 'microblading') {
-                if (!selectedSlotId) {
-                    console.error("No slot selected for microblading.");
-                    return;
-                }
-
-                // Get the time for the selected slot
-                const selectedSlot = availableSlotsData[selectedSlotId];
-                const selectedSlotDateTimeStr = `1970-01-01T${selectedSlot}:00`; // Assume slot is in HH:MM format
-                const selectedSlotTime = new Date(selectedSlotDateTimeStr);
-
-                // Ensure slotTime is a valid date
-                if (isNaN(selectedSlotTime.getTime())) {
-                    console.error(`Invalid slot time for slotId ${selectedSlotId}: ${selectedSlotDateTimeStr}`);
-                    return;
-                }
-
-                // Calculate end time which is 3 hours from the selected slot
-                const endTime = new Date(selectedSlotTime.getTime() + 3 * 60 * 60 * 1000);
-
-                // Log values for debugging
-                console.log(`Selected Slot Time: ${selectedSlotTime}`);
-                console.log(`End Time: ${endTime}`);
-
-                Object.keys(availableSlotsData).forEach(slotId => {
-                    const slotTimeStr = availableSlotsData[slotId];
-
-                    // Construct full date-time string
-                    const slotDateTimeStr = `1970-01-01T${slotTimeStr}:00`; // Assume slotTimeStr is in HH:MM format
-                    const slotTime = new Date(slotDateTimeStr);
-
-                    // Ensure slotTime is a valid date
-                    if (isNaN(slotTime.getTime())) {
-                        console.error(`Invalid slot time for slotId ${slotId}: ${slotDateTimeStr}`);
-                        return;
-                    }
-
-                    // Check if slot is within the 3-hour window
-                    if (slotTime >= selectedSlotTime && slotTime <= endTime) {
-                        console.log(`Preparing to delete slot ${slotId} for microblading service.`);
-                        updates[`availableSlots.${slotId}`] = deleteField();
-                    }
-                });
-            } else if (service === 'threading') {
+            if (service === 'threading') {
                 if (selectedSlotId) {
                     console.log(`Preparing to delete selected slot ${selectedSlotId} for threading service.`);
                     updates[`availableSlots.${selectedSlotId}`] = deleteField();
                 }
             }
 
-            // Log the updates object
+            if (service === 'microblading') {
+                if (selectedSlotId) {
+                    // Extract the time from the selectedSlotId
+                    const slotParts = selectedSlotId.split('_');
+                    const slotTime = slotParts[0]; // Expecting format like slot_HH:MM_timestamp
+
+                    // Debugging output to verify extraction
+                    console.log("Slot parts:", slotParts);
+                    console.log("Extracted slot time:", slotTime);
+
+                    if (!slotTime) {
+                        console.error("Invalid slot time extracted from selectedSlotId:", selectedSlotId);
+                        return;
+                    }
+
+                    const [hours, minutes] = slotTime.split(':').map(Number);
+                    if (isNaN(hours) || isNaN(minutes)) {
+                        console.error("Invalid time format:", slotTime);
+                        return;
+                    }
+
+                    // Create Date objects
+                    const startSlotTime = new Date(`1970-01-01T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
+                    const endSlotTime = new Date(startSlotTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
+
+                    console.log("Start time:", startSlotTime);
+                    console.log("End time:", endSlotTime);
+
+                    // Iterate through each 30-minute slot within the 3-hour window
+                    let currentSlotTime = new Date(startSlotTime);
+                    while (currentSlotTime < endSlotTime) {
+                        const hours = String(currentSlotTime.getUTCHours()).padStart(2, '0');
+                        const minutes = String(currentSlotTime.getUTCMinutes()).padStart(2, '0');
+                        const slotIdPrefix = `slot_${hours}:${minutes}_`;
+
+                        // Find matching slot IDs in availableSlotsData
+                        const matchingSlotIds = Object.keys(availableSlotsData).filter(key => key.startsWith(slotIdPrefix));
+
+                        // Update each matching slot ID
+                        matchingSlotIds.forEach(matchingSlotId => {
+                            updates[`availableSlots.${matchingSlotId}`] = deleteField();
+                        });
+
+                        // Increment by 30 minutes
+                        currentSlotTime = new Date(currentSlotTime.getTime() + 30 * 60 * 1000);
+                    }
+                }
+            }
+
             console.log("Updates Object:", updates);
 
             if (Object.keys(updates).length > 0) {
@@ -313,6 +315,8 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting appointments:", error);
         }
     }
+
+
 
     // Handle form submission
     form.addEventListener('submit', async function (event) {
