@@ -119,12 +119,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const availableBlocks = [];
         const slotCount = timeSlots.length;
 
-        // Helper function to check if a given time is available
-        function isSlotAvailable(time) {
-            return timeSlots.some(slot => slot.getTime() === time.getTime());
+        // Helper function to check if a given time is unbooked
+        function isSlotUnbooked(time) {
+            return slots.some(slot => parseTimeTo24Hour(slot.time).getTime() === time.getTime() && slot.status === 'unbooked');
         }
 
-        // Check each slot to see if it can be the start of a 3-hour block
+        // Check for consecutive 3-hour blocks of unbooked slots
         for (let i = 0; i < slotCount; i++) {
             const startSlot = timeSlots[i];
             let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
@@ -132,18 +132,17 @@ document.addEventListener("DOMContentLoaded", function () {
             let currentSlot = new Date(startSlot.getTime());
             let isBlockAvailable = true;
 
-            // Check for continuous 30-minute slots
+            // Check for continuous 30-minute unbooked slots
             while (currentSlot < endSlot) {
                 const timeKey = formatTimeTo12Hour(currentSlot);
-                const slotAvailable = isSlotAvailable(currentSlot);
-
-                if (!slotAvailable) {
+                if (!isSlotUnbooked(currentSlot)) {
                     isBlockAvailable = false;
                     break;
                 }
                 currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
             }
 
+            // If a continuous block of unbooked slots was found, add the start time to availableBlocks
             if (isBlockAvailable) {
                 availableBlocks.push({
                     start: formatTimeTo12Hour(startSlot) // Use the new format
@@ -157,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
             time: block.start // Only display the start time
         }));
     }
+
 
     // Function to render available slots
     function renderSlots(slots) {
