@@ -58,16 +58,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 const availableSlotsData = docSnapshot.data().availableSlots || {};
 
                 if (Object.keys(availableSlotsData).length > 0) {
-                    const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
-                        id: slotId,
-                        time: availableSlotsData[slotId]
-                    })).sort((a, b) => new Date(`${date}T${a.time}:00`) - new Date(`${date}T${b.time}:00`)); // Sort slots by time
+                    const slotsArray = Object.keys(availableSlotsData).map(slotId => {
+                        console.log("Processing slotId:", slotId);
 
-                    // Return slots with formatted times
-                    return slotsArray.map(slot => ({
-                        id: slot.id,
-                        time: formatTimeTo12Hour(slot.time)
-                    }));
+                        // Directly use slotId for time formatting
+                        const timePart = slotId;
+
+                        return {
+                            id: slotId,
+                            time: timePart // Use slotId directly as time
+                        };
+                    }).sort((a, b) => {
+                        // Convert time to 24-hour format for sorting
+                        const aDate = new Date(`1970-01-01T${a.time.replace(/ /g, ':')}:00`);
+                        const bDate = new Date(`1970-01-01T${b.time.replace(/ /g, ':')}:00`);
+                        return aDate - bDate;
+                    });
+
+                    return slotsArray;
                 } else {
                     console.log("No available slots found for date:", date);
                     return [];
@@ -161,10 +169,10 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.setAttribute("data-slot-id", slot.id);
 
             slotElement.innerHTML = `
-            <p><strong>Time:</strong> ${slot.time}</p>
-            <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
-            <hr>
-        `;
+                <p><strong>Time:</strong> ${slot.time}</p>
+                <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
+                <hr>
+            `;
 
             const selectButton = slotElement.querySelector('.select-button');
             selectButton.addEventListener('click', (event) => {
@@ -219,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAvailableSlots();
     });
 
+    // Function to delete appointments
     async function deleteAppointments(service) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
@@ -232,98 +241,61 @@ document.addEventListener("DOMContentLoaded", function () {
             const availableSlotsData = slotDoc.data().availableSlots || {};
             console.log("Available Slots Data:", availableSlotsData);
 
-            if (Object.keys(availableSlotsData).length === 0) {
-                console.log("No available slots found for the selected date.");
-                return;
-            }
-
-            const updates = {};
-
-            if (service === 'threading') {
-                if (selectedSlotId) {
-                    console.log(`Preparing to delete selected slot ${selectedSlotId} for threading service.`);
-                    updates[`availableSlots.${selectedSlotId}`] = deleteField();
-                }
-            } else if (service === 'microblading') {
-                if (selectedSlotId) {
-                    const slotParts = selectedSlotId.split(' ');
-                    const slotTime = slotParts[0]; // Extract time in HH:MM format
-                    const slotPeriod = (slotParts[1] || '').trim(); // AM or PM, with extra spaces removed
-
-                    // Validate and parse time
-                    const [hours, minutes] = slotTime.split(':').map(Number);
-                    if (isNaN(hours) || isNaN(minutes)) {
-                        console.error("Invalid time format:", slotTime);
-                        return;
+            if (Object.keys(availableSlotsData).length > 0) {
+                const updatedSlotsData = { ...availableSlotsData };
+                Object.keys(updatedSlotsData).forEach(slotId => {
+                    if (updatedSlotsData[slotId][service]) {
+                        delete updatedSlotsData[slotId][service];
                     }
+                });
 
-                    // Convert 12-hour time to 24-hour format
-                    let hours24 = hours;
-                    if (slotPeriod === 'PM' && hours !== 12) {
-                        hours24 += 12;
-                    } else if (slotPeriod === 'AM' && hours === 12) {
-                        hours24 = 0;
-                    }
-
-                    const startSlotTime = new Date(`1970-01-01T${String(hours24).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
-                    const endSlotTime = new Date(startSlotTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
-
-                    let currentSlotTime = new Date(startSlotTime);
-
-                    while (currentSlotTime < endSlotTime) {
-                        const hours24Formatted = String(currentSlotTime.getUTCHours()).padStart(2, '0');
-                        const minutes24Formatted = String(currentSlotTime.getUTCMinutes()).padStart(2, '0');
-                        const slotIdToMatch = `slot_${hours24Formatted}:${minutes24Formatted}_`;
-
-                        const matchingSlotIds = Object.keys(availableSlotsData).filter(key => key.startsWith(slotIdToMatch));
-                        console.log("Matching Slot IDs:", matchingSlotIds);
-
-                        matchingSlotIds.forEach(matchingSlotId => {
-                            updates[`availableSlots.${matchingSlotId}`] = deleteField();
-                        });
-
-                        currentSlotTime = new Date(currentSlotTime.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
-                    }
+                if (Object.keys(updatedSlotsData).length === 0) {
+                    // Delete the entire document if there are no more slots
+                    await updateDoc(availabilityRef, {
+                        availableSlots: deleteField()
+                    });
+                } else {
+                    // Otherwise, update the available slots with the remaining slots
+                    await updateDoc(availabilityRef, {
+                        availableSlots: updatedSlotsData
+                    });
                 }
-            }
 
-            console.log("Updates Object:", updates);
-
-            if (Object.keys(updates).length > 0) {
-                await updateDoc(availabilityRef, updates);
-                console.log(`Appointments for service ${service} updated.`);
-
-                // Fetch and render updated slots
-                availableSlots = await fetchAvailableSlotsForDate(selectedDate);
-                if (selectedService === 'microblading') {
-                    availableSlots = filterSlotsForMicroblading(availableSlots);
-                }
-                renderSlots(availableSlots);
+                console.log("Appointments deleted successfully.");
+                messageDiv.textContent = "Appointments deleted successfully.";
+                messageDiv.classList.add("success");
             } else {
-                console.log("No slots to update.");
+                console.log("No slots available to delete.");
+                messageDiv.textContent = "No slots available to delete.";
+                messageDiv.classList.add("info");
             }
         } catch (error) {
             console.error("Error deleting appointments:", error);
+            messageDiv.textContent = "Error deleting appointments.";
+            messageDiv.classList.add("error");
         }
     }
 
-
-    // Handle form submission
-    form.addEventListener('submit', async function (event) {
+    // Event listener for form submission
+    form.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        if (!selectedService) {
-            console.error("No service selected");
-            messageDiv.textContent = "Please select a service.";
+        if (!selectedSlotId) {
+            console.error("No slot selected.");
+            messageDiv.textContent = "Please select a slot.";
+            messageDiv.classList.add("error");
             return;
         }
 
-        if (selectedSlotId) {
-            await deleteAppointments(selectedService);
-            messageDiv.textContent = `Appointment booked for slot ${selectedSlotId}.`;
-        } else {
-            console.error("No slot selected");
-            messageDiv.textContent = "Please select a time slot.";
+        if (!selectedDate || !selectedService) {
+            console.error("Date or service not selected.");
+            messageDiv.textContent = "Please select both date and service.";
+            messageDiv.classList.add("error");
+            return;
         }
+
+        console.log("Form submitted with selected slotId:", selectedSlotId);
+        // Call the function to delete appointments or proceed with booking
+        deleteAppointments(selectedService);
     });
 });

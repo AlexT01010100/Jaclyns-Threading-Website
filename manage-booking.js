@@ -66,8 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 let timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot';
                 timeSlot.innerHTML = `
-                    <input type="checkbox" id="${timeLabel24}" name="timeSlots" value="${timeLabel12}">
-                    <label for="${timeLabel24}">${timeLabel12}</label>
+                    <input type="checkbox" id="${timeLabel12}" name="timeSlots" value="${timeLabel12}">
+                    <label for="${timeLabel12}">${timeLabel12}</label>
                 `;
                 timeSlotsContainer.appendChild(timeSlot);
             }
@@ -96,7 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (availableSlotsData) {
                     const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
                         id: slotId,
-                        time: convertTo12HourFormat(availableSlotsData[slotId])
+                        time: slotId,
+                        status: availableSlotsData[slotId]
                     }));
 
                     console.log("Active Slots retrieved:", slotsArray);
@@ -154,6 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             slotElement.innerHTML = `
                 <p><strong>Time:</strong> ${slot.time}</p>
+                <p><strong>Status:</strong> ${slot.status}</p>
                 <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
                 <hr>
             `;
@@ -170,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to add or update individual time slots
     // Function to add or update individual time slots
     async function addSlot(date, times) {
         if (!date || !times || times.length === 0) {
@@ -189,11 +190,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Check each time slot
             times.forEach(time => {
                 const standardizedTime = convertTo24HourFormat(time); // Convert time to 24-hour format
-                const newSlotId = `slot_${time.replace(/\s+/g, '_')}_${Date.now()}`;
+                const timeLabel = convertTo12HourFormat(standardizedTime); // Convert back to 12-hour format for key
 
                 // Check if this time slot already exists
-                if (!Object.values(availableSlotsData).includes(standardizedTime)) {
-                    newSlotsData[newSlotId] = standardizedTime; // Add to new slots data if it doesn't exist
+                if (!availableSlotsData[timeLabel]) {
+                    newSlotsData[timeLabel] = "unbooked"; // Add to new slots data if it doesn't exist
                 }
             });
 
@@ -204,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 await setDoc(availabilityRef, { availableSlots: availableSlotsData }, { merge: true });
 
-                console.log(`Time slots ${Object.values(newSlotsData).join(", ")} added for date ${date}.`);
+                console.log(`Time slots ${Object.keys(newSlotsData).join(", ")} added for date ${date}.`);
 
                 // Re-fetch and re-render slots after addition
                 const activeSlots = await fetchActiveSlotsForDate(date);
@@ -216,7 +217,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error adding time slots:", error);
         }
     }
-
 
     // Function to delete a slot
     async function deleteSlot(slotId) {
