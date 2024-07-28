@@ -31,6 +31,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Set the minimum date to today
+    function setMinDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(today.getDate()).padStart(2, '0');
+        const minDate = `${year}-${month}-${day}`;
+        slotDateInput.setAttribute('min', minDate);
+    }
+
+    setMinDate(); // Call the function to set the minimum date on page load
+
     // Function to convert time from 24-hour to AM/PM format
     function convertTo12HourFormat(time) {
         const [hours, minutes] = time.split(':').map(Number);
