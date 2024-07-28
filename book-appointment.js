@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to book an appointment
-    async function bookAppointment(service) {
+    async function bookAppointment() {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
             const slotDoc = await getDoc(availabilityRef);
@@ -249,20 +249,30 @@ document.addEventListener("DOMContentLoaded", function () {
             const availableSlotsData = slotDoc.data().availableSlots || {};
             console.log("Available Slots Data:", availableSlotsData);
 
-            if (availableSlotsData[selectedSlotId]) {
-                // Mark the slot as booked
+            if (selectedService === 'microblading') {
+                const startSlot = parseTimeTo24Hour(selectedSlotId);
+                let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
+
+                let currentSlot = new Date(startSlot.getTime());
+                const updatedSlotsData = { ...availableSlotsData };
+
+                while (currentSlot < endSlot) {
+                    const timeKey = formatTimeTo12Hour(currentSlot);
+                    if (updatedSlotsData[timeKey]) {
+                        updatedSlotsData[timeKey] = "booked";
+                    }
+                    currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
+                }
+
                 await updateDoc(availabilityRef, {
-                    [`availableSlots.${selectedSlotId}`]: 'booked'
+                    availableSlots: updatedSlotsData
                 });
 
                 console.log("Appointment booked successfully.");
                 messageDiv.textContent = "Appointment booked successfully.";
                 messageDiv.classList.add("success");
-                updateAvailableSlots(); // Refresh the slot display
             } else {
-                console.error("Selected slot is not available.");
-                messageDiv.textContent = "Selected slot is not available.";
-                messageDiv.classList.add("error");
+                // Handle other services similarly, if applicable
             }
         } catch (error) {
             console.error("Error booking appointment:", error);
@@ -290,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         console.log("Form submitted with selected slotId:", selectedSlotId);
-        // Call the function to book the appointment
-        bookAppointment(selectedService);
+        // Call the function to book an appointment
+        bookAppointment();
     });
 });
