@@ -416,7 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (selectedTimes.length > 0) {
                     // Save availability for future occurrences if times are selected
                     await saveAvailabilityForWeekday(selectedDate, selectedTimes);
-                    alert("Availability has been remembered for all future occurrences until 2032.");
+                    alert("Availability for weekday has been remembered for all future occurrences until Dec 31st, 2024.");
                 } else {
                     // Delete all times for the selected weekday if no times are selected
                     const weekday = getWeekday(selectedDate);
@@ -426,7 +426,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         await deleteAllSlots(futureDate);
                     }
 
-                    alert("All times for the selected weekday have been deleted until 2032.");
+                    alert("All times for the selected weekday have been deleted until Dec 31st, 2024.");
                 }
             } catch (error) {
                 console.error("Error handling availability:", error);
