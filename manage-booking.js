@@ -167,12 +167,24 @@ document.addEventListener("DOMContentLoaded", function () {
             const slotElement = document.createElement("div");
             slotElement.classList.add("slot-item");
 
+            // Determine button text based on slot status
+            const buttonText = slot.status === "booked" ? "Mark as Unbooked" : "Mark as Booked";
+
             slotElement.innerHTML = `
-            <p><strong>Time:</strong> ${slot.time}</p>
-            <p><strong>Status:</strong> ${slot.status}</p>
-            <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
-            <hr>
-        `;
+                <p><strong>Time:</strong> ${slot.time}</p>
+                <p><strong>Status:</strong> ${slot.status}</p>
+                <button type="button" class="book-button" data-slot-id="${slot.id}">${buttonText}</button>
+                <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
+                <hr>
+            `;
+
+            // Add event listener to book button
+            const bookButton = slotElement.querySelector('.book-button');
+            bookButton.addEventListener('click', async (event) => {
+                event.preventDefault(); // Prevent form submission and page reload
+                console.log(`Book button clicked for slot ${slot.id}`);
+                await toggleBookingStatus(slot.id); // Call toggleBookingStatus function on click
+            });
 
             // Add event listener to delete button
             const deleteButton = slotElement.querySelector('.delete-button');
@@ -186,6 +198,49 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Function to toggle booking status of a slot
+    async function toggleBookingStatus(slotId) {
+        const selectedDate = slotDateInput.value;
+        if (!selectedDate) {
+            console.error("No date selected");
+            return;
+        }
+
+        const availabilityRef = doc(db, "availability", selectedDate);
+
+        try {
+            // Check if the document exists
+            const slotDoc = await getDoc(availabilityRef);
+
+            if (slotDoc.exists()) {
+                // Check if the slot exists in the document
+                const availableSlotsData = slotDoc.data().availableSlots || {};
+
+                if (availableSlotsData[slotId]) {
+                    const newStatus = availableSlotsData[slotId] === "booked" ? "unbooked" : "booked";
+
+                    console.log(`Updating slot ${slotId} to ${newStatus} for date ${selectedDate}`);
+
+                    // Update the slot status
+                    await updateDoc(availabilityRef, {
+                        [`availableSlots.${slotId}`]: newStatus
+                    });
+
+                    console.log(`Slot ${slotId} updated to ${newStatus}.`);
+
+                    // Re-fetch and re-render slots after updating
+                    const activeSlots = await fetchActiveSlotsForDate(selectedDate);
+                    renderSlots(activeSlots);
+                } else {
+                    console.log(`Slot ${slotId} does not exist in the document.`);
+                }
+            } else {
+                console.log(`No availability document found for date ${selectedDate}.`);
+            }
+        } catch (error) {
+            console.error("Error updating slot:", error);
+        }
+    }
 
     // Function to add or update individual time slots
     async function addSlot(date, times) {
