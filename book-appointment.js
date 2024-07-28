@@ -30,15 +30,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const db = getFirestore(app);
 
     let selectedDate = null;
+    let selectedService = null;
     let availableSlots = [];
     let selectedSlotId = null;
-    let selectedService = null;
 
     // Function to fetch available slots for a specific date
-    async function fetchAvailableSlotsForDate(selectedDate) {
-        console.log("Fetching available slots for date:", selectedDate);
+    async function fetchAvailableSlotsForDate(date) {
+        console.log("Fetching available slots for date:", date);
 
-        const availabilityRef = doc(db, "availability", selectedDate);
+        const availabilityRef = doc(db, "availability", date);
 
         try {
             const docSnapshot = await getDoc(availabilityRef);
@@ -55,11 +55,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("Available Slots:", slotsArray);
                     return slotsArray;
                 } else {
-                    console.log("No available slots found for date:", selectedDate);
+                    console.log("No available slots found for date:", date);
                     return [];
                 }
             } else {
-                console.log("Document does not exist for date:", selectedDate);
+                console.log("Document does not exist for date:", date);
                 return [];
             }
         } catch (error) {
@@ -67,30 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
             throw error;
         }
     }
-
-    // Display available slots based on selected date
-    dateInput.addEventListener("change", async function () {
-        selectedDate = dateInput.value;
-        console.log("Date input changed, selected date:", selectedDate);
-
-        if (!selectedDate) {
-            console.error("Selected date is empty");
-            return;
-        }
-
-        try {
-            availableSlots = await fetchAvailableSlotsForDate(selectedDate);
-
-            if (availableSlots.length > 0) {
-                renderSlots(availableSlots);
-            } else {
-                timeSlotsContainer.innerHTML = "<p>No available slots for selected date.</p>";
-            }
-        } catch (error) {
-            console.error("Error fetching available slots:", error);
-            timeSlotsContainer.innerHTML = "<p>Error fetching available slots.</p>";
-        }
-    });
 
     // Function to render available slots
     function renderSlots(slots) {
@@ -132,6 +108,36 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.classList.add('selected');
         }
     }
+
+    // Function to check if both date and service are selected and update available slots
+    function updateAvailableSlots() {
+        if (selectedDate && selectedService) {
+            fetchAvailableSlotsForDate(selectedDate).then(slots => {
+                if (slots.length > 0) {
+                    renderSlots(slots);
+                } else {
+                    timeSlotsContainer.innerHTML = "<p>No available slots for selected date and service.</p>";
+                }
+            }).catch(error => {
+                console.error("Error fetching available slots:", error);
+                timeSlotsContainer.innerHTML = "<p>Error fetching available slots.</p>";
+            });
+        }
+    }
+
+    // Event listener for date input
+    dateInput.addEventListener("change", function () {
+        selectedDate = dateInput.value;
+        console.log("Date input changed, selected date:", selectedDate);
+        updateAvailableSlots();
+    });
+
+    // Event listener for service select
+    serviceSelect.addEventListener("change", function () {
+        selectedService = serviceSelect.value;
+        console.log("Service select changed, selected service:", selectedService);
+        updateAvailableSlots();
+    });
 
     // Function to delete appointments based on service
     async function deleteAppointments(service) {
@@ -229,12 +235,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     // Handle form submission
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        selectedService = serviceSelect.value;
         if (!selectedService) {
             console.error("No service selected");
             messageDiv.textContent = "Please select a service.";
