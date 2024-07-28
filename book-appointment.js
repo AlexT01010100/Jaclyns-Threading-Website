@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
@@ -75,10 +75,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         // Directly use slotId for time formatting
                         const timePart = slotId;
+                        const slotData = availableSlotsData[slotId];
 
                         return {
                             id: slotId,
-                            time: timePart // Use slotId directly as time
+                            time: timePart,
+                            status: slotData // Include status in slot data
                         };
                     }).sort((a, b) => {
                         // Convert time to 24-hour format for sorting
@@ -166,6 +168,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         slots.forEach(slot => {
+            if (slot.status === 'booked') {
+                return; // Skip rendering if the slot is booked
+            }
+
             const slotElement = document.createElement("div");
             slotElement.classList.add("slot-item");
             slotElement.setAttribute("data-slot-id", slot.id);
@@ -229,8 +235,8 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAvailableSlots();
     });
 
-    // Function to delete appointments
-    async function deleteAppointments(service) {
+    // Function to book an appointment
+    async function bookAppointment(service) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
             const slotDoc = await getDoc(availabilityRef);
@@ -243,37 +249,24 @@ document.addEventListener("DOMContentLoaded", function () {
             const availableSlotsData = slotDoc.data().availableSlots || {};
             console.log("Available Slots Data:", availableSlotsData);
 
-            if (Object.keys(availableSlotsData).length > 0) {
-                const updatedSlotsData = { ...availableSlotsData };
-                Object.keys(updatedSlotsData).forEach(slotId => {
-                    if (updatedSlotsData[slotId][service]) {
-                        delete updatedSlotsData[slotId][service];
-                    }
+            if (availableSlotsData[selectedSlotId]) {
+                // Mark the slot as booked
+                await updateDoc(availabilityRef, {
+                    [`availableSlots.${selectedSlotId}`]: 'booked'
                 });
 
-                if (Object.keys(updatedSlotsData).length === 0) {
-                    // Delete the entire document if there are no more slots
-                    await updateDoc(availabilityRef, {
-                        availableSlots: deleteField()
-                    });
-                } else {
-                    // Otherwise, update the available slots with the remaining slots
-                    await updateDoc(availabilityRef, {
-                        availableSlots: updatedSlotsData
-                    });
-                }
-
-                console.log("Appointments deleted successfully.");
-                messageDiv.textContent = "Appointments deleted successfully.";
+                console.log("Appointment booked successfully.");
+                messageDiv.textContent = "Appointment booked successfully.";
                 messageDiv.classList.add("success");
+                updateAvailableSlots(); // Refresh the slot display
             } else {
-                console.log("No slots available to delete.");
-                messageDiv.textContent = "No slots available to delete.";
-                messageDiv.classList.add("info");
+                console.error("Selected slot is not available.");
+                messageDiv.textContent = "Selected slot is not available.";
+                messageDiv.classList.add("error");
             }
         } catch (error) {
-            console.error("Error deleting appointments:", error);
-            messageDiv.textContent = "Error deleting appointments.";
+            console.error("Error booking appointment:", error);
+            messageDiv.textContent = "Error booking appointment.";
             messageDiv.classList.add("error");
         }
     }
@@ -297,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         console.log("Form submitted with selected slotId:", selectedSlotId);
-        // Call the function to delete appointments or proceed with booking
-        deleteAppointments(selectedService);
+        // Call the function to book the appointment
+        bookAppointment(selectedService);
     });
 });
