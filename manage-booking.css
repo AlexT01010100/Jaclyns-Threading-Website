@@ -107,33 +107,64 @@ body::-webkit-scrollbar-thumb {
     flex-direction: column;
     gap: 10px;
 }
-
 .slot-item {
-    padding: 10px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-between; /* Distribute space between items */
+    align-items: center; /* Center items vertically */
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.slot-item > div:first-child {
+    display: flex;
+    flex: 1; /* Take up available space */
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between time and status */
+}
+
+.slot-item .button-container {
+    display: flex;
+    gap: 10px; /* Space between buttons */
 }
 
 .slot-item p {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
+    margin: 0; /* Remove default margin for <p> elements */
 }
 
-.slot-item .delete-button {
+.slot-item-content {
+    flex-grow: 1;
+}
+
+.slot-item-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.slot-item .delete-button,
+.slot-item .book-button {
     padding: 6px 12px;
     font-size: 14px;
     color: #fff;
-    background-color: #dc3545;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.slot-item .delete-button {
+    background-color: #dc3545;
 }
 
 .slot-item .delete-button:hover {
     background-color: #c82333;
+}
+
+.slot-item .book-button {
+    background-color: #28a745;
+}
+
+.slot-item .book-button:hover {
+    background-color: #218838;
 }

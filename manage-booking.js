@@ -140,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Function to render active slots
     function renderSlots(slots) {
         slotsListContainer.innerHTML = "";
 
@@ -171,12 +170,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const buttonText = slot.status === "booked" ? "Mark as Unbooked" : "Mark as Booked";
 
             slotElement.innerHTML = `
+            <div>
                 <p><strong>Time:</strong> ${slot.time}</p>
                 <p><strong>Status:</strong> ${slot.status}</p>
+            </div>
+            <div class="button-container">
                 <button type="button" class="book-button" data-slot-id="${slot.id}">${buttonText}</button>
                 <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
-                <hr>
-            `;
+            </div>
+        `;
 
             // Add event listener to book button
             const bookButton = slotElement.querySelector('.book-button');
