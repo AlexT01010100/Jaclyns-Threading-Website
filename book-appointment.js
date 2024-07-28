@@ -34,12 +34,24 @@ document.addEventListener("DOMContentLoaded", function () {
     let availableSlots = [];
     let selectedSlotId = null;
 
-    // Function to format time from 24-hour to 12-hour format
-    function formatTimeTo12Hour(timeString) {
-        const [hour, minute] = timeString.split(':').map(Number);
-        if (isNaN(hour) || isNaN(minute)) {
-            return "Invalid Time";
+    // Function to parse and convert time from 12-hour to 24-hour format
+    function parseTimeTo24Hour(timeString) {
+        const [time, period] = timeString.split(' ');
+        let [hour, minute] = time.split(':').map(Number);
+
+        if (period === 'PM' && hour !== 12) {
+            hour += 12;
+        } else if (period === 'AM' && hour === 12) {
+            hour = 0;
         }
+
+        return new Date(1970, 0, 1, hour, minute); // Use a fixed date for comparison
+    }
+
+    // Function to format time from 24-hour to 12-hour format
+    function formatTimeTo12Hour(time) {
+        const hour = time.getHours();
+        const minute = time.getMinutes();
         const period = hour >= 12 ? 'PM' : 'AM';
         const formattedHour = hour % 12 || 12; // Convert 0 to 12 for midnight
         return `${formattedHour}:${minute.toString().padStart(2, '0')} ${period}`;
@@ -70,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         };
                     }).sort((a, b) => {
                         // Convert time to 24-hour format for sorting
-                        const aDate = new Date(`1970-01-01T${a.time.replace(/ /g, ':')}:00`);
-                        const bDate = new Date(`1970-01-01T${b.time.replace(/ /g, ':')}:00`);
+                        const aDate = parseTimeTo24Hour(a.time);
+                        const bDate = parseTimeTo24Hour(b.time);
                         return aDate - bDate;
                     });
 
@@ -96,17 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Convert formatted slot times to Date objects for easier manipulation
         const timeSlots = slots.map(slot => {
-            const [time, period] = slot.time.split(' ');
-            const [hour, minute] = time.split(':').map(Number);
-
-            let hours24 = hour;
-            if (period === 'PM' && hour !== 12) {
-                hours24 += 12;
-            } else if (period === 'AM' && hour === 12) {
-                hours24 = 0;
-            }
-
-            return new Date(1970, 0, 1, hours24, minute); // Use a fixed date for comparison
+            return parseTimeTo24Hour(slot.time);
         }).filter(date => date !== null);
 
         // Sort slots by time
@@ -130,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check for continuous 30-minute slots
             while (currentSlot < endSlot) {
-                const timeKey = formatTimeTo12Hour(currentSlot.toTimeString().slice(0, 5));
+                const timeKey = formatTimeTo12Hour(currentSlot);
                 const slotAvailable = isSlotAvailable(currentSlot);
 
                 if (!slotAvailable) {
@@ -142,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (isBlockAvailable) {
                 availableBlocks.push({
-                    start: formatTimeTo12Hour(startSlot.toTimeString().slice(0, 5)) // Use the new format
+                    start: formatTimeTo12Hour(startSlot) // Use the new format
                 });
             }
         }
