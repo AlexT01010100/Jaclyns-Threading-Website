@@ -32,7 +32,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedDate = null;
     let selectedService = null;
     let availableSlots = [];
-    let selectedSlotId = null;
+    let selectedSlotId = null
+
+    // Function to set the minimum date for the date input
+    function setMinDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(today.getDate()).padStart(2, '0');
+        const minDate = `${year}-${month}-${day}`;
+        dateInput.setAttribute('min', minDate);
+    }
+
+    setMinDate(); // Call the function to set the minimum date on page load;
 
     // Function to parse and convert time from 12-hour to 24-hour format
     function parseTimeTo24Hour(timeString) {
