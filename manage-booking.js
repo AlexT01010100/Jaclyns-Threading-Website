@@ -149,16 +149,30 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        slots.forEach(slot => {
+        // Convert time from 12-hour to 24-hour format for sorting
+        const slotsWithTimes = slots.map(slot => {
+            return {
+                ...slot,
+                time24: convertTo24HourFormat(slot.time)
+            };
+        });
+
+        // Sort slots by time in 24-hour format
+        slotsWithTimes.sort((a, b) => {
+            return a.time24.localeCompare(b.time24);
+        });
+
+        // Render sorted slots
+        slotsWithTimes.forEach(slot => {
             const slotElement = document.createElement("div");
             slotElement.classList.add("slot-item");
 
             slotElement.innerHTML = `
-                <p><strong>Time:</strong> ${slot.time}</p>
-                <p><strong>Status:</strong> ${slot.status}</p>
-                <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
-                <hr>
-            `;
+            <p><strong>Time:</strong> ${slot.time}</p>
+            <p><strong>Status:</strong> ${slot.status}</p>
+            <button type="button" class="delete-button" data-slot-id="${slot.id}">Delete Slot</button>
+            <hr>
+        `;
 
             // Add event listener to delete button
             const deleteButton = slotElement.querySelector('.delete-button');
@@ -171,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slotsListContainer.appendChild(slotElement);
         });
     }
+
 
     // Function to add or update individual time slots
     async function addSlot(date, times) {
