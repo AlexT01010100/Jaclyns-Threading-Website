@@ -63,8 +63,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         time: availableSlotsData[slotId]
                     })).sort((a, b) => new Date(`${date}T${a.time}:00`) - new Date(`${date}T${b.time}:00`)); // Sort slots by time
 
-                    console.log("Available Slots:", slotsArray);
-                    return slotsArray;
+                    // Return slots with formatted times
+                    return slotsArray.map(slot => ({
+                        id: slot.id,
+                        time: formatTimeTo12Hour(slot.time)
+                    }));
                 } else {
                     console.log("No available slots found for date:", date);
                     return [];
@@ -83,13 +86,19 @@ document.addEventListener("DOMContentLoaded", function () {
     function filterSlotsForMicroblading(slots) {
         if (slots.length === 0) return [];
 
-        // Convert slot times to Date objects for easier manipulation
+        // Convert formatted slot times to Date objects for easier manipulation
         const timeSlots = slots.map(slot => {
-            const [hour, minute] = slot.time.split(':').map(Number);
-            if (isNaN(hour) || isNaN(minute)) {
-                return null; // Skip invalid slots
+            const [time, period] = slot.time.split(' ');
+            const [hour, minute] = time.split(':').map(Number);
+
+            let hours24 = hour;
+            if (period === 'PM' && hour !== 12) {
+                hours24 += 12;
+            } else if (period === 'AM' && hour === 12) {
+                hours24 = 0;
             }
-            return new Date(1970, 0, 1, hour, minute); // Use a fixed date for comparison
+
+            return new Date(1970, 0, 1, hours24, minute); // Use a fixed date for comparison
         }).filter(date => date !== null);
 
         // Sort slots by time
@@ -113,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check for continuous 30-minute slots
             while (currentSlot < endSlot) {
-                const timeKey = currentSlot.toTimeString().slice(0, 5); // Format to HH:MM
+                const timeKey = formatTimeTo12Hour(currentSlot.toTimeString().slice(0, 5));
                 const slotAvailable = isSlotAvailable(currentSlot);
 
                 if (!slotAvailable) {
@@ -242,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Get the time for the selected slot
                 const selectedSlot = availableSlotsData[selectedSlotId];
-                const selectedSlotDateTimeStr = `${selectedDate}T${selectedSlot}:00`; // Assume slot is in HH:MM format
+                const selectedSlotDateTimeStr = `1970-01-01T${selectedSlot}:00`; // Assume slot is in HH:MM format
                 const selectedSlotTime = new Date(selectedSlotDateTimeStr);
 
                 // Ensure slotTime is a valid date
@@ -262,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const slotTimeStr = availableSlotsData[slotId];
 
                     // Construct full date-time string
-                    const slotDateTimeStr = `${selectedDate}T${slotTimeStr}:00`; // Assume slotTimeStr is in HH:MM format
+                    const slotDateTimeStr = `1970-01-01T${slotTimeStr}:00`; // Assume slotTimeStr is in HH:MM format
                     const slotTime = new Date(slotDateTimeStr);
 
                     // Ensure slotTime is a valid date
