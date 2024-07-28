@@ -219,7 +219,6 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAvailableSlots();
     });
 
-    // Function to delete or mark appointments based on service
     async function deleteAppointments(service) {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
@@ -245,53 +244,45 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log(`Preparing to delete selected slot ${selectedSlotId} for threading service.`);
                     updates[`availableSlots.${selectedSlotId}`] = deleteField();
                 }
-            }
-
-            if (service === 'microblading') {
+            } else if (service === 'microblading') {
                 if (selectedSlotId) {
-                    // Extract the time from the selectedSlotId
-                    const slotParts = selectedSlotId.split('_');
-                    const slotTime = slotParts[0]; // Expecting format like slot_HH:MM_timestamp
+                    const slotParts = selectedSlotId.split(' ');
+                    const slotTime = slotParts[0]; // Extract time in HH:MM format
+                    const slotPeriod = (slotParts[1] || '').trim(); // AM or PM, with extra spaces removed
 
-                    // Debugging output to verify extraction
-                    console.log("Slot parts:", slotParts);
-                    console.log("Extracted slot time:", slotTime);
-
-                    if (!slotTime) {
-                        console.error("Invalid slot time extracted from selectedSlotId:", selectedSlotId);
-                        return;
-                    }
-
+                    // Validate and parse time
                     const [hours, minutes] = slotTime.split(':').map(Number);
                     if (isNaN(hours) || isNaN(minutes)) {
                         console.error("Invalid time format:", slotTime);
                         return;
                     }
 
-                    // Create Date objects
-                    const startSlotTime = new Date(`1970-01-01T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
+                    // Convert 12-hour time to 24-hour format
+                    let hours24 = hours;
+                    if (slotPeriod === 'PM' && hours !== 12) {
+                        hours24 += 12;
+                    } else if (slotPeriod === 'AM' && hours === 12) {
+                        hours24 = 0;
+                    }
+
+                    const startSlotTime = new Date(`1970-01-01T${String(hours24).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00Z`);
                     const endSlotTime = new Date(startSlotTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
 
-                    console.log("Start time:", startSlotTime);
-                    console.log("End time:", endSlotTime);
-
-                    // Iterate through each 30-minute slot within the 3-hour window
                     let currentSlotTime = new Date(startSlotTime);
+
                     while (currentSlotTime < endSlotTime) {
-                        const hours = String(currentSlotTime.getUTCHours()).padStart(2, '0');
-                        const minutes = String(currentSlotTime.getUTCMinutes()).padStart(2, '0');
-                        const slotIdPrefix = `slot_${hours}:${minutes}_`;
+                        const hours24Formatted = String(currentSlotTime.getUTCHours()).padStart(2, '0');
+                        const minutes24Formatted = String(currentSlotTime.getUTCMinutes()).padStart(2, '0');
+                        const slotIdToMatch = `slot_${hours24Formatted}:${minutes24Formatted}_`;
 
-                        // Find matching slot IDs in availableSlotsData
-                        const matchingSlotIds = Object.keys(availableSlotsData).filter(key => key.startsWith(slotIdPrefix));
+                        const matchingSlotIds = Object.keys(availableSlotsData).filter(key => key.startsWith(slotIdToMatch));
+                        console.log("Matching Slot IDs:", matchingSlotIds);
 
-                        // Update each matching slot ID
                         matchingSlotIds.forEach(matchingSlotId => {
                             updates[`availableSlots.${matchingSlotId}`] = deleteField();
                         });
 
-                        // Increment by 30 minutes
-                        currentSlotTime = new Date(currentSlotTime.getTime() + 30 * 60 * 1000);
+                        currentSlotTime = new Date(currentSlotTime.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
                     }
                 }
             }
@@ -302,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 await updateDoc(availabilityRef, updates);
                 console.log(`Appointments for service ${service} updated.`);
 
-                // Fetch updated slots
+                // Fetch and render updated slots
                 availableSlots = await fetchAvailableSlotsForDate(selectedDate);
                 if (selectedService === 'microblading') {
                     availableSlots = filterSlotsForMicroblading(availableSlots);
@@ -315,7 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting appointments:", error);
         }
     }
-
 
 
     // Handle form submission
