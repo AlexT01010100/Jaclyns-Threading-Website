@@ -34,6 +34,17 @@ document.addEventListener("DOMContentLoaded", function () {
     let availableSlots = [];
     let selectedSlotId = null;
 
+    // Function to format time from 24-hour to 12-hour format
+    function formatTimeTo12Hour(timeString) {
+        const [hour, minute] = timeString.split(':').map(Number);
+        if (isNaN(hour) || isNaN(minute)) {
+            return "Invalid Time";
+        }
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const formattedHour = hour % 12 || 12; // Convert 0 to 12 for midnight
+        return `${formattedHour}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
     // Function to fetch available slots for a specific date
     async function fetchAvailableSlotsForDate(date) {
         console.log("Fetching available slots for date:", date);
@@ -50,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
                         id: slotId,
                         time: availableSlotsData[slotId]
-                    }));
+                    })).sort((a, b) => new Date(`${date}T${a.time}:00`) - new Date(`${date}T${b.time}:00`)); // Sort slots by time
 
                     console.log("Available Slots:", slotsArray);
                     return slotsArray;
@@ -68,31 +79,92 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Function to filter slots for microblading
+    function filterSlotsForMicroblading(slots) {
+        if (slots.length === 0) return [];
+
+        // Convert slot times to Date objects for easier manipulation
+        const timeSlots = slots.map(slot => {
+            const [hour, minute] = slot.time.split(':').map(Number);
+            if (isNaN(hour) || isNaN(minute)) {
+                return null; // Skip invalid slots
+            }
+            return new Date(1970, 0, 1, hour, minute); // Use a fixed date for comparison
+        }).filter(date => date !== null);
+
+        // Sort slots by time
+        timeSlots.sort((a, b) => a - b);
+
+        const availableBlocks = [];
+        const slotCount = timeSlots.length;
+
+        // Helper function to check if a given time is available
+        function isSlotAvailable(time) {
+            return timeSlots.some(slot => slot.getTime() === time.getTime());
+        }
+
+        // Check each slot to see if it can be the start of a 3-hour block
+        for (let i = 0; i < slotCount; i++) {
+            const startSlot = timeSlots[i];
+            let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
+
+            let currentSlot = new Date(startSlot.getTime());
+            let isBlockAvailable = true;
+
+            // Check for continuous 30-minute slots
+            while (currentSlot < endSlot) {
+                const timeKey = currentSlot.toTimeString().slice(0, 5); // Format to HH:MM
+                const slotAvailable = isSlotAvailable(currentSlot);
+
+                if (!slotAvailable) {
+                    isBlockAvailable = false;
+                    break;
+                }
+                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
+            }
+
+            if (isBlockAvailable) {
+                availableBlocks.push({
+                    start: formatTimeTo12Hour(startSlot.toTimeString().slice(0, 5)) // Use the new format
+                });
+            }
+        }
+
+        // Return only starting times
+        return availableBlocks.map(block => ({
+            id: block.start, // Unique ID for the starting time
+            time: block.start // Only display the start time
+        }));
+    }
+
     // Function to render available slots
     function renderSlots(slots) {
         timeSlotsContainer.innerHTML = "";
 
+        if (slots.length === 0) {
+            timeSlotsContainer.innerHTML = "<p>No available slots for the selected service.</p>";
+            return;
+        }
+
         slots.forEach(slot => {
-            if (slot.id !== 'booked') {
-                const slotElement = document.createElement("div");
-                slotElement.classList.add("slot-item");
-                slotElement.setAttribute("data-slot-id", slot.id);
+            const slotElement = document.createElement("div");
+            slotElement.classList.add("slot-item");
+            slotElement.setAttribute("data-slot-id", slot.id);
 
-                slotElement.innerHTML = `
-                    <p><strong>Time:</strong> ${slot.time}</p>
-                    <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
-                    <hr>
-                `;
+            slotElement.innerHTML = `
+            <p><strong>Time:</strong> ${slot.time}</p>
+            <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
+            <hr>
+        `;
 
-                const selectButton = slotElement.querySelector('.select-button');
-                selectButton.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    selectedSlotId = slot.id;
-                    toggleSlotSelection(slot.id);
-                });
+            const selectButton = slotElement.querySelector('.select-button');
+            selectButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                selectedSlotId = slot.id;
+                toggleSlotSelection(slot.id);
+            });
 
-                timeSlotsContainer.appendChild(slotElement);
-            }
+            timeSlotsContainer.appendChild(slotElement);
         });
     }
 
@@ -113,11 +185,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateAvailableSlots() {
         if (selectedDate && selectedService) {
             fetchAvailableSlotsForDate(selectedDate).then(slots => {
-                if (slots.length > 0) {
-                    renderSlots(slots);
-                } else {
-                    timeSlotsContainer.innerHTML = "<p>No available slots for selected date and service.</p>";
+                if (selectedService === 'microblading') {
+                    slots = filterSlotsForMicroblading(slots);
                 }
+                renderSlots(slots);
             }).catch(error => {
                 console.error("Error fetching available slots:", error);
                 timeSlotsContainer.innerHTML = "<p>Error fetching available slots.</p>";
@@ -161,10 +232,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const updates = {};
-            const slotDurationInHours = 3; // Microblading: 3 hours
-
-            // Convert selectedDate to a Date object
-            const selectedDateObj = new Date(selectedDate);
 
             // If service is microblading, use the selectedSlotId's time to determine which slots to delete
             if (service === 'microblading') {
@@ -185,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Calculate end time which is 3 hours from the selected slot
-                const endTime = new Date(selectedSlotTime.getTime() + slotDurationInHours * 60 * 60 * 1000);
+                const endTime = new Date(selectedSlotTime.getTime() + 3 * 60 * 60 * 1000);
 
                 // Log values for debugging
                 console.log(`Selected Slot Time: ${selectedSlotTime}`);
@@ -226,6 +293,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Fetch updated slots
                 availableSlots = await fetchAvailableSlotsForDate(selectedDate);
+                if (selectedService === 'microblading') {
+                    availableSlots = filterSlotsForMicroblading(availableSlots);
+                }
                 renderSlots(availableSlots);
             } else {
                 console.log("No slots to update.");
