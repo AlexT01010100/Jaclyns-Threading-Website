@@ -31,7 +31,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Function to generate time slots
+    // Function to convert time from 24-hour to AM/PM format
+    function convertTo12HourFormat(time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12; // Convert hour to 12-hour format
+        return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+
+    // Function to convert time from AM/PM to 24-hour format
+    function convertTo24HourFormat(time) {
+        const [timePart, period] = time.split(' ');
+        let [hours, minutes] = timePart.split(':').map(Number);
+
+        if (period === 'PM' && hours !== 12) {
+            hours += 12;
+        } else if (period === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    // Function to generate time slots in AM/PM format
     function generateTimeSlots() {
         const startTime = 8; // 8 AM
         const endTime = 19; // 7 PM
@@ -39,12 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         for (let hour = startTime; hour <= endTime; hour++) {
             for (let minute = 0; minute < 60; minute += interval) {
-                let timeLabel = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                let timeLabel24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                let timeLabel12 = convertTo12HourFormat(timeLabel24);
                 let timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot';
                 timeSlot.innerHTML = `
-                    <input type="checkbox" id="${timeLabel}" name="timeSlots" value="${timeLabel}">
-                    <label for="${timeLabel}">${timeLabel}</label>
+                    <input type="checkbox" id="${timeLabel24}" name="timeSlots" value="${timeLabel12}">
+                    <label for="${timeLabel24}">${timeLabel12}</label>
                 `;
                 timeSlotsContainer.appendChild(timeSlot);
             }
@@ -73,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (availableSlotsData) {
                     const slotsArray = Object.keys(availableSlotsData).map(slotId => ({
                         id: slotId,
-                        time: availableSlotsData[slotId]
+                        time: convertTo12HourFormat(availableSlotsData[slotId])
                     }));
 
                     console.log("Active Slots retrieved:", slotsArray);
@@ -148,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to add or update individual time slots
+    // Function to add or update individual time slots
     async function addSlot(date, times) {
         if (!date || !times || times.length === 0) {
             console.error("Date or time slots input is empty");
@@ -164,12 +188,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check each time slot
             times.forEach(time => {
-                // Generate a unique ID for the slot
-                const newSlotId = `slot_${time}_${Date.now()}`;
+                const standardizedTime = convertTo24HourFormat(time); // Convert time to 24-hour format
+                const newSlotId = `slot_${time.replace(/\s+/g, '_')}_${Date.now()}`;
 
                 // Check if this time slot already exists
-                if (!Object.values(availableSlotsData).includes(time)) {
-                    newSlotsData[newSlotId] = time; // Add to new slots data if it doesn't exist
+                if (!Object.values(availableSlotsData).includes(standardizedTime)) {
+                    newSlotsData[newSlotId] = standardizedTime; // Add to new slots data if it doesn't exist
                 }
             });
 
@@ -192,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error adding time slots:", error);
         }
     }
+
 
     // Function to delete a slot
     async function deleteSlot(slotId) {
