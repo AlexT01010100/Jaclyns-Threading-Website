@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, { merge: true });
 
                 const slotsArray = Object.keys(availableSlots).map(slotKey => ({
-                    time: slotKey,
+                    time: convertTo12HourFormat(slotKey),
                     ...availableSlots[slotKey]
                 }));
 
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const updatedSlots = updatedSnapshot.data().availableSlots || {};
 
                 const slotsArray = Object.keys(updatedSlots).map(slotKey => ({
-                    time: slotKey,
+                    time: convertTo12HourFormat(slotKey),
                     ...updatedSlots[slotKey]
                 }));
 
@@ -288,18 +288,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedTimes = Array.from(timeSlotsContainer.querySelectorAll('input[name="timeSlots"]:checked')).map(input => input.value);
 
         if (selectedDate) {
-            if (selectedTimes.length > 0) {
-                await saveAvailabilityForWeekday(selectedDate, selectedTimes);
-                alert("Availability for the weekday has been remembered.");
-            } else {
-                await saveAvailabilityForWeekday(selectedDate, []);
-                alert("No time slots selected. Cleared all slots for the selected weekday.");
-            }
+            await saveAvailabilityForWeekday(selectedDate, selectedTimes);
+
+            // Fetch and render updated slots after saving
+            const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
+            const slotsArray = Object.keys(availableSlots).map(slotTime => ({
+                time: convertTo12HourFormat(slotTime),
+                ...availableSlots[slotTime]
+            }));
+
+            renderSlots(slotsArray);
+
+            alert("Availability for the weekday has been remembered.");
         } else {
             alert("Please select a date.");
         }
     });
-
 
     async function addSlot(date, times) {
         if (!date || !times || times.length === 0) {
@@ -324,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }, { merge: true });
 
             const slotsArray = Object.keys(availableSlots).map(slotKey => ({
-                time: slotKey,
+                time: convertTo12HourFormat(slotKey),
                 ...availableSlots[slotKey]
             }));
 
@@ -384,7 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         return weekdays.indexOf(weekday);
     }
-
 
     generateTimeSlots();
 });
