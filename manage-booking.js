@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -239,32 +239,49 @@ document.addEventListener("DOMContentLoaded", function () {
         const availabilityRef = doc(db, "availability", selectedDate);
 
         try {
-            const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
+            // Fetch the current slots from Firestore
+            const docSnapshot = await getDoc(availabilityRef);
 
-            const slotKey = slotTime; // Ensure this key matches what's stored
+            if (!docSnapshot.exists()) {
+                console.error("No slots found for the selected date.");
+                return;
+            }
 
-            if (availableSlots[slotKey]) {
-                delete availableSlots[slotKey];
+            const availableSlots = docSnapshot.data().availableSlots || {};
 
-                await setDoc(availabilityRef, {
-                    availableSlots: availableSlots
-                }, { merge: true });
+            // Log the current available slots for debugging
+            console.log("Current availableSlots:", availableSlots);
 
-                console.log(`Slot ${slotKey} deleted successfully`);
+            // Check if the slot exists in the availableSlots map
+            if (availableSlots[slotTime]) {
+                // Log the slot to be deleted
+                console.log(`Deleting slot: ${slotTime}`);
 
-                const slotsArray = Object.keys(availableSlots).map(slotKey => ({
+                // Update Firestore document to delete the specific slot
+                await updateDoc(availabilityRef, {
+                    [`availableSlots.${slotTime}`]: deleteField()
+                });
+
+                console.log(`Slot ${slotTime} deleted successfully`);
+
+                // Update the UI to reflect the changes immediately
+                const updatedSnapshot = await getDoc(availabilityRef);
+                const updatedSlots = updatedSnapshot.data().availableSlots || {};
+
+                const slotsArray = Object.keys(updatedSlots).map(slotKey => ({
                     time: slotKey,
-                    ...availableSlots[slotKey]
+                    ...updatedSlots[slotKey]
                 }));
 
                 renderSlots(slotsArray);
             } else {
-                console.error(`Slot ${slotTime} not found`);
+                console.error(`Slot ${slotTime} not found in availableSlots`);
             }
         } catch (error) {
             console.error("Error deleting slot:", error);
         }
     }
+
 
     slotForm.addEventListener("submit", async (event) => {
         event.preventDefault();
