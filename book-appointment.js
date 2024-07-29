@@ -1,6 +1,20 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
 import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
+    authDomain: "jaclyns-threading.firebaseapp.com",
+    projectId: "jaclyns-threading",
+    storageBucket: "jaclyns-threading.appspot.com",
+    messagingSenderId: "599625407213",
+    appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
+    measurementId: "G-HSF7B83VYH"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
 
@@ -15,26 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Initialize Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
-        authDomain: "jaclyns-threading.firebaseapp.com",
-        projectId: "jaclyns-threading",
-        storageBucket: "jaclyns-threading.appspot.com",
-        messagingSenderId: "599625407213",
-        appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
-        measurementId: "G-HSF7B83VYH"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
     let selectedDate = null;
     let selectedService = null;
-    let availableSlots = [];
-    let selectedSlotId = null
+    let selectedSlotId = null;
 
-    // Function to set the minimum date for the date input
     function setMinDate() {
         const today = new Date();
         const year = today.getFullYear();
@@ -44,9 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
         dateInput.setAttribute('min', minDate);
     }
 
-    setMinDate(); // Call the function to set the minimum date on page load;
+    setMinDate();
 
-    // Function to parse and convert time from 12-hour to 24-hour format
     function parseTimeTo24Hour(timeString) {
         const [time, period] = timeString.split(' ');
         let [hour, minute] = time.split(':').map(Number);
@@ -57,19 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
             hour = 0;
         }
 
-        return new Date(1970, 0, 1, hour, minute); // Use a fixed date for comparison
+        return new Date(1970, 0, 1, hour, minute);
     }
 
-    // Function to format time from 24-hour to 12-hour format
     function formatTimeTo12Hour(time) {
         const hour = time.getHours();
         const minute = time.getMinutes();
         const period = hour >= 12 ? 'PM' : 'AM';
-        const formattedHour = hour % 12 || 12; // Convert 0 to 12 for midnight
+        const formattedHour = hour % 12 || 12;
         return `${formattedHour}:${minute.toString().padStart(2, '0')} ${period}`;
     }
 
-    // Function to fetch available slots for a specific date
     async function fetchAvailableSlotsForDate(date) {
         console.log("Fetching available slots for date:", date);
 
@@ -85,17 +80,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     const slotsArray = Object.keys(availableSlotsData).map(slotId => {
                         console.log("Processing slotId:", slotId);
 
-                        // Directly use slotId for time formatting
-                        const timePart = slotId;
                         const slotData = availableSlotsData[slotId];
 
                         return {
                             id: slotId,
-                            time: timePart,
-                            status: slotData // Include status in slot data
+                            time: slotId,
+                            status: slotData.status
                         };
                     }).sort((a, b) => {
-                        // Convert time to 24-hour format for sorting
                         const aDate = parseTimeTo24Hour(a.time);
                         const bDate = parseTimeTo24Hour(b.time);
                         return aDate - bDate;
@@ -116,27 +108,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to filter slots for microblading
     function filterSlotsForMicroblading(slots) {
         if (slots.length === 0) return [];
 
-        // Convert formatted slot times to Date objects for easier manipulation
-        const timeSlots = slots.map(slot => {
-            return parseTimeTo24Hour(slot.time);
-        }).filter(date => date !== null);
-
-        // Sort slots by time
+        const timeSlots = slots.map(slot => parseTimeTo24Hour(slot.time)).filter(date => date !== null);
         timeSlots.sort((a, b) => a - b);
 
         const availableBlocks = [];
         const slotCount = timeSlots.length;
 
-        // Helper function to check if a given time is unbooked
         function isSlotUnbooked(time) {
             return slots.some(slot => parseTimeTo24Hour(slot.time).getTime() === time.getTime() && slot.status === 'unbooked');
         }
 
-        // Check for consecutive 3-hour blocks of unbooked slots
         for (let i = 0; i < slotCount; i++) {
             const startSlot = timeSlots[i];
             let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
@@ -144,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             let currentSlot = new Date(startSlot.getTime());
             let isBlockAvailable = true;
 
-            // Check for continuous 30-minute unbooked slots
             while (currentSlot < endSlot) {
                 const timeKey = formatTimeTo12Hour(currentSlot);
                 if (!isSlotUnbooked(currentSlot)) {
@@ -154,23 +137,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
             }
 
-            // If a continuous block of unbooked slots was found, add the start time to availableBlocks
             if (isBlockAvailable) {
                 availableBlocks.push({
-                    start: formatTimeTo12Hour(startSlot) // Use the new format
+                    start: formatTimeTo12Hour(startSlot)
                 });
             }
         }
 
-        // Return only starting times
         return availableBlocks.map(block => ({
-            id: block.start, // Unique ID for the starting time
-            time: block.start // Only display the start time
+            id: block.start,
+            time: block.start
         }));
     }
 
-
-    // Function to render available slots
     function renderSlots(slots) {
         timeSlotsContainer.innerHTML = "";
 
@@ -181,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         slots.forEach(slot => {
             if (slot.status === 'booked') {
-                return; // Skip rendering if the slot is booked
+                return;
             }
 
             const slotElement = document.createElement("div");
@@ -205,7 +184,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to toggle slot selection
     function toggleSlotSelection(slotId) {
         const selectedSlot = timeSlotsContainer.querySelector('.slot-item.selected');
         if (selectedSlot) {
@@ -218,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to check if both date and service are selected and update available slots
     function updateAvailableSlots() {
         if (selectedDate && selectedService) {
             fetchAvailableSlotsForDate(selectedDate).then(slots => {
@@ -233,21 +210,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Event listener for date input
     dateInput.addEventListener("change", function () {
         selectedDate = dateInput.value;
         console.log("Date input changed, selected date:", selectedDate);
         updateAvailableSlots();
     });
 
-    // Event listener for service select
     serviceSelect.addEventListener("change", function () {
         selectedService = serviceSelect.value;
         console.log("Service select changed, selected service:", selectedService);
         updateAvailableSlots();
     });
 
-    // Function to book an appointment
     async function bookAppointment() {
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
@@ -263,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (selectedService === 'microblading') {
                 const startSlot = parseTimeTo24Hour(selectedSlotId);
-                let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000); // 3 hours later
+                let endSlot = new Date(startSlot.getTime() + 3 * 60 * 60 * 1000);
 
                 let currentSlot = new Date(startSlot.getTime());
                 const updatedSlotsData = { ...availableSlotsData };
@@ -271,9 +245,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 while (currentSlot < endSlot) {
                     const timeKey = formatTimeTo12Hour(currentSlot);
                     if (updatedSlotsData[timeKey]) {
-                        updatedSlotsData[timeKey] = "booked";
+                        updatedSlotsData[timeKey] = {
+                            ...updatedSlotsData[timeKey],
+                            status: "booked",
+                            service: selectedService
+                        };
                     }
-                    currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
+                    currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000);
                 }
 
                 await updateDoc(availabilityRef, {
@@ -293,7 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Event listener for form submission
     form.addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -312,7 +289,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         console.log("Form submitted with selected slotId:", selectedSlotId);
-        // Call the function to book an appointment
         bookAppointment();
     });
 });
