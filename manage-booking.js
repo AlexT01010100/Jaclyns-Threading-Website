@@ -246,14 +246,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const availableSlots = docSnapshot.data().availableSlots || {};
 
-            if (availableSlots[slotTime]) {
+            // Convert slotTime to 24-hour format
+            const slotKey = convertTo24HourFormat(slotTime);
+            if (availableSlots[slotKey]) {
                 await updateDoc(availabilityRef, {
-                    [`availableSlots.${slotTime}`]: deleteField()
+                    [`availableSlots.${slotKey}`]: deleteField()
                 });
 
                 const updatedSnapshot = await getDoc(availabilityRef);
                 const updatedSlots = updatedSnapshot.data().availableSlots || {};
 
+                // Convert updated slots to 12-hour format for display
                 const slotsArray = Object.keys(updatedSlots).map(slotKey => ({
                     time: convertTo12HourFormat(slotKey),
                     ...updatedSlots[slotKey]
@@ -267,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting slot:", error);
         }
     }
+
 
     slotForm.addEventListener("submit", async (event) => {
         event.preventDefault();
