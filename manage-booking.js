@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -39,11 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setMinDate();
 
     function convertTo12HourFormat(time) {
-
-        // Determine if the time includes AM/PM
         const period = time.includes('AM') || time.includes('PM') ? time.split(' ')[1] : null;
-
-        // Remove AM/PM if present
         const [hours, minutes] = time.split(' ')[0].split(':').map(Number);
 
         if (isNaN(hours) || isNaN(minutes)) {
@@ -51,19 +47,15 @@ document.addEventListener("DOMContentLoaded", function () {
             return "";
         }
 
-        // Determine period for 24-hour time
         const actualPeriod = period || (hours >= 12 ? 'PM' : 'AM');
         const displayHours = hours % 12 || 12;
 
-        // Return formatted time
         return `${displayHours}:${minutes.toString().padStart(2, '0')} ${actualPeriod}`;
     }
 
-
-
     function convertTo24HourFormat(time) {
         const [timePart, period] = time.split(' ');
-        if (!timePart || !period) return "00:00"; // Default to 24-hour format if invalid
+        if (!timePart || !period) return "00:00";
 
         let [hours, minutes] = timePart.split(':').map(Number);
         if (isNaN(hours) || isNaN(minutes)) {
@@ -85,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const endTime = 19;
         const interval = 30;
 
-        timeSlotsContainer.innerHTML = ""; // Clear existing slots
+        timeSlotsContainer.innerHTML = "";
 
         for (let hour = startTime; hour <= endTime; hour++) {
             for (let minute = 0; minute < 60; minute += interval) {
@@ -119,6 +111,12 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error fetching or initializing document:", error);
             return {};
         }
+    }
+
+    function getWeekday(date) {
+        const day = new Date(date).getDay();
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return weekdays[day];
     }
 
     slotDateInput.addEventListener("change", async function () {
@@ -204,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
 
-            const slotKey = slotTime; // Use the 12-hour format directly
+            const slotKey = convertTo24HourFormat(slotTime);
             if (availableSlots[slotKey]) {
                 const currentStatus = availableSlots[slotKey].status;
                 const newStatus = currentStatus === "booked" ? "unbooked" : "booked";
@@ -216,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, { merge: true });
 
                 const slotsArray = Object.keys(availableSlots).map(slotKey => ({
-                    time: slotKey, // Use the 12-hour format directly
+                    time: slotKey,
                     ...availableSlots[slotKey]
                 }));
 
@@ -239,7 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const availabilityRef = doc(db, "availability", selectedDate);
 
         try {
-            // Fetch the current slots from Firestore
             const docSnapshot = await getDoc(availabilityRef);
 
             if (!docSnapshot.exists()) {
@@ -249,22 +246,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const availableSlots = docSnapshot.data().availableSlots || {};
 
-            // Log the current available slots for debugging
-            console.log("Current availableSlots:", availableSlots);
-
-            // Check if the slot exists in the availableSlots map
             if (availableSlots[slotTime]) {
-                // Log the slot to be deleted
-                console.log(`Deleting slot: ${slotTime}`);
-
-                // Update Firestore document to delete the specific slot
                 await updateDoc(availabilityRef, {
                     [`availableSlots.${slotTime}`]: deleteField()
                 });
 
-                console.log(`Slot ${slotTime} deleted successfully`);
-
-                // Update the UI to reflect the changes immediately
                 const updatedSnapshot = await getDoc(availabilityRef);
                 const updatedSlots = updatedSnapshot.data().availableSlots || {};
 
@@ -281,7 +267,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting slot:", error);
         }
     }
-
 
     slotForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -301,7 +286,8 @@ document.addEventListener("DOMContentLoaded", function () {
     rememberButton.addEventListener("click", async () => {
         const selectedDate = slotDateInput.value;
         const selectedTimes = Array.from(timeSlotsContainer.querySelectorAll('input[name="timeSlots"]:checked')).map(input => input.value);
-
+        console.log("Selected Date:", selectedDate);
+        console.log("Selected Times:", selectedTimes);
         if (selectedDate) {
             if (selectedTimes.length > 0) {
                 await saveAvailabilityForWeekday(selectedDate, selectedTimes);
@@ -326,9 +312,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const availableSlots = await fetchOrInitializeActiveSlots(date);
 
             times.forEach(time => {
-                const time12 = time; // Use the 12-hour format directly
-                if (!availableSlots[time12]) {
-                    availableSlots[time12] = { status: "unbooked", service: "" };
+                const time24 = convertTo24HourFormat(time);
+                if (!availableSlots[time24]) {
+                    availableSlots[time24] = { status: "unbooked", service: "" };
                 }
             });
 
@@ -337,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }, { merge: true });
 
             const slotsArray = Object.keys(availableSlots).map(slotKey => ({
-                time: slotKey, // Use the 12-hour format directly
+                time: slotKey,
                 ...availableSlots[slotKey]
             }));
 
@@ -353,28 +339,36 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const availabilityRef = doc(db, "availability", date);
+        const weekday = getWeekday(date);
+        const endOfYear = new Date("2024-12-31").toISOString().split('T')[0];
 
-        try {
-            const availableSlots = await fetchOrInitializeActiveSlots(date);
+        const batch = writeBatch(db);
+        let timeSlotRef;
+
+        for (let dt = new Date(date); dt <= new Date(endOfYear); dt.setDate(dt.getDate() + 7)) {
+            const currentDate = dt.toISOString().split('T')[0];
+            timeSlotRef = doc(db, "availability", currentDate);
+            const availableSlots = await fetchOrInitializeActiveSlots(currentDate);
 
             times.forEach(time => {
-                const time12 = time; // Use the 12-hour format directly
-                if (!availableSlots[time12]) {
-                    availableSlots[time12] = { status: "unbooked", service: "" };
-                }
+                const time24 = convertTo24HourFormat(time);
+                availableSlots[time24] = { status: "unbooked", service: "" };
             });
 
-            await setDoc(availabilityRef, {
-                availableSlots: availableSlots
-            }, { merge: true });
-
-            console.log("Availability saved for weekday:", availableSlots);
-        } catch (error) {
-            console.error("Error saving availability for weekday:", error);
+            batch.set(timeSlotRef, { availableSlots }, { merge: true });
         }
+
+        if (times.length === 0) {
+            const availabilityRef = doc(db, "availability", date);
+            const availableSlots = await fetchOrInitializeActiveSlots(date);
+            for (const timeSlot in availableSlots) {
+                batch.update(availabilityRef, { [`availableSlots.${timeSlot}`]: deleteField() });
+            }
+        }
+
+        await batch.commit();
+        console.log("Availability saved/cleared for the selected weekday.");
     }
 
-    // Generate time slots on page load
     generateTimeSlots();
 });
