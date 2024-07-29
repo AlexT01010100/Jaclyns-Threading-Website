@@ -39,15 +39,37 @@ document.addEventListener("DOMContentLoaded", function () {
     setMinDate();
 
     function convertTo12HourFormat(time) {
-        const [hours, minutes] = time.split(':').map(Number);
-        const period = hours >= 12 ? 'PM' : 'AM';
+
+        // Determine if the time includes AM/PM
+        const period = time.includes('AM') || time.includes('PM') ? time.split(' ')[1] : null;
+
+        // Remove AM/PM if present
+        const [hours, minutes] = time.split(' ')[0].split(':').map(Number);
+
+        if (isNaN(hours) || isNaN(minutes)) {
+            console.error("Invalid time format:", time);
+            return "";
+        }
+
+        // Determine period for 24-hour time
+        const actualPeriod = period || (hours >= 12 ? 'PM' : 'AM');
         const displayHours = hours % 12 || 12;
-        return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+
+        // Return formatted time
+        return `${displayHours}:${minutes.toString().padStart(2, '0')} ${actualPeriod}`;
     }
+
+
 
     function convertTo24HourFormat(time) {
         const [timePart, period] = time.split(' ');
+        if (!timePart || !period) return "00:00"; // Default to 24-hour format if invalid
+
         let [hours, minutes] = timePart.split(':').map(Number);
+        if (isNaN(hours) || isNaN(minutes)) {
+            console.error("Invalid time format:", time);
+            return "00:00";
+        }
 
         if (period === 'PM' && hours !== 12) {
             hours += 12;
@@ -62,6 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const startTime = 8;
         const endTime = 19;
         const interval = 30;
+
+        timeSlotsContainer.innerHTML = ""; // Clear existing slots
 
         for (let hour = startTime; hour <= endTime; hour++) {
             for (let minute = 0; minute < 60; minute += interval) {
@@ -217,21 +241,17 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
 
-            // Convert slotTime to 24-hour format if needed
             const slotKey = slotTime; // Ensure this key matches what's stored
 
             if (availableSlots[slotKey]) {
-                // Delete the slot from the availableSlots object
                 delete availableSlots[slotKey];
 
-                // Update the Firestore document with the modified availableSlots
                 await setDoc(availabilityRef, {
                     availableSlots: availableSlots
                 }, { merge: true });
 
                 console.log(`Slot ${slotKey} deleted successfully`);
 
-                // Update the UI to reflect the changes immediately
                 const slotsArray = Object.keys(availableSlots).map(slotKey => ({
                     time: slotKey,
                     ...availableSlots[slotKey]
@@ -245,7 +265,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting slot:", error);
         }
     }
-
 
     slotForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -339,5 +358,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Generate time slots on page load
     generateTimeSlots();
 });
