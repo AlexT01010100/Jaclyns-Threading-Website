@@ -1,3 +1,26 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
 /* Base styles for review cards */
 .reviews {
     display: flex;
