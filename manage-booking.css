@@ -190,12 +190,8 @@ body::-webkit-scrollbar-thumb {
 .slot-item .button-container {
     display: flex;
     gap: 10px;
-    justify-content: flex-start; /* Align buttons to the left */
-    padding-left: 10px; /* Move buttons slightly to the left */
-}
-
-.slot-item p {
-    margin: 0;
+    justify-content: center; /* Center buttons horizontally */
+    padding-top: 10px; /* Optional: Add some spacing from other content */
 }
 
 /* Slot item buttons */
@@ -205,7 +201,7 @@ body::-webkit-scrollbar-thumb {
 .slot-item .edit-email-button,
 .slot-item .edit-service-button,
 .slot-item .edit-phone-button {
-    padding: 8px 14px;
+    padding: 8px 12px;
     font-size: 14px;
     color: #fff;
     border: none;
