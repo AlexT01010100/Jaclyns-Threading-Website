@@ -182,19 +182,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         slots.forEach(slot => {
-            if (slot.status === 'booked') {
-                return;
-            }
-
             const slotElement = document.createElement("div");
             slotElement.classList.add("slot-item");
             slotElement.setAttribute("data-slot-id", slot.id);
 
             slotElement.innerHTML = `
-                <p><strong>Time:</strong> ${slot.time}</p>
-                <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
-                <hr>
-            `;
+            <p>${slot.time}</p>
+            <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
+            <hr>
+        `;
 
             const selectButton = slotElement.querySelector('.select-button');
             selectButton.addEventListener('click', (event) => {
@@ -218,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.classList.add('selected');
         }
     }
+
 
     function updateAvailableSlots() {
         if (selectedDate && selectedService) {
