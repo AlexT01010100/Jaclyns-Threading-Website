@@ -119,30 +119,36 @@ select {
     background-color: #e0f7fa;
     border: 1px solid #b2ebf2;
     border-radius: 8px;
+    justify-content: center;
     padding: 15px;
+    align-items: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
-/* Selected slot item */
-.slot-item.selected {
-    background-color: #b2ebf2;
-    border: 1px solid #80deea;
-}
-
 
 .slot-item:hover {
     background-color: #b2ebf2;
     transform: scale(1.02);
 }
 
+.slot-item.selected {
+    background-color: #f8f6b5;
+}
 
 .slot-item p {
     margin-top: 5px;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
+}
 
+.submit-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    position: relative;
 }
 
 .select-button {
@@ -154,6 +160,8 @@ select {
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    position: relative;
+    left: 7px;
 }
 
 
@@ -176,7 +184,7 @@ hr {
 
 
 button[type="submit"] {
-    width: 100%;
+    width: auto;
     padding: 14px;
     background-color: #1a73e8;
     color: #ffffff;
@@ -184,7 +192,7 @@ button[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
-    margin-top: 20px;
+    margin: 0 auto;
     transition: background-color 0.3s ease;
 }
 
@@ -232,12 +240,6 @@ button[type="submit"]:hover {
 
 .popup:hover .popup-content {
     opacity: 1;
-}
-
-/* Slot item styling */
-.slot-item.selected {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
 }
 
 /* Social icons styling */
