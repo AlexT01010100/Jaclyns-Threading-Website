@@ -246,6 +246,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     async function bookAppointment() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
             const slotDoc = await getDoc(availabilityRef);
@@ -271,7 +275,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         updatedSlotsData[timeKey] = {
                             ...updatedSlotsData[timeKey],
                             status: "booked",
-                            service: selectedService
+                            service: selectedService,
+                            name: name,
+                            email: email,
+                            phone: phone
                         };
                     }
                     currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000);
