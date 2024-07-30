@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -234,62 +234,67 @@ document.addEventListener("DOMContentLoaded", function () {
         const availabilityRef = doc(db, "availability", selectedDate);
 
         try {
+            // Fetch existing data
             const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
-            const slotKey = slotTime24;
 
-            if (availableSlots[slotKey]) {
-                delete availableSlots[slotKey];
+            // Prepare the batch
+            const batch = writeBatch(db);
 
-                await setDoc(availabilityRef, {
-                    availableSlots: availableSlots
-                }, { merge: true });
+            // Prepare the delete operation
+            batch.update(availabilityRef, {
+                [`availableSlots.${slotTime24}`]: deleteField()
+            });
 
-                const slotsArray = Object.keys(availableSlots).map(slotKey => ({
+            // Commit the batch
+            await batch.commit();
+
+            // Refresh the slot list
+            const updatedSlots = Object.keys(availableSlots).filter(slotKey => slotKey !== slotTime24)
+                .map(slotKey => ({
                     time: convertTo12HourFormat(slotKey),
                     ...availableSlots[slotKey]
                 }));
 
-                renderSlots(slotsArray);
-            } else {
-                console.error(`Slot ${slotTime24} not found`);
-            }
+            renderSlots(updatedSlots);
+
         } catch (error) {
             console.error("Error deleting slot:", error);
         }
     }
 
-    async function addSlot(date, times) {
-        if (!date || !times || times.length === 0) {
-            console.error("Date or time slots input is empty");
-            return;
-        }
 
-        const availabilityRef = doc(db, "availability", date);
-
-        try {
-            const availableSlots = await fetchOrInitializeActiveSlots(date);
-
-            times.forEach(time => {
-                const time24 = convertTo24HourFormat(time);
-                if (!availableSlots[time24]) {
-                    availableSlots[time24] = { status: "unbooked", service: "", name: "", email: "", phone: "" };
-                }
-            });
-
-            await setDoc(availabilityRef, {
-                availableSlots: availableSlots
-            }, { merge: true });
-
-            const slotsArray = Object.keys(availableSlots).map(slotKey => ({
-                time: convertTo12HourFormat(slotKey),
-                ...availableSlots[slotKey]
-            }));
-
-            renderSlots(slotsArray);
-        } catch (error) {
-            console.error("Error adding slots:", error);
-        }
-    }
+    // async function addSlot(date, times) {
+    //     if (!date || !times || times.length === 0) {
+    //         console.error("Date or time slots input is empty");
+    //         return;
+    //     }
+    //
+    //     const availabilityRef = doc(db, "availability", date);
+    //
+    //     try {
+    //         const availableSlots = await fetchOrInitializeActiveSlots(date);
+    //
+    //         times.forEach(time => {
+    //             const time24 = convertTo24HourFormat(time);
+    //             if (!availableSlots[time24]) {
+    //                 availableSlots[time24] = { status: "unbooked", service: "", name: "", email: "", phone: "" };
+    //             }
+    //         });
+    //
+    //         await setDoc(availabilityRef, {
+    //             availableSlots: availableSlots
+    //         }, { merge: true });
+    //
+    //         const slotsArray = Object.keys(availableSlots).map(slotKey => ({
+    //             time: convertTo12HourFormat(slotKey),
+    //             ...availableSlots[slotKey]
+    //         }));
+    //
+    //         renderSlots(slotsArray);
+    //     } catch (error) {
+    //         console.error("Error adding slots:", error);
+    //     }
+    // }
 
     async function addSlotWithDetails(date, details) {
         if (!date || !details || details.length === 0) {
