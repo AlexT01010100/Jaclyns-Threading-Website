@@ -114,8 +114,8 @@ select {
 /* Container for slot items */
 .time-slots-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Four equal-width columns */
-    gap: 10px; /* Space between items */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 }
 
 /* Slot item styling */
@@ -153,6 +153,7 @@ select {
     width: 100%;
     padding: 10px 0;
     position: relative;
+    margin-top: 20px;
 }
 
 .select-button {
