@@ -24,63 +24,54 @@
 </header>
 
 <body>
-<div class="container" id="booking-container">
-  <h1>Book Now</h1>
+<div class="booking-wrapper">
+  <div class="booking-container">
+    <h1>Book Now</h1>
 
-  <form id="appointment-form">
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required>
-    </div>
+    <form id="appointment-form">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
 
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required>
-    </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
 
-    <div class="form-group">
-      <label for="phone">Phone Number:</label>
-      <input type="tel" id="phone" name="phone" required>
-    </div>
+      <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
 
-    <div class="form-group">
-      <label for="date">Date:</label>
-      <input type="date" id="date" name="date" required>
-    </div>
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+      </div>
 
-    <div class="form-group">
-      <label for="service">Service:</label>
-      <select id="service" name="service" required>
-        <option value="" disabled selected>Select a service</option>
-        <option value="brow-lamination">Brow Lamination</option>
-        <option value="threading">Threading</option>
-        <option value="microblading">Microblading</option>
-        <option value="lash-lifting">Lash Lifting</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="service">Service:</label>
+        <select id="service" name="service" required>
+          <option value="" disabled selected>Select a service</option>
+          <option value="brow-lamination">Brow Lamination</option>
+          <option value="threading">Threading</option>
+          <option value="microblading">Microblading</option>
+          <option value="lash-lifting">Lash Lifting</option>
+        </select>
+      </div>
 
-    <h3>Choose a Time Slot:</h3>
-    <div class="time-slots" id="time-slots">
-      <!-- Time slot buttons will be generated here -->
-    </div>
+      <h3>Choose a Time Slot:</h3>
+      <div class="time-slots" id="time-slots">
+        <!-- Time slot buttons will be generated here -->
+      </div>
 
-    <button type="submit">Book Appointment</button>
-  </form>
+      <button type="submit">Book Appointment</button>
+    </form>
 
-  <div id="message"></div>
+    <div id="message"></div>
+  </div>
 </div>
 
-<!--<div id="popup" class="popup sticky">-->
-<!--  <div class="popup-content">-->
-<!--    <div class="social-icons">-->
-<!--      <a href="#"><i class="fab fa-facebook-f"></i></a>-->
-<!--      <a href="#"><i class="fab fa-instagram"></i></a>-->
-<!--      <a href="#"><i class="fab fa-twitter"></i></a>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
-<!-- Contact me -->
 <div class="contact-me-container-gallery">
   <h1>Get in touch!</h1>
   <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.</p>
@@ -96,7 +87,6 @@
 
 <footer>
   <p class="copyright-text-gallery">&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
-  <!-- Second booking button -->
   <a href="contact-me.html"><button type="button" class="contact-button-footer-gallery">Contact</button></a>
 </footer>
 
