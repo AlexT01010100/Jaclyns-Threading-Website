@@ -229,24 +229,25 @@ document.addEventListener("DOMContentLoaded", function () {
             const buttonText = slot.status === "booked" ? "Mark as Unbooked" : "Mark as Booked";
 
             slotElement.innerHTML = `
-            <div class="info-row">
-                <div><strong>Time:</strong> ${slot.time}</div>
-                <div><strong>Status:</strong> ${slot.status}</div>
-                <div><strong>Service:</strong> ${slot.service || 'N/A'}</div>
-            </div>
-            <div class="details-row">
-                <div><strong>Name:</strong> ${slot.name || 'N/A'}</div>
-                <div><strong>Email:</strong> ${slot.email || 'N/A'}</div>
-                <div><strong>Phone Number:</strong> ${slot.phone || 'N/A'}</div>
-            </div>
-            <div class="button-container">
-                <button type="button" class="book-button" data-slot-id="${convertTo24HourFormat(slot.time)}">${buttonText}</button>
-                <button type="button" class="delete-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Delete Slot</button>
-                <button type="button" class="edit-name-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Name</button>
-                <button type="button" class="edit-email-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Email</button>
-                <button type="button" class="edit-phone-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Phone Number</button>
-            </div>
-        `;
+        <div class="info-row">
+            <div><strong>Time:</strong> ${slot.time}</div>
+            <div><strong>Status:</strong> ${slot.status}</div>
+            <div><strong>Service:</strong> ${slot.service || 'N/A'}</div>
+        </div>
+        <div class="details-row">
+            <div><strong>Name:</strong> ${slot.name || 'N/A'}</div>
+            <div><strong>Email:</strong> ${slot.email || 'N/A'}</div>
+            <div><strong>Phone Number:</strong> ${slot.phone || 'N/A'}</div>
+        </div>
+        <div class="button-container">
+            <button type="button" class="book-button" data-slot-id="${convertTo24HourFormat(slot.time)}">${buttonText}</button>
+            <button type="button" class="delete-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Delete Slot</button>
+            <button type="button" class="edit-service-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Service</button>
+            <button type="button" class="edit-name-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Name</button>
+            <button type="button" class="edit-email-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Email</button>
+            <button type="button" class="edit-phone-button" data-slot-id="${convertTo24HourFormat(slot.time)}">Edit Phone Number</button>
+        </div>
+    `;
 
             const bookButton = slotElement.querySelector('.book-button');
             bookButton.addEventListener('click', async (event) => {
@@ -258,6 +259,11 @@ document.addEventListener("DOMContentLoaded", function () {
             deleteButton.addEventListener('click', async (event) => {
                 event.preventDefault();
                 await deleteSlot(event.target.getAttribute('data-slot-id'));
+            });
+
+            const editServiceButton = slotElement.querySelector('.edit-service-button');
+            editServiceButton.addEventListener('click', () => {
+                editSlotDetail(slot.time, 'service');
             });
 
             const editNameButton = slotElement.querySelector('.edit-name-button');
@@ -295,12 +301,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
-            if (availableSlots[slotTime24]) {
+            if (availableSlots && availableSlots[slotTime24]) {
                 availableSlots[slotTime24][detailType] = detailValue;
-                await setDoc(availabilityRef, {
-                    availableSlots: availableSlots
-                }, { merge: true });
+                await setDoc(availabilityRef, { availableSlots: availableSlots }, { merge: true });
 
+                // Convert slots for rendering
                 const slotsArray = Object.keys(availableSlots).map(slotKey => ({
                     time: convertTo12HourFormat(slotKey),
                     ...availableSlots[slotKey]
@@ -314,6 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error(`Error updating slot ${detailType}:`, error);
         }
     }
+
 
     async function toggleBookingStatus(slotTime24) {
         const selectedDate = slotDateInput.value;
