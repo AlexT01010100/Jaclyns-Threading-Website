@@ -62,6 +62,23 @@ body::-webkit-scrollbar-thumb {
     font-weight: 500;
 }
 
+.input-box input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%; /* Ensure input field does not overflow */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.input-box input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
 /* Time slots container */
 .time-slots {
     display: grid;
@@ -82,7 +99,22 @@ body::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #fff;
     transition: background-color 0.3s ease;
-    box-sizing: border-box; /* Ensure padding is included in width */
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%; /* Ensure time slot does not overflow */
+}
+
+/* Ensure long labels wrap correctly */
+.time-slot label {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .time-slot:hover {
@@ -90,32 +122,11 @@ body::-webkit-scrollbar-thumb {
 }
 
 .time-slot input[type="checkbox"] {
-    margin-right: 10px; /* Ensure there is space between checkbox and label */
-    vertical-align: middle; /* Align checkbox with text */
+    margin-right: 10px;
+    vertical-align: middle;
 }
 
-.time-slot label {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 1.2; /* Ensure consistent vertical alignment */
-    margin: 0; /* Remove default margins that might misalign text */
-    display: flex; /* Ensure label content is flexible */
-    align-items: center; /* Center label content vertically */
-}
-
-.input-box input {
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    transition: border-color 0.3s ease;
-}
-
-.input-box input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
+/* Button styles */
 .slot-form .btn {
     padding: 14px 24px;
     font-size: 16px;
@@ -167,6 +178,8 @@ body::-webkit-scrollbar-thumb {
     background-color: #fff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .slot-item:hover {
@@ -177,21 +190,26 @@ body::-webkit-scrollbar-thumb {
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
+    flex-wrap: wrap; /* Allow wrapping of content */
 }
 
 .slot-item .info-row > div, .slot-item .details-row > div {
     flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0; /* Allow shrinking of flex items */
 }
 
 .slot-item .details-row > div {
-    text-align: left; /* Align text to the left */
+    text-align: left;
 }
 
+/* Button container */
 .slot-item .button-container {
     display: flex;
     gap: 10px;
-    justify-content: center; /* Center buttons horizontally */
-    padding-top: 10px; /* Optional: Add some spacing from other content */
+    justify-content: center;
+    padding-top: 10px;
 }
 
 /* Slot item buttons */
