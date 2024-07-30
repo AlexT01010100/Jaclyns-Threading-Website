@@ -190,7 +190,7 @@ button[type="submit"]:hover {
 
 
 /* Footer Section */
-.contact-me-container-information {
+.contact-me-container-gallery {
     position: relative;
     top: 12rem;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
@@ -202,15 +202,16 @@ button[type="submit"]:hover {
     padding: 2rem 1rem;
 }
 
-.contact-me-container-information h1 {
+.contact-me-container-gallery h1 {
     position: relative;
     top: 5rem;
     font-size: 2.5rem;
+    color: white;
     font-weight: 700;
     margin-bottom: 1rem;
 }
 
-.contact-me-container-information p {
+.contact-me-container-gallery p {
     position: relative;
     top: 10rem;
     font-size: 1.2rem;
@@ -219,14 +220,14 @@ button[type="submit"]:hover {
     line-height: 1.6;
 }
 
-.contact-me-container-information hr {
+.contact-me-container-gallery hr {
     border: 0;
     border-top: 1px solid #c2a76b;
     margin: 2rem auto;
     width: 80%;
 }
 
-.contact-me-container-information .social-media-information {
+.contact-me-container-gallery .social-media-gallery {
     position: absolute;
     margin: 0 auto;
     bottom: 2rem;
@@ -238,17 +239,17 @@ button[type="submit"]:hover {
     gap: 2rem;
 }
 
-.contact-me-container-information .social-media-information a {
+.contact-me-container-gallery .social-media-gallery a {
     color: white;
     font-size: 2rem;
     transition: color 0.3s ease;
 }
 
-.contact-me-container-information .social-media-information a:hover {
+.contact-me-container-gallery .social-media-gallery a:hover {
     color: #c2a76b;
 }
 
-.contact-button-footer-information {
+.contact-button-footer-gallery {
     position: relative;
     margin-top: 0.5rem; /* Adjust as needed to raise the button */
     left: 50%;
@@ -264,29 +265,29 @@ button[type="submit"]:hover {
 }
 
 
-.contact-me-container-information hr {
+.contact-me-container-gallery hr {
     margin-bottom: 8rem;
 }
 
 @media screen and (max-width: 768px) {
-    .contact-me-container-information .social-media-information {
+    .contact-me-container-gallery .social-media-gallery {
         margin-top: 4rem; /* Increase margin to push down social icons */
     }
 }
 
-.contact-button-footer-information:hover {
+.contact-button-footer-gallery:hover {
     background-color: #c1b46c;
     transition: 0.7s;
 }
 
-.contact-button-footer-information:focus {
+.contact-button-footer-gallery:focus {
     outline-color: transparent;
     outline-style: solid;
     box-shadow: 0 0 0 4px black;
     transition: 0.9s;
 }
 
-.contact-button-footer-information:active {
+.contact-button-footer-gallery:active {
     background-color: #baa94a;
 }
 
@@ -407,27 +408,27 @@ footer p {
         background-color: #575757;
     }
 
-    .information p {
+    .gallery p {
         align-items: center;
         text-align: center;
     }
 
-    .contact-me-container-information h1 {
+    .contact-me-container-gallery h1 {
         font-size: 1.8rem;
         top: -1rem;
     }
 
-    .contact-me-container-information p {
+    .contact-me-container-gallery p {
         font-size: 0.9rem;
         top: -1rem;
     }
 
-    .contact-me-container-information hr {
+    .contact-me-container-gallery hr {
         position: relative;
         top: -1rem;
     }
 
-    .contact-me-container-information .social-media-information {
+    .contact-me-container-gallery .social-media-gallery {
         top: 19.5rem;
     }
 
@@ -435,7 +436,7 @@ footer p {
         top: 9.4rem;
     }
 
-    .contact-button-footer-information {
+    .contact-button-footer-gallery {
         position: relative;
         margin-top: 2rem; /* Adjust as needed to raise the button */
         left: 50%;
@@ -445,7 +446,7 @@ footer p {
     }
 
     /* adjust background size */
-    .contact-me-container-information{
+    .contact-me-container-gallery{
         height: 26rem;
     }
 }
