@@ -190,7 +190,8 @@ body::-webkit-scrollbar-thumb {
 .slot-item .button-container {
     display: flex;
     gap: 10px;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Align buttons to the left */
+    padding-left: 10px; /* Move buttons slightly to the left */
 }
 
 .slot-item p {
@@ -199,8 +200,12 @@ body::-webkit-scrollbar-thumb {
 
 /* Slot item buttons */
 .slot-item .delete-button,
-.slot-item .book-button {
-    padding: 8px 16px;
+.slot-item .book-button,
+.slot-item .edit-name-button,
+.slot-item .edit-email-button,
+.slot-item .edit-service-button,
+.slot-item .edit-phone-button {
+    padding: 8px 14px;
     font-size: 14px;
     color: #fff;
     border: none;
@@ -224,6 +229,21 @@ body::-webkit-scrollbar-thumb {
 
 .slot-item .book-button:hover {
     background-color: #218838;
+    transform: scale(1.05);
+}
+
+.slot-item .edit-name-button,
+.slot-item .edit-email-button,
+.slot-item .edit-service-button,
+.slot-item .edit-phone-button {
+    background-color: #fd7e14; /* Orange color */
+}
+
+.slot-item .edit-name-button:hover,
+.slot-item .edit-email-button:hover,
+.slot-item .edit-service-button:hover,
+.slot-item .edit-phone-button:hover {
+    background-color: #e86c0c; /* Darker orange */
     transform: scale(1.05);
 }
 
