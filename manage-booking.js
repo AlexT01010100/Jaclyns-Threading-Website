@@ -19,9 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const slotForm = document.getElementById("slotForm");
     const slotDateInput = document.getElementById("slotDate");
     const timeSlotsContainer = document.getElementById("timeSlots");
+    const rememberButton = document.getElementById("rememberButton");
     const slotsListContainer = document.getElementById("slotsList");
 
-    if (!slotForm || !slotDateInput || !timeSlotsContainer || !slotsListContainer) {
+    if (!slotForm || !slotDateInput || !timeSlotsContainer || !rememberButton || !slotsListContainer) {
         console.error("One or more elements not found in the DOM");
         return;
     }
@@ -127,6 +128,85 @@ document.addEventListener("DOMContentLoaded", function () {
             slotsListContainer.innerHTML = "<p>Error fetching active slots.</p>";
         }
     });
+
+    function getWeekday(date) {
+        const day = new Date(date).getDay();
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return weekdays[day];
+    }
+
+    function weekdayToIndex(weekday) {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return weekdays.indexOf(weekday);
+    }
+
+    rememberButton.addEventListener("click", async () => {
+        const selectedDate = slotDateInput.value;
+        const selectedTimes = Array.from(timeSlotsContainer.querySelectorAll('input[name="timeSlots"]:checked')).map(input => input.value);
+
+        if (selectedDate) {
+            await saveAvailabilityForWeekday(selectedDate, selectedTimes);
+
+            // Fetch and render updated slots after saving
+            const availableSlots = await fetchOrInitializeActiveSlots(selectedDate);
+            const slotsArray = Object.keys(availableSlots).map(slotTime => ({
+                time: convertTo12HourFormat(slotTime),
+                ...availableSlots[slotTime]
+            }));
+
+            renderSlots(slotsArray);
+
+            alert("Availability for the weekday has been remembered.");
+        } else {
+            alert("Please select a date.");
+        }
+    });
+
+    async function saveAvailabilityForWeekday(date, times) {
+        if (!date || !times) {
+            console.error("Date or time slots input is empty");
+            return;
+        }
+
+        const weekday = getWeekday(date);
+        const endOfYear = new Date("2024-12-31").toISOString().split('T')[0];
+        const batch = writeBatch(db);
+        let timeSlotRef;
+
+        if (times.length > 0) {
+            // Add slots for the selected times
+            for (let dt = new Date(date); dt <= new Date(endOfYear); dt.setDate(dt.getDate() + 7)) {
+                const currentDate = dt.toISOString().split('T')[0];
+                timeSlotRef = doc(db, "availability", currentDate);
+                const availableSlots = await fetchOrInitializeActiveSlots(currentDate);
+
+                times.forEach(time => {
+                    const time24 = convertTo24HourFormat(time);
+                    availableSlots[time24] = { status: "unbooked", service: "" };
+                });
+
+                batch.set(timeSlotRef, { availableSlots }, { merge: true });
+            }
+        } else {
+            // Clear all slots for the weekday
+            const startDate = new Date(date);
+            const dayOffset = startDate.getDay() - weekdayToIndex(weekday);
+            startDate.setDate(startDate.getDate() - dayOffset);
+
+            for (let dt = startDate; dt <= new Date(endOfYear); dt.setDate(dt.getDate() + 7)) {
+                const currentDate = dt.toISOString().split('T')[0];
+                timeSlotRef = doc(db, "availability", currentDate);
+                const availableSlots = await fetchOrInitializeActiveSlots(currentDate);
+
+                if (Object.keys(availableSlots).length > 0) {
+                    batch.update(timeSlotRef, { availableSlots: deleteField() });
+                }
+            }
+        }
+
+        await batch.commit();
+        console.log("Availability saved/cleared for the selected weekday.");
+    }
 
     function renderSlots(slots) {
         slotsListContainer.innerHTML = "";
