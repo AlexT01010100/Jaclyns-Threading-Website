@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -196,7 +196,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (availableSlots[slotKey]) {
                 const currentStatus = availableSlots[slotKey].status;
-                availableSlots[slotKey].status = currentStatus === "booked" ? "unbooked" : "booked";
+                if (currentStatus === "booked") {
+                    availableSlots[slotKey].status = "unbooked";
+                    availableSlots[slotKey].service = "";
+                    availableSlots[slotKey].name = "";
+                    availableSlots[slotKey].email = "";
+                    availableSlots[slotKey].phone = "";
+                } else {
+                    availableSlots[slotKey].status = "booked";
+                }
 
                 await setDoc(availabilityRef, {
                     availableSlots: availableSlots
