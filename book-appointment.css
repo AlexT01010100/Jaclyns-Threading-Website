@@ -27,7 +27,10 @@ body::-webkit-scrollbar-thumb {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    flex-direction: column;
+    min-height: calc(100vh - 200px);
+    padding: 20px;
+    overflow: auto;
     position: relative;
     top: 130px;
 }
@@ -41,6 +44,7 @@ body::-webkit-scrollbar-thumb {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background: #fff;
+    box-sizing: border-box;
 }
 
 /* Centering the "Book Now" text */
