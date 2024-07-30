@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -72,12 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
+    // Function to generate time slots in AM/PM format
     function generateTimeSlots() {
-        const startTime = 8;
-        const endTime = 19;
-        const interval = 30;
-
-        timeSlotsContainer.innerHTML = "";
+        const startTime = 8; // 8 AM
+        const endTime = 19; // 7 PM
+        const interval = 30; // 30 minutes
 
         for (let hour = startTime; hour <= endTime; hour++) {
             for (let minute = 0; minute < 60; minute += interval) {
@@ -153,7 +152,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        slots.sort((a, b) => a.time.localeCompare(b.time));
+        // Sort slots in chronological order based on their 24-hour format
+        slots.sort((a, b) => {
+            const timeA = convertTo24HourFormat(a.time);
+            const timeB = convertTo24HourFormat(b.time);
+            return timeA.localeCompare(timeB);
+        });
 
         slots.forEach(slot => {
             const slotElement = document.createElement("div");
@@ -205,9 +209,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const slotKey = convertTo24HourFormat(slotTime);
             if (availableSlots[slotKey]) {
                 const currentStatus = availableSlots[slotKey].status;
-                const newStatus = currentStatus === "booked" ? "unbooked" : "booked";
-
-                availableSlots[slotKey].status = newStatus;
+                if (currentStatus === "booked") {
+                    // Mark slot as unbooked
+                    availableSlots[slotKey].status = "unbooked";
+                    availableSlots[slotKey].service = ""; // Set service to empty string
+                } else {
+                    // Mark slot as booked
+                    availableSlots[slotKey].status = "booked";
+                }
 
                 await setDoc(availabilityRef, {
                     availableSlots: availableSlots
@@ -226,6 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error updating slot status:", error);
         }
     }
+
 
     async function deleteSlot(slotTime) {
         const selectedDate = slotDateInput.value;
@@ -270,7 +280,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error deleting slot:", error);
         }
     }
-
 
     slotForm.addEventListener("submit", async (event) => {
         event.preventDefault();
