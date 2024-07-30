@@ -57,6 +57,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return new Date(1970, 0, 1, hour, minute);
     }
 
+    function formatTimeTo24HourString(time) {
+        return time.toTimeString().split(' ')[0].slice(0, 5); // HH:MM format
+    }
+
     function formatTimeTo12Hour(time) {
         const hour = time.getHours();
         const minute = time.getMinutes();
@@ -144,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let isBlockAvailable = true;
 
             while (currentSlot < endSlot) {
-                const timeKey = formatTimeTo12Hour(currentSlot);
+                const timeKey = formatTimeTo24HourString(currentSlot);
                 if (!isSlotUnbooked(currentSlot)) {
                     isBlockAvailable = false;
                     console.log(`Slot ${timeKey} is not available.`);
@@ -262,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const updatedSlotsData = { ...availableSlotsData };
 
                 while (currentSlot < endSlot) {
-                    const timeKey = formatTimeTo12Hour(currentSlot);
+                    const timeKey = formatTimeTo24HourString(currentSlot);
                     if (updatedSlotsData[timeKey]) {
                         updatedSlotsData[timeKey] = {
                             ...updatedSlotsData[timeKey],
