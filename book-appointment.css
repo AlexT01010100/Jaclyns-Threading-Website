@@ -118,6 +118,18 @@ select {
     gap: 10px;
 }
 
+@media screen and (max-width: 768px) and (min-width: 500px){
+    .time-slots-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media screen and (max-width: 499px) {
+    .time-slots-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* Slot item styling */
 .slot-item {
     background-color: #e0f7fa;
