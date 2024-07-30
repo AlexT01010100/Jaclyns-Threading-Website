@@ -24,13 +24,13 @@ body::-webkit-scrollbar-thumb {
 /* Main container styles */
 .manage-slots {
     max-width: 800px;
-    margin: 40px auto;
+    padding: 60px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    margin: 80px auto 40px;
     position: relative;
-    overflow: hidden; /* Ensures contents don't spill out */
+    overflow: hidden;
 }
 
 .manage-slots .heading {
