@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="details-row">
                     <div><strong>Name:</strong> ${slot.name || 'N/A'}</div>
                     <div><strong>Email:</strong> ${slot.email || 'N/A'}</div>
-                    <div><strong>Phone Number:</strong> ${slot.phoneNumber || 'N/A'}</div>
+                    <div><strong>Phone Number:</strong> ${slot.phone || 'N/A'}</div>
                 </div>
                 <div class="button-container">
                     <button type="button" class="book-button" data-slot-id="${convertTo24HourFormat(slot.time)}">${buttonText}</button>
@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
             times.forEach(time => {
                 const time24 = convertTo24HourFormat(time);
                 if (!availableSlots[time24]) {
-                    availableSlots[time24] = { status: "unbooked", service: "", name: "", email: "", phoneNumber: "" };
+                    availableSlots[time24] = { status: "unbooked", service: "", name: "", email: "", phone: "" };
                 }
             });
 
@@ -297,11 +297,11 @@ document.addEventListener("DOMContentLoaded", function () {
             details.forEach(detail => {
                 const time24 = convertTo24HourFormat(detail.time);
                 if (!availableSlots[time24]) {
-                    availableSlots[time24] = { status: "unbooked", service: "", name: detail.name, email: detail.email, phoneNumber: detail.phoneNumber };
+                    availableSlots[time24] = { status: "unbooked", service: "", name: detail.name, email: detail.email, phone: detail.phone };
                 } else {
                     availableSlots[time24].name = detail.name;
                     availableSlots[time24].email = detail.email;
-                    availableSlots[time24].phoneNumber = detail.phoneNumber;
+                    availableSlots[time24].phone = detail.phone;
                 }
             });
 
@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 time: slot.value,
                 name: slot.closest('.time-slot').querySelector('.slot-name').value,
                 email: slot.closest('.time-slot').querySelector('.slot-email').value,
-                phoneNumber: slot.closest('.time-slot').querySelector('.slot-phone').value
+                phone: slot.closest('.time-slot').querySelector('.slot-phone').value
             }));
 
             await addSlotWithDetails(selectedDate, details);
