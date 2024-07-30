@@ -213,7 +213,7 @@ button[type="submit"]:hover {
 }
 
 /* Footer Section */
-.contact-me-container-gallery {
+.contact-me-container-book-appointment {
     position: relative;
     top: 12rem;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("microblading-footer.jpg") no-repeat center center;
@@ -225,7 +225,7 @@ button[type="submit"]:hover {
     padding: 2rem 1rem;
 }
 
-.contact-me-container-gallery h1 {
+.contact-me-container-book-appointment h1 {
     position: relative;
     top: 5rem;
     font-size: 2.5rem;
@@ -234,7 +234,7 @@ button[type="submit"]:hover {
     margin-bottom: 1rem;
 }
 
-.contact-me-container-gallery p {
+.contact-me-container-book-appointment p {
     position: relative;
     top: 10rem;
     font-size: 1.2rem;
@@ -243,14 +243,14 @@ button[type="submit"]:hover {
     line-height: 1.6;
 }
 
-.contact-me-container-gallery hr {
+.contact-me-container-book-appointment hr {
     border: 0;
     border-top: 1px solid #c2a76b;
     margin: 2rem auto;
     width: 80%;
 }
 
-.contact-me-container-gallery .social-media-gallery {
+.contact-me-container-book-appointment .social-media-book-appointment {
     position: absolute;
     margin: 0 auto;
     bottom: 2rem;
@@ -262,17 +262,17 @@ button[type="submit"]:hover {
     gap: 2rem;
 }
 
-.contact-me-container-gallery .social-media-gallery a {
+.contact-me-container-book-appointment .social-media-book-appointment a {
     color: white;
     font-size: 2rem;
     transition: color 0.3s ease;
 }
 
-.contact-me-container-gallery .social-media-gallery a:hover {
+.contact-me-container-book-appointment .social-media-book-appointment a:hover {
     color: #c2a76b;
 }
 
-.contact-button-footer-gallery {
+.contact-button-footer-book-appointment {
     position: relative;
     margin-top: 0.5rem;
     left: 50%;
@@ -287,29 +287,29 @@ button[type="submit"]:hover {
     padding: 0.5rem 1rem;
 }
 
-.contact-me-container-gallery hr {
+.contact-me-container-book-appointment hr {
     margin-bottom: 8rem;
 }
 
 @media screen and (max-width: 768px) {
-    .contact-me-container-gallery .social-media-gallery {
+    .contact-me-container-book-appointment .social-media-book-appointment {
         margin-top: 4rem;
     }
 }
 
-.contact-button-footer-gallery:hover {
+.contact-button-footer-book-appointment:hover {
     background-color: #c1b46c;
     transition: 0.7s;
 }
 
-.contact-button-footer-gallery:focus {
+.contact-button-footer-book-appointment:focus {
     outline-color: transparent;
     outline-style: solid;
     box-shadow: 0 0 0 4px black;
     transition: 0.9s;
 }
 
-.contact-button-footer-gallery:active {
+.contact-button-footer-book-appointment:active {
     background-color: #baa94a;
 }
 
@@ -430,27 +430,27 @@ footer p {
         background-color: #575757;
     }
 
-    .gallery p {
+    .book-appointment p {
         align-items: center;
         text-align: center;
     }
 
-    .contact-me-container-gallery h1 {
+    .contact-me-container-book-appointment h1 {
         font-size: 1.8rem;
         top: -1rem;
     }
 
-    .contact-me-container-gallery p {
+    .contact-me-container-book-appointment p {
         font-size: 0.9rem;
         top: -1rem;
     }
 
-    .contact-me-container-gallery hr {
+    .contact-me-container-book-appointment hr {
         position: relative;
         top: -1rem;
     }
 
-    .contact-me-container-gallery .social-media-gallery {
+    .contact-me-container-book-appointment .social-media-book-appointment {
         top: 19.5rem;
     }
 
@@ -458,7 +458,7 @@ footer p {
         top: 9.4rem;
     }
 
-    .contact-button-footer-gallery {
+    .contact-button-footer-book-appointment {
         position: relative;
         margin-top: 2rem;
         left: 50%;
@@ -468,7 +468,7 @@ footer p {
     }
 
     /* adjust background size */
-    .contact-me-container-gallery{
+    .contact-me-container-book-appointment{
         height: 26rem;
     }
 }
