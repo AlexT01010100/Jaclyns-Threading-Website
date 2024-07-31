@@ -1,5 +1,3 @@
-
-
 .contact {
     position: relative;
     top: 8rem;
@@ -8,31 +6,32 @@
     padding: 2rem 1rem;
     background-color: #404040;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 50rem;
+    max-width: 50rem; /* Maximum width for larger screens */
     border-radius: 8px;
+    width: 100%; /* Full width of the viewport */
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 @media screen and (max-width: 768px) {
     .contact {
-        position: relative; /* Ensure relative positioning */
-        left: 50%; /* Move left by half of its own width */
-        transform: translateX(-50%); /* Center horizontally */
-        width: 70%; /* Adjust width as needed */
-        padding: 2rem; /* Adjust padding for smaller screens */
-        max-width: 100%; /* Ensure it stretches to the viewport */
+        width: 90%; /* Width for medium screens */
+        max-width: 90%; /* Ensure it doesn't exceed 90% of viewport width */
+        padding: 1rem; /* Reduce padding for smaller screens */
+        left: 5%; /* Center with some margin on smaller screens */
+        transform: none; /* Remove horizontal centering transform */
     }
 
-    .contact form .input-box input {
-        flex: 1 1 100%; /* Full width for input on smaller screens */
+    .contact form .input-box input,
+    .contact form textarea {
+        width: 100%; /* Full width for input and textarea */
         margin-bottom: 1rem; /* Increase spacing between fields */
     }
 
     .contact form textarea {
-        height: 80px; /* Adjusted height for smaller screens */
-        margin-top: 1.5rem; /* Increased spacing from above input */
+        height:200px; /* Adjusted height for smaller screens */
+        margin-top: 1rem; /* Increase spacing from above input */
     }
 }
-
 
 .contact h2 {
     color: #c2a76b;
@@ -43,15 +42,15 @@
 
 .contact form {
     background-color: #373434;
-    padding: 2rem;
+    padding: 1.5rem; /* Adjust padding for better fit */
     border-radius: 8px;
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 .contact form .input-box {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem; /* Adjust gap for smaller screens */
 }
 
 .contact form .input-box input,
@@ -62,15 +61,15 @@
     color: black;
     border: 1px solid #c2a76b;
     border-radius: 8px;
-    width: 100%;
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 .contact form .input-box input {
-    flex: 1 1 calc(50% - 0.5rem); /* Maintain current width calculation */
+    flex: 1 1 calc(50% - 0.75rem); /* Adjust width calculation */
 }
 
 .contact form textarea {
-    width: 95.5%; /* Maintain current width calculation */
+    width: 100%; /* Full width of the container */
     margin-top: 1rem; /* Increase spacing from above input */
 }
 
@@ -92,4 +91,3 @@
 #contact-footer-copyright-text {
     top: 9.5rem;
 }
-
