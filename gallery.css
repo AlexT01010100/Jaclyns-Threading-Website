@@ -43,6 +43,11 @@ body::-webkit-scrollbar-thumb {
     box-sizing: border-box;
 }
 
+.navbar-menu a:hover {
+    background-color: #575757;
+    color: #c2a76b; /* Text color changes to gold on hover */
+}
+
 .header.sticky {
     border-bottom: 1rem solid rgb(123, 123, 123);
 }
@@ -86,6 +91,7 @@ body::-webkit-scrollbar-thumb {
     font-family: 'Playfair Display', serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s, color 0.3s;
+    text-decoration: none;
 }
 
 .logo:hover {
