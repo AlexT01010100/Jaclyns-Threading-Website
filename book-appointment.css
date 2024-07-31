@@ -38,24 +38,24 @@ select:focus {
     border-color: #5b9bd5;
 }
 
-/* Adjustments for smaller screens */
+
 @media screen and (max-width: 768px) {
     select {
-        padding: 8px; /* Reduce padding for smaller screens */
-        font-size: 12px; /* Adjust font size for better readability */
-        max-width: 55%; !important;
+        padding: 8px;
+        font-size: 12px;
+        max-width: 55%;
     }
 }
 
 @media screen and (max-width: 500px) {
     select {
-        padding: 8px; /* Further reduce padding for very small screens */
-        font-size: 10px; /* Adjust font size for very small screens */
-        max-width: 85%; !important;
+        padding: 8px;
+        font-size: 10px;
+        max-width: 85%;
     }
 }
 
-/* Booking wrapper to center container */
+
 .booking-wrapper {
     display: flex;
     justify-content: center;
