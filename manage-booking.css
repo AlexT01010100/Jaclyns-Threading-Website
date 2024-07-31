@@ -182,16 +182,27 @@ body::-webkit-scrollbar-thumb {
     overflow-wrap: break-word;
 }
 
+.slot-item .details-row > div {
+    text-align: left;
+}
+
 @media (max-width: 600px) {
     .slot-item .info-row,
     .slot-item .details-row {
-        flex-direction: column; /* Stack items vertically */
-        text-align: left;
+        flex-direction: column; !important;
+        text-align: center; !important;
+    }
+
+    .slot-item .info-row > div,
+    .slot-item .details-row > div {
+        width: 100%;
+        text-align: center; !important;
+        margin: 0 auto;
     }
 
     .slot-item .button-container {
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 8px; /* Reduce space between buttons */
+        flex-direction: column;
+        gap: 8px;
     }
 
     .slot-item .button-container .delete-button,
@@ -200,19 +211,14 @@ body::-webkit-scrollbar-thumb {
     .slot-item .button-container .edit-email-button,
     .slot-item .button-container .edit-service-button,
     .slot-item .button-container .edit-phone-button {
-        width: 100%; /* Full-width buttons */
-        padding: 10px; /* Reduce padding */
-        font-size: 14px; /* Reduce font size */
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
     }
+
 }
 
-
-
-.slot-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.slot-item .info-row, .slot-item .details-row {
+.slot-item .info-row, .slot-item .details-row{
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
@@ -226,8 +232,8 @@ body::-webkit-scrollbar-thumb {
     min-width: 0; /* Allow shrinking of flex items */
 }
 
-.slot-item .details-row > div {
-    text-align: left;
+.slot-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Button container */
