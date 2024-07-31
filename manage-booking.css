@@ -186,18 +186,35 @@ body::-webkit-scrollbar-thumb {
     text-align: left;
 }
 
+/* Ensure small screens have proper display of time and other info */
 @media (max-width: 600px) {
     .slot-item .info-row,
     .slot-item .details-row {
-        flex-direction: column; !important;
-        text-align: center; !important;
+        flex-direction: column; /* Stack label and value vertically */
+        text-align: center; /* Center align text */
+        margin-bottom: 15px; /* Add space between rows */
     }
 
     .slot-item .info-row > div,
     .slot-item .details-row > div {
         width: 100%;
-        text-align: center; !important;
+        text-align: center; /* Center align text for each item */
         margin: 0 auto;
+    }
+
+    /* Label style for small screens */
+    .slot-item .info-row > div > label,
+    .slot-item .details-row > div > label {
+        display: block; /* Make labels block elements */
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Value style for small screens */
+    .slot-item .info-row > div > span,
+    .slot-item .details-row > div > span {
+        display: block; /* Make values block elements */
+        font-size: 14px; /* Slightly smaller font size for values */
     }
 
     .slot-item .button-container {
@@ -215,7 +232,6 @@ body::-webkit-scrollbar-thumb {
         padding: 10px;
         font-size: 14px;
     }
-
 }
 
 .slot-item .info-row, .slot-item .details-row{
