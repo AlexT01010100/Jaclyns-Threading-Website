@@ -182,6 +182,32 @@ body::-webkit-scrollbar-thumb {
     overflow-wrap: break-word;
 }
 
+@media (max-width: 600px) {
+    .slot-item .info-row,
+    .slot-item .details-row {
+        flex-direction: column; /* Stack items vertically */
+        text-align: left;
+    }
+
+    .slot-item .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 8px; /* Reduce space between buttons */
+    }
+
+    .slot-item .button-container .delete-button,
+    .slot-item .button-container .book-button,
+    .slot-item .button-container .edit-name-button,
+    .slot-item .button-container .edit-email-button,
+    .slot-item .button-container .edit-service-button,
+    .slot-item .button-container .edit-phone-button {
+        width: 100%; /* Full-width buttons */
+        padding: 10px; /* Reduce padding */
+        font-size: 14px; /* Reduce font size */
+    }
+}
+
+
+
 .slot-item:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
