@@ -74,6 +74,7 @@
 }
 
 .contact form .btn {
+    width: 100%; /* Make button width the same as input fields */
     margin-top: 1.5rem;
     padding: 1rem 2rem;
     background-color: #c2a76b;
@@ -82,6 +83,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-align: center; /* Center text inside button */
 }
 
 .contact form .btn:hover {
