@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.innerHTML = `
             <p>${slot.time}</p>
             <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
-            <hr>
+            <hr class="time-slots-hr">
         `;
 
             const selectButton = slotElement.querySelector('.select-button');

@@ -194,9 +194,11 @@ select {
     transform: scale(0.95);
 }
 
-hr {
-    border: 0;
-    border-top: 5px solid #b2ebf2;
+.time-slots-hr {
+    border: 0 !important;
+    border-top: 1px solid #c5c5c5 !important;
+    width: 100%;
+    margin: 10px 0;
 }
 
 
