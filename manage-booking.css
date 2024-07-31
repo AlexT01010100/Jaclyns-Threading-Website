@@ -187,7 +187,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 /* Ensure small screens have proper display of time and other info */
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .slot-item .info-row,
     .slot-item .details-row {
         flex-direction: column; /* Stack label and value vertically */
