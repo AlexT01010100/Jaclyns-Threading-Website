@@ -139,8 +139,10 @@ select {
     flex-direction: column;
     padding: 15px;
     align-items: center;
+    display: flex;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, transform 0.2s ease;
+    box-sizing: border-box;
 }
 
 .slot-item:hover {
@@ -194,8 +196,7 @@ select {
 
 hr {
     border: 0;
-    border-top: 1px solid #b2ebf2;
-    margin: 10px 0;
+    border-top: 5px solid #b2ebf2;
 }
 
 
