@@ -38,24 +38,6 @@ select:focus {
     border-color: #5b9bd5;
 }
 
-
-@media screen and (max-width: 768px) {
-    select {
-        padding: 8px;
-        font-size: 12px;
-        max-width: 55%;
-    }
-}
-
-@media screen and (max-width: 500px) {
-    select {
-        padding: 8px;
-        font-size: 10px;
-        max-width: 85%;
-    }
-}
-
-
 .booking-wrapper {
     display: flex;
     justify-content: center;
