@@ -201,7 +201,6 @@ body::-webkit-scrollbar-thumb {
         margin-bottom: 20px;
     }
 
-
     .review-row {
         display: flex;
         flex-wrap: wrap;
@@ -209,11 +208,10 @@ body::-webkit-scrollbar-thumb {
         gap: 20px;
         margin-bottom: 20px;
     }
-
 }
 
 /* Adjusted styles for smaller screens */
-@media screen and (max-width: 469px) {
+@media screen and (max-width: 700px) {
     .review-card {
         flex: 1 1 calc(100% - 20px); /* One card per row */
     }
