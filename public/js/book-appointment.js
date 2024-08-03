@@ -247,56 +247,91 @@ document.addEventListener("DOMContentLoaded", function () {
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
 
+        if (!selectedDate || !selectedService || !selectedSlotId) {
+            messageDiv.textContent = "Please select a date, service, and time slot.";
+            messageDiv.classList.add("error");
+            return;
+        }
+
         try {
             const availabilityRef = doc(db, "availability", selectedDate);
             const slotDoc = await getDoc(availabilityRef);
 
             if (!slotDoc.exists()) {
                 console.error("No such document!");
+                messageDiv.textContent = "No available slots for the selected date.";
+                messageDiv.classList.add("error");
                 return;
             }
 
             const availableSlotsData = slotDoc.data().availableSlots || {};
             console.log("Available Slots Data:", availableSlotsData);
 
-            if (selectedService === 'microblading' || selectedService === 'threading') {
-                const startSlot = parseTimeTo24Hour(selectedSlotId);
-                let endSlot = new Date(startSlot.getTime() + (selectedService === 'microblading' ? 3 : 1) * 60 * 60 * 1000);
+            // Define service durations
+            const serviceDurations = {
+                'microblading': 3 * 60 * 60 * 1000, // 3 hours
+                'threading': 1 * 60 * 60 * 1000,    // 1 hour
+                // Add other services here with their respective durations
+            };
 
-                let currentSlot = new Date(startSlot.getTime());
-                const updatedSlotsData = { ...availableSlotsData };
+            // Calculate end slot time based on selected service
+            const startSlot = parseTimeTo24Hour(selectedSlotId);
+            let endSlot = new Date(startSlot.getTime() + (serviceDurations[selectedService] || 1 * 60 * 60 * 1000));
 
-                while (currentSlot < endSlot) {
-                    const timeKey = formatTimeTo24HourString(currentSlot);
-                    if (updatedSlotsData[timeKey]) {
-                        updatedSlotsData[timeKey] = {
-                            ...updatedSlotsData[timeKey],
-                            status: "booked",
-                            service: selectedService,
-                            name: name,
-                            email: email,
-                            phone: phone
-                        };
-                    }
-                    currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000);
+            let currentSlot = new Date(startSlot.getTime());
+            const updatedSlotsData = { ...availableSlotsData };
+
+            // Mark slots as booked
+            while (currentSlot < endSlot) {
+                const timeKey = formatTimeTo24HourString(currentSlot);
+                if (updatedSlotsData[timeKey]) {
+                    updatedSlotsData[timeKey] = {
+                        ...updatedSlotsData[timeKey],
+                        status: "booked",
+                        service: selectedService,
+                        name: name,
+                        email: email,
+                        phone: phone
+                    };
                 }
-
-                await updateDoc(availabilityRef, {
-                    availableSlots: updatedSlotsData
-                });
-
-                console.log("Appointment booked successfully.");
-                messageDiv.textContent = "Appointment booked successfully.";
-                messageDiv.classList.add("success");
-            } else {
-                // Handle other services similarly, if applicable
+                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
             }
+
+            // Update Firestore with new slot data
+            await updateDoc(availabilityRef, { availableSlots: updatedSlotsData });
+
+            // Notify user of successful booking
+            messageDiv.textContent = "Appointment booked successfully.";
+            messageDiv.classList.add("success");
+
+            // Send appointment data to your server endpoint
+            const response = await fetch('/book_appointment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    service: selectedService,
+                    date: selectedDate,
+                    slot: selectedSlotId
+                })
+            });
+
+            const result = await response.text();
+            console.log("Server response:", result);
+            messageDiv.textContent = result;
+            messageDiv.classList.add("success");
+
         } catch (error) {
             console.error("Error booking appointment:", error);
             messageDiv.textContent = "Error booking appointment.";
             messageDiv.classList.add("error");
         }
     }
+
 
     form.addEventListener("submit", function (event) {
         event.preventDefault();
