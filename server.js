@@ -2,6 +2,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +16,12 @@ app.use(bodyParser.json());
 
 // Serve static files from 'public' directory
 app.use(express.static('public'));
+
+// Serve the index.html file from the root URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 
 // Endpoint to handle form submission
 app.post('/send_email', (req, res) => {
