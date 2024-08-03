@@ -13,7 +13,7 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// JavaScript for handling form submission
+//form handling
 document.addEventListener('DOMContentLoaded', function() {
     var contactForm = document.getElementById('contactForm');
 
@@ -22,10 +22,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var formData = new FormData(contactForm);
 
+        // Convert FormData to URLSearchParams to mimic form submission
+        var urlEncodedData = new URLSearchParams(formData).toString();
+
         // Send form data to the server
         fetch('http://localhost:63342/send_email', {  // Updated port
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: urlEncodedData
         })
             .then(response => response.text())
             .then(result => {
