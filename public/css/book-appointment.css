@@ -297,7 +297,7 @@ button[type="submit"]:hover {
 .contact-me-container-book-appointment {
     position: relative;
     top: 12rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("public/images/microblading-footer.jpg") no-repeat center center;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../images/microblading-footer.jpg") no-repeat center center;
     background-size: cover;
     background-position: 70%;
     height: 40rem;
