@@ -3,13 +3,13 @@ import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField, writeBatch, 
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
-    authDomain: "jaclyns-threading.firebaseapp.com",
-    projectId: "jaclyns-threading",
-    storageBucket: "jaclyns-threading.appspot.com",
-    messagingSenderId: "599625407213",
-    appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
-    measurementId: "G-HSF7B83VYH"
+    apiKey: process.env.FIREBASEAPIKEY,
+    authDomain: process.env.FIREBASEAUTHDOMAIN,
+    projectId: process.env.FIREBASEPROJECTID,
+    storageBucket: process.env.FIREBASESTORAGEBUCKET,
+    messagingSenderId: process.env.FIREBASEMESSAGINGSENDERID,
+    appId: process.env.FIREBASEAPPID,
+    measurementId: process.env.FIREBASEMEASUREMENTID
 };
 
 const app = initializeApp(firebaseConfig);
