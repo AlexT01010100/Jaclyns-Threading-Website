@@ -3,13 +3,13 @@ import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/fi
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: process.env.FIREBASEAPIKEY,
-    authDomain: process.env.FIREBASEAUTHDOMAIN,
-    projectId: process.env.FIREBASEPROJECTID,
-    storageBucket: process.env.FIREBASESTORAGEBUCKET,
-    messagingSenderId: process.env.FIREBASEMESSAGINGSENDERID,
-    appId: process.env.FIREBASEAPPID,
-    measurementId: process.env.FIREBASEMEASUREMENTID
+    apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
+    authDomain: "jaclyns-threading.firebaseapp.com",
+    projectId: "jaclyns-threading",
+    storageBucket: "jaclyns-threading.appspot.com",
+    messagingSenderId: "599625407213",
+    appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
+    measurementId: "G-HSF7B83VYH"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -17,7 +17,6 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
-
     const form = document.getElementById("appointment-form");
     const timeSlotsContainer = document.getElementById("time-slots");
     const dateInput = document.getElementById("date");
