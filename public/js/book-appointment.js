@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
         timeSlotsContainer.innerHTML = "";
 
         if (slots.length === 0) {
-            timeSlotsContainer.innerHTML = "<p>No available slots for the selected service.</p>";
+            timeSlotsContainer.innerHTML = "<p class='no-slots-message'>No available slots for the selected service.</p>";
             return;
         }
 
