@@ -1,12 +1,32 @@
 /* Global styles */
 body {
     background-color: #373434;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden;
-    color: #333;
+    height: 100%;
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
 }
 
 .header {
@@ -19,6 +39,11 @@ body {
     align-items: center;
     z-index: 3;
     box-sizing: border-box;
+}
+
+.navbar-menu a:hover {
+    background-color: #575757;
+    color: #c2a76b; /* Text color changes to gold on hover */
 }
 
 .header.sticky {
@@ -62,14 +87,18 @@ body {
     color: white;
     cursor: default;
     font-family: 'Playfair Display', serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s, color 0.3s;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4); /* Slightly larger and softer shadow */
+    transition: transform 0.3s ease, color 0.3s ease; /* Added ease for smoother transitions */
+    text-decoration: none;
+    letter-spacing: 0.5px; /* Slight spacing for a more refined look */
 }
 
 .logo:hover {
     transform: scale(1.1);
-    color: #c2a76b;
+    color: #c2a76b; /* Gold color for a more sophisticated effect */
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); /* Slightly more intense shadow on hover */
 }
+
 
 .page-title {
     margin: 0;

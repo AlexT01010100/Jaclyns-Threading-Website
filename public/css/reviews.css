@@ -1,12 +1,21 @@
-html, body {
+/* Global styles */
+body {
+    background-color: #373434;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     overflow-y: auto;
     font-family: Arial, sans-serif;
-    color: #333;
 }
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
 
 body::-webkit-scrollbar {
     width: 8px;
