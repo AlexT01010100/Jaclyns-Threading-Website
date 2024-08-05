@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
 // Endpoint to handle form submission
 app.post('/send_email', (req, res) => {
     const { fullName, phoneNumber, email, message } = req.body;

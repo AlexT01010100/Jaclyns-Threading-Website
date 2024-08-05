@@ -1,57 +1,23 @@
-// opacity 0 --> 1 transition for images
+function fadeInOnScroll() {
+    const galleryItems = document.querySelectorAll(".gallery-item");
+    galleryItems.forEach((item) => {
+        const itemTop = item.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+
+        if (itemTop < windowHeight) {
+            item.classList.add("fade-in");
+        }
+    });
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".gallery-item");
 
-    function fadeInOnScroll() {
-        galleryItems.forEach((item) => {
-            const itemTop = item.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-
-            if (itemTop < windowHeight) {
-                item.classList.add("fade-in");
-            }
-        });
-    }
-
     // Initial check on page load
     fadeInOnScroll();
 
-    // Listen for scroll events
-    window.addEventListener("scroll", fadeInOnScroll);
-});
-
-// images small --> large transition
-
-// script.js
-
-document.addEventListener("DOMContentLoaded", function () {
-    const galleryItems = document.querySelectorAll(".gallery-item");
-
-    function fadeInOnScroll() {
-        galleryItems.forEach((item) => {
-            const itemTop = item.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-
-            if (itemTop < windowHeight) {
-                item.classList.add("fade-in");
-            }
-        });
-    }
-
-    // Initial check on page load
-    fadeInOnScroll();
-
-    // Listen for scroll events
-    window.addEventListener("scroll", fadeInOnScroll);
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
-
-    galleryItems.forEach(function(item) {
-        item.addEventListener('click', function(event) {
+    galleryItems.forEach((item) => {
+        item.addEventListener('click', (event) => {
             event.stopPropagation(); // Prevent event from propagating to parent elements
 
             if (!item.classList.contains('active')) {
@@ -60,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.classList.add('modal-open');
 
                 // Disable pointer events on all gallery items
-                galleryItems.forEach(function(otherItem) {
+                galleryItems.forEach((otherItem) => {
                     otherItem.style.pointerEvents = 'none';
                 });
             } else {
@@ -68,15 +34,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.classList.remove('modal-open');
 
                 // Re-enable pointer events on all gallery items
-                galleryItems.forEach(function(otherItem) {
+                galleryItems.forEach((otherItem) => {
                     otherItem.style.pointerEvents = 'auto';
                 });
             }
         });
     });
 
+    window.addEventListener("scroll", fadeInOnScroll);
+
     // Close active item when clicking outside of it
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', (event) => {
         if (!event.target.closest('.gallery-item.active') && document.querySelector('.gallery-item.active')) {
             closeActiveItems();
         }
@@ -89,11 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.remove('modal-open');
 
             // Re-enable pointer events on all gallery items
-            galleryItems.forEach(function(item) {
+            galleryItems.forEach((item) => {
                 item.style.pointerEvents = 'auto';
             });
         }
     }
 });
-
 
