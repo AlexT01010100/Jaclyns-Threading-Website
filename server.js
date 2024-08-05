@@ -21,6 +21,21 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.use((req, res, next) => {
+    // Skip redirection for root URL
+    if (req.url === '/') {
+        return next();
+    }
+
+    // Remove trailing slash if present
+    if (req.url.endsWith('/') && req.url.length > 1) {
+        res.redirect(301, req.url.slice(0, -1));
+    } else {
+        next();
+    }
+});
+
+
 // Endpoint to handle form submission
 app.post('/send_email', (req, res) => {
     const { fullName, phoneNumber, email, message } = req.body;
