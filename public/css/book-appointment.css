@@ -101,6 +101,20 @@ label {
     font-size: 16px;
 }
 
+.no-slots-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    color: #333;
+    position: absolute;
+    top: 230px;
+    left: 0;
+}
+
+
 /* Input field styling */
 input[type="text"],
 input[type="email"],
