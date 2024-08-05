@@ -101,20 +101,6 @@ label {
     font-size: 16px;
 }
 
-.no-slots-message {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    color: #333;
-    position: absolute;
-    top: 230px;
-    left: 0;
-}
-
-
 /* Input field styling */
 input[type="text"],
 input[type="email"],
@@ -165,6 +151,23 @@ select {
     .time-slots-container {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+.no-slots-wrapper {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    width: 100%;
+    grid-column: span 4; /* Span all columns if needed */
+    margin-bottom: 20px;
+}
+
+.no-slots-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #333;
 }
 
 /* Slot item styling */
