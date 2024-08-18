@@ -16,7 +16,6 @@ html {
     font-family: Arial, sans-serif;
 }
 
-
 body::-webkit-scrollbar {
     width: 8px;
 }
@@ -29,7 +28,6 @@ body::-webkit-scrollbar-thumb {
     background-color: #888;
     border-radius: 4px;
 }
-
 /* Main container styles */
 .manage-slots {
     max-width: 800px;
@@ -37,7 +35,7 @@ body::-webkit-scrollbar-thumb {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin: 80px auto 40px;
+    margin: 0px auto 40px;
     position: relative;
     top: 120px;
     overflow: hidden;
