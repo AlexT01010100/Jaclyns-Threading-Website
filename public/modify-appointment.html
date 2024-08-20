@@ -100,7 +100,7 @@
 
     async function fetchBookingDetails() {
       try {
-        const response = await fetch(`/book_appointment?confirmationId=${confirmationId}`);
+        const response = await fetch(`/get_booking_details?confirmationId=${confirmationId}`);
         const data = await response.json();
 
         if (data.error) {
