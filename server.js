@@ -5,7 +5,8 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config()
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
+const { v4: uuidv4 } = require('uuid'); // Ensure you have the uuid package to generate unique IDs
+const confirmationId = uuidv4();
 const app = express();
 const port = 63342;
 
@@ -77,13 +78,21 @@ app.post('/book_appointment', (req, res) => {
         }
     });
 
-    // Email options for user confirmation
     let userMailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
         subject: `Appointment Confirmation`,
-        text: `Dear ${name},\n\nYour appointment for ${service} has been successfully booked on ${date} at ${slot}.\n\nThank you!`
-    };
+        text: `
+                Dear ${name},
+                
+                Your appointment for ${service} has been successfully booked on ${date} at ${slot}.
+                
+                You can manage your appointment using the following links:
+                - To edit your appointment, click here: https://yourdomain.com/edit-appointment?confirmationId=${confirmationId}
+                - To cancel your appointment, click here: https://yourdomain.com/cancel-appointment?confirmationId=${confirmationId}
+                
+                Thank you!
+            `};
 
     // Email options for admin notification
     let adminMailOptions = {
@@ -138,6 +147,50 @@ app.post('/book_appointment', (req, res) => {
         });
     });
 });
+
+app.post('/cancel-appointment', async (req, res) => {
+    const { confirmationId } = req.body;
+
+    // Fetch and validate booking using confirmationId
+    const bookingRef = doc(db, "appointments", confirmationId);
+    const bookingDoc = await getDoc(bookingRef);
+
+    if (!bookingDoc.exists()) {
+        res.status(404).send("Booking not found.");
+        return;
+    }
+
+    const bookingData = bookingDoc.data();
+
+    // Update available slots to mark them as unbooked
+
+    // Delete or update booking document
+    await deleteDoc(bookingRef);
+
+    res.send("Appointment canceled successfully.");
+});
+
+app.post('/edit-appointment', async (req, res) => {
+    const { confirmationId, newDate, newSlot, newService } = req.body;
+
+    // Fetch and validate booking using confirmationId
+    const bookingRef = doc(db, "appointments", confirmationId);
+    const bookingDoc = await getDoc(bookingRef);
+
+    if (!bookingDoc.exists()) {
+        res.status(404).send("Booking not found.");
+        return;
+    }
+
+    const bookingData = bookingDoc.data();
+
+    // Update booking with new details
+    // Update available slots in the same way as booking
+
+    res.send("Appointment updated successfully.");
+});
+
+
 
 // Start the server
 app.listen(port, () => {

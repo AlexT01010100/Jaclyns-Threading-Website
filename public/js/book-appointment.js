@@ -1,5 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
 import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
+import { v4 as uuidv4 } from 'https://esm.sh/uuid@8.3.2';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -245,6 +246,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
+        const confirmationId = uuidv4(); // Generate a unique confirmation ID
+        console.log('Generated UUID:', confirmationId);
 
         if (!selectedDate || !selectedService || !selectedSlotId) {
             messageDiv.textContent = "Please select a date, service, and time slot.";
@@ -290,7 +293,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         service: selectedService,
                         name: name,
                         email: email,
-                        phone: phone
+                        phone: phone,
+                        confirmationId: confirmationId
                     };
                 }
                 currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
@@ -315,7 +319,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     phone,
                     service: selectedService,
                     date: selectedDate,
-                    slot: selectedSlotId
+                    slot: selectedSlotId,
+                    confirmationId: confirmationId
                 })
             });
 
