@@ -107,7 +107,7 @@ app.get('/get_booking_details', async (req, res) => {
 
 // Endpoint to handle appointment booking and sending confirmation and admin notification emails
 app.post('/book_appointment', (req, res) => {
-    const { name, email, phone, service, date, slot } = req.body;
+    const { name, email, phone, service, date, slot, confirmationId } = req.body;
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
