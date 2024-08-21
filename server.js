@@ -5,12 +5,18 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config()
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const { v4: uuidv4 } = require('uuid'); // Ensure you have the uuid package to generate unique IDs
+const { v4: uuidv4 } = require('uuid');
 const { getFirestore, doc, getDoc, updateDoc, deleteDoc } = require('firebase/firestore');
-const confirmationId = uuidv4();
 const app = express();
 const port = 63342;
 const { initializeApp } = require('firebase/app');
+const admin = require('firebase-admin');
+const serviceAccount = require('./jaclyns-threading-firebase-admin.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://jaclyns-threading.firebaseio.com'
+});
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -90,9 +96,11 @@ app.get('/get_booking_details', async (req, res) => {
         return res.status(400).send('Confirmation ID is required.');
     }
 
+    console.log(confirmationId)
+
     try {
-        const bookingRef = doc(db, "appointments", confirmationId);
-        const bookingDoc = await getDoc(bookingRef);
+        const bookingRef = db.collection('availability').doc(confirmationId);
+        const bookingDoc = await bookingRef.get();
 
         if (!bookingDoc.exists()) {
             return res.status(404).send('Booking not found.');
