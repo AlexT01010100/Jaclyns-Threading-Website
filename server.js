@@ -11,7 +11,7 @@ const app = express();
 const port = 63342;
 const { initializeApp } = require('firebase/app');
 const admin = require('firebase-admin');
-const serviceAccount = require('./jaclyns-threading-firebase-admin.json');
+const serviceAccount = require('.idea/jaclyns-threading-firebase-admin.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
