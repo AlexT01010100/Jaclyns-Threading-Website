@@ -30,8 +30,7 @@ const firebaseConfig = {
 };
 
 const initDB = initializeApp(firebaseConfig);
-const db = getFirestore(initDB);
-
+const db = admin.firestore();
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -92,21 +91,31 @@ app.post('/send_email', (req, res) => {
 app.get('/get_booking_details', async (req, res) => {
     const { confirmationId } = req.query;
 
-    if (!confirmationId) {
-        return res.status(400).send('Confirmation ID is required.');
-    }
-
-    console.log(confirmationId)
-
     try {
-        const bookingRef = db.collection('availability').doc(confirmationId);
-        const bookingDoc = await bookingRef.get();
+        let bookingData = null;
 
-        if (!bookingDoc.exists()) {
+        // Iterate through each date in 'availability'
+        const datesSnapshot = await db.collection('availability').get();
+        for (const dateDoc of datesSnapshot.docs) {
+            const availableSlotsRef = dateDoc.ref.collection('availableSlots');
+
+            // Check each slot in the current date's availableSlots collection
+            const slotsSnapshot = await availableSlotsRef.get();
+            for (const slotDoc of slotsSnapshot.docs) {
+                if (slotDoc.data().confirmationId === confirmationId) {
+                    bookingData = slotDoc.data();
+                    break;
+                }
+            }
+
+            if (bookingData) break; // Exit loop if found
+        }
+
+        if (!bookingData) {
             return res.status(404).send('Booking not found.');
         }
 
-        res.json(bookingDoc.data());
+        res.json(bookingData);
     } catch (error) {
         console.error('Error fetching booking details:', error);
         res.status(500).send('Error fetching booking details.');
