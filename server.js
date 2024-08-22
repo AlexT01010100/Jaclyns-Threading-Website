@@ -5,11 +5,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config()
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const { v4: uuidv4 } = require('uuid');
-const { getFirestore, doc, getDoc, updateDoc, deleteDoc } = require('firebase/firestore');
+const { doc, getDoc, updateDoc } = require('firebase/firestore');
 const app = express();
 const port = 63342;
-const { initializeApp } = require('firebase/app');
 const admin = require('firebase-admin');
 const serviceAccount = require('./jaclyns-threading-firebase-admin.json');
 
@@ -18,18 +16,6 @@ admin.initializeApp({
     databaseURL: 'https://jaclyns-threading.firebaseio.com'
 });
 
-// Initialize Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
-    authDomain: "jaclyns-threading.firebaseapp.com",
-    projectId: "jaclyns-threading",
-    storageBucket: "jaclyns-threading.appspot.com",
-    messagingSenderId: "599625407213",
-    appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
-    measurementId: "G-HSF7B83VYH"
-};
-
-const initDB = initializeApp(firebaseConfig);
 const db = admin.firestore();
 app.use(cors());
 
@@ -87,41 +73,6 @@ app.post('/send_email', (req, res) => {
     });
 });
 
-// Endpoint to handle fetching booking details
-app.get('/get_booking_details', async (req, res) => {
-    const { confirmationId } = req.query;
-
-    try {
-        let bookingData = null;
-
-        // Iterate through each date in 'availability'
-        const datesSnapshot = await db.collection('availability').get();
-        for (const dateDoc of datesSnapshot.docs) {
-            const availableSlotsRef = dateDoc.ref.collection('availableSlots');
-
-            // Check each slot in the current date's availableSlots collection
-            const slotsSnapshot = await availableSlotsRef.get();
-            for (const slotDoc of slotsSnapshot.docs) {
-                if (slotDoc.data().confirmationId === confirmationId) {
-                    bookingData = slotDoc.data();
-                    break;
-                }
-            }
-
-            if (bookingData) break; // Exit loop if found
-        }
-
-        if (!bookingData) {
-            return res.status(404).send('Booking not found.');
-        }
-
-        res.json(bookingData);
-    } catch (error) {
-        console.error('Error fetching booking details:', error);
-        res.status(500).send('Error fetching booking details.');
-    }
-});
-
 // Endpoint to handle appointment booking and sending confirmation and admin notification emails
 app.post('/book_appointment', (req, res) => {
     const { name, email, phone, service, date, slot, confirmationId } = req.body;
@@ -144,7 +95,7 @@ app.post('/book_appointment', (req, res) => {
                 Your appointment for ${service} has been successfully booked on ${date} at ${slot}.
                 
                 You can manage your appointment using the following link:
-                http://localhost:63342/modify-appointment.html?confirmationId=${confirmationId}
+                http://localhost:63342/modify-appointment.html?confirmationId=${confirmationId}&date=${date}
                 
                 Thank you!
             `};
@@ -204,35 +155,63 @@ app.post('/book_appointment', (req, res) => {
 });
 
 app.post('/cancel-appointment', async (req, res) => {
-    const { confirmationId } = req.body;
+    // Extract query parameters from req.query
+    const confirmationId = req.query.confirmationId;
+    const date = req.query.date;
 
-    if (!confirmationId) {
-        return res.status(400).send('Confirmation ID is required.');
+    if (!confirmationId || !date) {
+        return res.status(400).send('Confirmation ID and date are required.');
     }
 
     try {
-        // Fetch the booking
-        const bookingRef = doc(db, "appointments", confirmationId);
-        const bookingDoc = await getDoc(bookingRef);
+        // Query for the specific date document in 'availability'
+        const dateDocRef = db.collection('availability').doc(date);
+        const dateDoc = await dateDocRef.get();
 
-        if (!bookingDoc.exists()) {
-            return res.status(404).send('Booking not found.');
+        if (!dateDoc.exists) {
+            console.error('Date document not found:', date);
+            return res.status(404).send('Date not found.');
         }
 
-        const bookingData = bookingDoc.data();
+        const availableSlotsMap = dateDoc.data().availableSlots;
+        let appointmentFound = false;
 
-        // Remove the booking
-        await deleteDoc(bookingRef);
+        if (availableSlotsMap) {
+            for (const [time, slot] of Object.entries(availableSlotsMap)) {
+                if (slot.confirmationId === confirmationId) {
+                    // Update the booking details to unbooked
+                    await dateDocRef.update({
+                        [`availableSlots.${time}`]: {
+                            status: 'unbooked',
+                            name: '',
+                            email: '',
+                            phone: '',
+                            service: ''
+                        }
+                    });
 
-        // Handle updating available slots if needed
-        // ...
+                    appointmentFound = true;
+                }
+            }
+        }
 
-        res.send('Appointment canceled successfully.');
+        if (appointmentFound) {
+            res.send('Appointment canceled successfully.');
+        } else {
+            console.error('Appointment not found with ID:', confirmationId);
+            res.status(404).send('No appointment found with the given confirmation ID.');
+        }
+
     } catch (error) {
         console.error('Error canceling appointment:', error);
         res.status(500).send('Error canceling appointment.');
     }
 });
+
+
+
+
+
 
 app.post('/edit-appointment', async (req, res) => {
     const { confirmationId, newDate, newSlot, newService } = req.body;

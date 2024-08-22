@@ -98,26 +98,6 @@
 
     document.getElementById('confirmationId').value = confirmationId;
 
-    async function fetchBookingDetails() {
-      try {
-        const response = await fetch(`/get_booking_details?confirmationId=${confirmationId}`);
-        const data = await response.json();
-
-        if (data.error) {
-          document.getElementById('message').textContent = data.error;
-          return;
-        }
-
-        document.getElementById('name').value = data.name || '';
-        document.getElementById('email').value = data.email || '';
-        document.getElementById('phone').value = data.phone || '';
-      } catch (error) {
-        document.getElementById('message').textContent = 'Error fetching booking details.';
-      }
-    }
-
-    fetchBookingDetails();
-
     document.getElementById('appointment-form').addEventListener('submit', async function (event) {
       event.preventDefault();
 
@@ -148,20 +128,27 @@
 
     document.getElementById('cancel-button').addEventListener('click', async function () {
       if (confirm('Are you sure you want to cancel this appointment?')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const confirmationId = urlParams.get('confirmationId');
+        const date = urlParams.get('date');
+
+        if (!confirmationId || !date) {
+          document.getElementById('message').textContent = 'Missing confirmation ID or date.';
+          return;
+        }
+
         try {
-          const response = await fetch('/cancel-appointment', {
+          const response = await fetch(`/cancel-appointment?confirmationId=${confirmationId}&date=${date}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              confirmationId
-            })
+            }
           });
 
           const result = await response.text();
           document.getElementById('message').textContent = result;
         } catch (error) {
+          console.error('Fetch error:', error);
           document.getElementById('message').textContent = 'Error canceling appointment.';
         }
       }
