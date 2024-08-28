@@ -3,34 +3,6 @@
     padding-top: 60px;
 }
 
-.information {
-    padding: 40px 5%;
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: justify;
-}
-
-.information h1 {
-    font-size: 3rem;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #c2a76b;
-}
-
-/* Media query to adjust margin when logo wraps */
-@media screen and (max-width: 1100px) and (min-width: 680px){
-    .information h1 {
-        margin-top: 6rem;
-    }
-}
-
-.information p {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    margin-bottom: 20px;
-    color: white;
-}
-
 .services {
     display: flex;
     flex-wrap: wrap;
