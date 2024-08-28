@@ -1,0 +1,294 @@
+/* Main content styles */
+.main-content {
+    padding-top: 60px;
+}
+
+.information {
+    padding: 40px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: justify;
+}
+
+.information h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #c2a76b;
+}
+
+/* Media query to adjust margin when logo wraps */
+@media screen and (max-width: 1100px) and (min-width: 680px){
+    .information h1 {
+        margin-top: 6rem;
+    }
+}
+
+.information p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: white;
+}
+
+/* Footer Section */
+.contact-me-container-about-jaclyn {
+    position: relative;
+    top: 12rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../images/microblading-footer.jpg") no-repeat center center;
+    background-size: cover;
+    background-position: 70%;
+    height: 40rem;
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.contact-me-container-about-jaclyn h1 {
+    position: relative;
+    top: 5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.contact-me-container-about-jaclyn p {
+    position: relative;
+    top: 10rem;
+    font-size: 1.2rem;
+    max-width: 1000px;
+    margin: 1rem auto;
+    line-height: 1.6;
+}
+
+.contact-me-container-about-jaclyn hr {
+    border: 0;
+    border-top: 1px solid #c2a76b;
+    margin: 2rem auto;
+    width: 80%;
+}
+
+.contact-me-container-about-jaclyn .social-media-about-jaclyn {
+    position: absolute;
+    margin: 0 auto;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.contact-me-container-about-jaclyn .social-media-about-jaclyn a {
+    color: white;
+    font-size: 2rem;
+    transition: color 0.3s ease;
+}
+
+.contact-me-container-about-jaclyn .social-media-about-jaclyn a:hover {
+    color: #c2a76b;
+}
+
+.contact-button-footer-about-jaclyn {
+    position: relative;
+    margin-top: 0.5rem; /* Adjust as needed to raise the button */
+    left: 50%;
+    transform: translate(-51%, -155%);
+    background-color: #0f0f0f;
+    color: white;
+    height: 5rem;
+    width: 12rem;
+    font-size: 16px;
+    font-family: times, serif;
+    z-index: 1;
+    padding: 0.5rem 1rem;
+}
+
+
+.contact-me-container-about-jaclyn hr {
+    margin-bottom: 8rem;
+}
+
+@media screen and (max-width: 768px) {
+    .contact-me-container-about-jaclyn .social-media-about-jaclyn {
+        margin-top: 4rem; /* Increase margin to push down social icons */
+    }
+}
+
+.contact-button-footer-about-jaclyn:hover {
+    background-color: #c1b46c;
+    transition: 0.7s;
+}
+
+.contact-button-footer-about-jaclyn:focus {
+    outline-color: transparent;
+    outline-style: solid;
+    box-shadow: 0 0 0 4px black;
+    transition: 0.9s;
+}
+
+.contact-button-footer-about-jaclyn:active {
+    background-color: #baa94a;
+}
+
+footer p {
+    position: relative;
+    color: white;
+    top: 154px;
+    font-size: 14px;
+    text-align: right; /* Align text to the right */
+}
+
+@media screen and (min-width: 769px) and (max-width: 870px) {
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        font-size: 2rem;
+    }
+
+    .navbar-menu a {
+        font-size: 1.5rem;
+        text-decoration: none;
+    }
+
+    /* Adjusted styles for the dropdown menu on small screens */
+    .navbar .icon {
+        display: block;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #404040;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        padding: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-menu.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .navbar-menu a {
+        display: block;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+        background-color: #575757;
+    }
+
+    .about-jaclyn p {
+        align-items: center;
+        text-align: center;
+    }
+
+    .contact-me-container-about-jaclyn h1 {
+        font-size: 1.8rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-about-jaclyn p {
+        font-size: 0.9rem;
+        top: -1rem;
+    }
+
+    .contact-me-container-about-jaclyn hr {
+        position: relative;
+        top: -1rem;
+    }
+
+    .contact-me-container-about-jaclyn .social-media-about-jaclyn {
+        top: 19.5rem;
+    }
+
+    footer p {
+        top: 9.4rem;
+    }
+
+    .contact-button-footer-about-jaclyn {
+        position: relative;
+        margin-top: 2rem; /* Adjust as needed to raise the button */
+        left: 50%;
+        transform: translate(-51%, -160%);
+        height: 4rem;
+        width: 10rem;
+    }
+
+    /* adjust background size */
+    .contact-me-container-about-jaclyn{
+        height: 26rem;
+    }
+}
+
