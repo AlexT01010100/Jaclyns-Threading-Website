@@ -74,8 +74,8 @@
 /* FAQ Section Styling */
 .faq-section {
     margin: 50px auto;
-    max-width: 800px;
-    padding: 20px;
+    max-width: 1200px;
+    padding: 20px 40px;
     text-align: center;
 }
 
@@ -93,7 +93,7 @@
     width: 100%;
     background-color: #c2a76b;
     color: white;
-    padding: 10px;
+    padding: 15px;
     font-size: 1.2rem;
     border: none;
     cursor: pointer;
@@ -108,7 +108,7 @@
 
 .faq-content {
     display: none;
-    padding: 15px;
+    padding: 20px;
     text-align: left;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
@@ -124,11 +124,12 @@
 
 @media screen and (max-width: 768px) {
     .faq-section {
-        max-width: 90%;
+        max-width: 95%;
+        padding: 20px;
     }
     .faq-toggle {
         font-size: 1rem;
-        padding: 8px;
+        padding: 10px;
     }
 }
 
