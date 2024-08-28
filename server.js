@@ -189,7 +189,6 @@ app.post('/cancel-appointment', async (req, res) => {
                             service: ''
                         }
                     });
-
                     appointmentFound = true;
                 }
             }

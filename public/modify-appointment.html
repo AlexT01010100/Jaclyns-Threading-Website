@@ -3,82 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit or Cancel Appointment</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f9f9f9;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .form-group input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    .form-group button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      background-color: #007BFF;
-      cursor: pointer;
-    }
-    .form-group button.cancel {
-      background-color: #dc3545;
-    }
-    .form-group button:hover {
-      opacity: 0.9;
-    }
-    .message {
-      margin-top: 20px;
-    }
-  </style>
+  <title>Cancel Appointment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="css/modify-appointment.css">
+  <link rel="stylesheet" href="css/gallery.css">
 </head>
+
+<!-- Navbar and header -->
+<header class="header">
+  <a href="index.html" class="logo">Jaclyn's Threading</a>
+  <nav class="navbar">
+    <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">&#9776;</a>
+    <div class="navbar-menu" id="navbarMenu">
+      <a href="gallery.html">Gallery</a>
+      <a href="information.html">Information</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact-me.html">Contact</a>
+    </div>
+  </nav>
+</header>
+
 <body>
 <div class="container">
-  <h1>Edit or Cancel Your Appointment</h1>
+  <h1>Are you sure you want to cancel your appointment?</h1>
   <form id="appointment-form">
     <input type="hidden" id="confirmationId" name="confirmationId" value="">
 
     <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" placeholder="Your Name">
-    </div>
-
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" placeholder="Your Email">
-    </div>
-
-    <div class="form-group">
-      <label for="phone">Phone:</label>
-      <input type="tel" id="phone" name="phone" placeholder="Your Phone Number">
-    </div>
-
-    <div class="form-group">
-      <button type="submit" id="edit-button">Update Appointment</button>
       <button type="button" id="cancel-button" class="cancel">Cancel Appointment</button>
     </div>
   </form>
@@ -86,74 +37,25 @@
   <div id="message" class="message"></div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const confirmationId = urlParams.get('confirmationId');
+<div class="contact-me-container-modify-appointment">
+  <h1>Get in touch!</h1>
+  <p>Jaclyn is a NYS licensed esthetician who has been expertly trained in the threading business and has been practicing for over 15 years.</p>
 
-    if (!confirmationId) {
-      document.getElementById('message').textContent = 'No confirmation ID provided.';
-      return;
-    }
+  <hr>
 
-    document.getElementById('confirmationId').value = confirmationId;
+  <div class="social-media-modify-appointment">
+    <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+</div>
 
-    document.getElementById('appointment-form').addEventListener('submit', async function (event) {
-      event.preventDefault();
+<footer>
+  <p class="copyright-text-modify-appointment">&copy; 2024 Jaclyn's Threading. All rights reserved.</p>
+  <a href="contact-me.html"><button type="button" class="contact-button-footer-modify-appointment">Contact</button></a>
+</footer>
 
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-
-      try {
-        const response = await fetch('/edit-appointment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            confirmationId,
-            name,
-            email,
-            phone
-          })
-        });
-
-        const result = await response.text();
-        document.getElementById('message').textContent = result;
-      } catch (error) {
-        document.getElementById('message').textContent = 'Error updating appointment.';
-      }
-    });
-
-    document.getElementById('cancel-button').addEventListener('click', async function () {
-      if (confirm('Are you sure you want to cancel this appointment?')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const confirmationId = urlParams.get('confirmationId');
-        const date = urlParams.get('date');
-
-        if (!confirmationId || !date) {
-          document.getElementById('message').textContent = 'Missing confirmation ID or date.';
-          return;
-        }
-
-        try {
-          const response = await fetch(`/cancel-appointment?confirmationId=${confirmationId}&date=${date}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-
-          const result = await response.text();
-          document.getElementById('message').textContent = result;
-        } catch (error) {
-          console.error('Fetch error:', error);
-          document.getElementById('message').textContent = 'Error canceling appointment.';
-        }
-      }
-    });
-  });
-</script>
+<script src="js/contact-me.js"></script>
+<script type="module" src="js/modify-appointment.js"></script>
 </body>
 </html>
