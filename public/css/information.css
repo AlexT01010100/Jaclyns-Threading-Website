@@ -3,6 +3,16 @@
     padding-top: 60px;
 }
 
+/* Service section title */
+.services-title {
+    position: relative;
+    top: 70px;
+    text-align: center;
+    color: #c2a76b;
+    font-size: 2.5rem;
+    margin-bottom: 100px;
+}
+
 .services {
     display: flex;
     flex-wrap: wrap;
@@ -54,6 +64,11 @@
         margin-bottom: 140px;
     }
 
+    /* Service section title */
+    .services-title {
+        margin-bottom: 10px;
+    }
+
     .service-card {
         max-width: 90%;
         margin-bottom: 20px;
@@ -81,8 +96,8 @@
 
 .faq-section h2 {
     font-size: 2.2rem;
-    color: white;
-    margin-bottom: 25px;
+    color: #c2a76b;
+    margin-bottom: 55px;
 }
 
 .faq-category {
@@ -127,6 +142,11 @@
         max-width: 95%;
         padding: 25px;
     }
+
+    .faq-section h2 {
+        margin-bottom: 85px;
+    }
+
     .faq-toggle {
         font-size: 1.1rem;
         padding: 12px;
