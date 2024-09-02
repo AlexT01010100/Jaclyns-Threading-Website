@@ -390,7 +390,6 @@ body::-webkit-scrollbar-thumb {
   font-size: 30px;
   font-weight: 700;
 }
-
 .reviews {
   display: flex;
   justify-content: center;
@@ -403,7 +402,6 @@ body::-webkit-scrollbar-thumb {
 .reviews::-webkit-scrollbar {
   width: 4px;
   height: 5px;
-  z-index: 9999;
 }
 
 .reviews::-webkit-scrollbar-track {
@@ -485,6 +483,13 @@ body::-webkit-scrollbar-thumb {
   color: #ffc107;
 }
 
+/* Media Queries for Responsive Design */
+@media (max-width: 1200px) {
+  .review-card {
+    width: calc(45% - 10px);
+  }
+}
+
 @media (max-width: 1000px) {
   .reviews {
     flex-wrap: nowrap;
@@ -494,13 +499,25 @@ body::-webkit-scrollbar-thumb {
   }
 
   .review-card {
-    width: calc(60% - 10px);
-    min-width: calc(60% - 10px);
+    width: calc(60% - 20px);
     margin-right: 20px;
-    margin-bottom: 0;
-
   }
 }
+
+@media (max-width: 768px) {
+  .review-card {
+    width: calc(80% - 20px);
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-card {
+    width: calc(100% - 20px);
+    margin-right: 0;
+  }
+}
+
 
 .slider-wrapper {
   position: relative;
