@@ -93,7 +93,7 @@ body::-webkit-scrollbar-thumb {
     letter-spacing: 0.5px; /* Slight spacing for a more refined look */
 }
 
-@media screen and (max-width: 500px) and (min-width: 300px) {
+@media screen and (max-width: 500px) and (min-width: 0px) {
     .logo {
         font-size: 1.4rem;
     }
