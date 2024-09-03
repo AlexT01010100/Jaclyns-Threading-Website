@@ -93,6 +93,18 @@ body::-webkit-scrollbar-thumb {
     letter-spacing: 0.5px; /* Slight spacing for a more refined look */
 }
 
+@media screen and (max-width: 500px) and (min-width: 300px) {
+    .logo {
+        font-size: 1.4rem;
+    }
+}
+
+@media screen and (max-width: 1000px) and (min-width: 500px) {
+    .logo {
+        font-size: 1.8rem;
+    }
+}
+
 .logo:hover {
     transform: scale(1.1);
     color: #c2a76b; /* Gold color for a more sophisticated effect */
@@ -395,10 +407,6 @@ footer p {
 }
 
 @media screen and (max-width: 768px) {
-    .logo {
-        font-size: 2rem;
-    }
-
     .navbar-menu a {
         font-size: 1.5rem;
         text-decoration: none;

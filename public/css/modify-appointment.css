@@ -255,10 +255,6 @@ footer p {
 }
 
 @media screen and (max-width: 768px) {
-    .logo {
-        font-size: 2rem;
-    }
-
     .navbar-menu a {
         font-size: 1.5rem;
         text-decoration: none;
