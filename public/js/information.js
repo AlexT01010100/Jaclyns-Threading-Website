@@ -1,12 +1,15 @@
-// Select all FAQ toggle buttons
 document.querySelectorAll('.faq-toggle').forEach(button => {
-    // Initially display all FAQ content sections
     const content = button.nextElementSibling;
-    content.style.display = 'block'; // Set all FAQ content to be visible by default
+
+    content.style.display = 'block'; // Ensure content is visible
+    button.classList.add('active'); // Ensure arrow is in the switched position
 
     // Add a click event listener to toggle visibility
     button.addEventListener('click', () => {
-        // Toggle the display property on click
-        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        const isCurrentlyOpen = content.style.display === 'block' || window.getComputedStyle(content).display === 'block';
+        content.style.display = isCurrentlyOpen ? 'none' : 'block';
+
+        // Toggle the arrow direction
+        button.classList.toggle('active', !isCurrentlyOpen);
     });
 });
