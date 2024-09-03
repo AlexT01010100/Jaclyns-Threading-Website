@@ -279,8 +279,23 @@ document.addEventListener("DOMContentLoaded", function () {
             // Calculate end slot time based on selected service
             const startSlot = parseTimeTo24Hour(selectedSlotId);
             let endSlot = new Date(startSlot.getTime() + (serviceDurations[selectedService] || 1 * 60 * 60 * 1000));
-
+            // Check if all consecutive slots are available
             let currentSlot = new Date(startSlot.getTime());
+
+            while (currentSlot < endSlot) {
+                const timeKey = formatTimeTo24HourString(currentSlot);
+                const slotStatus = availableSlotsData[timeKey]?.status;
+
+                if (slotStatus !== 'unbooked') {
+                    messageDiv.textContent = "Someone already booked this slot.";
+                    messageDiv.classList.add("error");
+                    return; // Exit if any slot in the range is already booked
+                }
+
+                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
+            }
+
+            currentSlot = new Date(startSlot.getTime());
             const updatedSlotsData = { ...availableSlotsData };
 
             // Mark slots as booked
@@ -328,6 +343,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Server response:", result);
             messageDiv.textContent = result;
             messageDiv.classList.add("success");
+            location.reload();
 
         } catch (error) {
             console.error("Error booking appointment:", error);
