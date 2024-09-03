@@ -474,13 +474,13 @@ body::-webkit-scrollbar-thumb {
   margin-bottom: 8px;
 }
 
-.review-rating .fa-star {
-  font-size: 20px;
-  color: #ccc;
+.review-rating .star {
+  font-size: 30px;
+  color: #ffc107;
   margin-right: 5px;
 }
 
-.review-rating .fa-star.checked {
+.review-rating .star.checked {
   color: #ffc107;
 }
 
