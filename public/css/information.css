@@ -23,7 +23,6 @@
     transform: translateY(5%);
 }
 
-/* Default layout: 4 cards per row */
 .service-card {
     background-color: #fff;
     border-radius: 10px;
@@ -34,6 +33,12 @@
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px #c2a76b;
 }
 
 .service-card img {
@@ -71,7 +76,6 @@
         margin-bottom: 140px;
     }
 
-    /* Service section title */
     .services-title {
         margin-bottom: 10px;
     }
@@ -94,6 +98,7 @@
         margin: 0;
     }
 }
+
 /* FAQ Section Styling */
 .faq-section {
     margin: 1px auto;
