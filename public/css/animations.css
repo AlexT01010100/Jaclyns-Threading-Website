@@ -220,9 +220,10 @@ button:hover,
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
+/* Contact button footer - preserve original positioning transform */
 .contact-button-footer-gallery:hover {
-    transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
 }
 
 button:active,
@@ -496,6 +497,7 @@ a:not(.navbar-menu a):not(.logo) {
     }
     
     .contact-button-footer-gallery:hover {
-        transform: scale(1.03);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        filter: brightness(1.1);
     }
 }
