@@ -1,21 +1,3 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js';
-import { v4 as uuidv4 } from 'https://esm.sh/uuid@8.3.2';
-
-// Initialize Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBDPBRPGG2-FCnqX_mI8C2oyhBzrFuMql0",
-    authDomain: "jaclyns-threading.firebaseapp.com",
-    projectId: "jaclyns-threading",
-    storageBucket: "jaclyns-threading.appspot.com",
-    messagingSenderId: "599625407213",
-    appId: "1:599625407213:web:8ee84fd1a0c4e74d474ae4",
-    measurementId: "G-HSF7B83VYH"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
     const form = document.getElementById("appointment-form");
@@ -36,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function setMinDate() {
         const today = new Date();
         const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const minDate = `${year}-${month}-${day}`;
         dateInput.setAttribute('min', minDate);
@@ -57,10 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return new Date(1970, 0, 1, hour, minute);
     }
 
-    function formatTimeTo24HourString(time) {
-        return time.toTimeString().split(' ')[0].slice(0, 5); // HH:MM format
-    }
-
     function formatTimeTo12Hour(time) {
         const hour = time.getHours();
         const minute = time.getMinutes();
@@ -72,42 +50,17 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchAvailableSlotsForDate(date) {
         console.log("Fetching available slots for date:", date);
 
-        const availabilityRef = doc(db, "availability", date);
-
         try {
-            const docSnapshot = await getDoc(availabilityRef);
-
-            if (docSnapshot.exists()) {
-                const availableSlotsData = docSnapshot.data().availableSlots || {};
-
-                if (Object.keys(availableSlotsData).length > 0) {
-                    const slotsArray = Object.keys(availableSlotsData).map(slotId => {
-                        console.log("Processing slotId:", slotId);
-
-                        const slotData = availableSlotsData[slotId];
-
-                        return {
-                            id: slotId,
-                            time: slotId,
-                            status: slotData.status
-                        };
-                    }).sort((a, b) => {
-                        const aDate = parseTimeTo24Hour(a.time);
-                        const bDate = parseTimeTo24Hour(b.time);
-                        return aDate - bDate;
-                    });
-
-                    return slotsArray;
-                } else {
-                    console.log("No available slots found for date:", date);
-                    return [];
-                }
-            } else {
-                console.log("Document does not exist for date:", date);
-                return [];
+            const response = await fetch(`/api/available-slots/${date}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch available slots');
             }
+            
+            const slots = await response.json();
+            console.log("Fetched slots:", slots);
+            return slots;
         } catch (error) {
-            console.error("Error fetching document:", error);
+            console.error("Error fetching available slots:", error);
             throw error;
         }
     }
@@ -115,69 +68,67 @@ document.addEventListener("DOMContentLoaded", function () {
     function filterSlotsForService(slots, service) {
         if (slots.length === 0) return [];
 
-        // Define durations for different services
+        // Define durations for different services (in milliseconds)
         const serviceDurations = {
             'microblading': 3 * 60 * 60 * 1000, // 3 hours
-            'threading': 1 * 60 * 60 * 1000,   // 1 hour
-            // Add other services here with their respective durations
+            'threading': 1 * 60 * 60 * 1000,    // 1 hour
+            'brow lamination': 1 * 60 * 60 * 1000, // 1 hour
+            'lash lift': 1 * 60 * 60 * 1000     // 1 hour
         };
 
-        // Default duration if the service is not found
-        const duration = serviceDurations[service] || 1 * 60 * 60 * 1000; // Default to 1 hour if not found
+        const duration = serviceDurations[service.toLowerCase()] || 1 * 60 * 60 * 1000;
 
         // Convert slot times to Date objects and sort them
-        const timeSlots = slots.map(slot => parseTimeTo24Hour(slot.time)).filter(date => date !== null);
-        timeSlots.sort((a, b) => a - b);
+        const timeSlots = slots
+            .filter(slot => slot.is_available)
+            .map(slot => ({
+                time: parseTimeTo24Hour(slot.time_slot),
+                original: slot.time_slot
+            }))
+            .sort((a, b) => a.time - b.time);
 
-        console.log("Time Slots for Service:", timeSlots);
+        console.log("Available time slots for service:", timeSlots);
 
         const availableBlocks = [];
-        const slotCount = timeSlots.length;
 
-        function isSlotUnbooked(time) {
-            return slots.some(slot => parseTimeTo24Hour(slot.time).getTime() === time.getTime() && slot.status === 'unbooked');
+        function isSlotAvailable(time) {
+            return timeSlots.some(slot => 
+                slot.time.getTime() === time.getTime()
+            );
         }
 
-        for (let i = 0; i < slotCount; i++) {
-            const startSlot = timeSlots[i];
+        for (let i = 0; i < timeSlots.length; i++) {
+            const startSlot = timeSlots[i].time;
             let endSlot = new Date(startSlot.getTime() + duration);
-
-            console.log(`Checking slot from ${formatTimeTo12Hour(startSlot)} to ${formatTimeTo12Hour(endSlot)}`);
 
             let currentSlot = new Date(startSlot.getTime());
             let isBlockAvailable = true;
 
             while (currentSlot < endSlot) {
-                const timeKey = formatTimeTo24HourString(currentSlot);
-                if (!isSlotUnbooked(currentSlot)) {
+                if (!isSlotAvailable(currentSlot)) {
                     isBlockAvailable = false;
-                    console.log(`Slot ${timeKey} is not available.`);
                     break;
                 }
-                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
+                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000);
             }
 
             if (isBlockAvailable) {
-                console.log(`Available block starting at ${formatTimeTo12Hour(startSlot)}`);
                 availableBlocks.push({
-                    start: formatTimeTo12Hour(startSlot)
+                    id: timeSlots[i].original,
+                    time: timeSlots[i].original
                 });
             }
         }
 
-        console.log("Available Blocks for Service:", availableBlocks);
-
-        return availableBlocks.map(block => ({
-            id: block.start,
-            time: block.start
-        }));
+        console.log("Available blocks for service:", availableBlocks);
+        return availableBlocks;
     }
 
     function renderSlots(slots) {
         timeSlotsContainer.innerHTML = "";
 
         if (slots.length === 0) {
-            timeSlotsContainer.innerHTML = "<div class=\"no-slots-wrapper\"><div class='no-slots-message'>No available slots for the selected service.</p></div></div>";
+            timeSlotsContainer.innerHTML = "<div class=\"no-slots-wrapper\"><div class='no-slots-message'>No available slots for the selected service.</div></div>";
             return;
         }
 
@@ -187,10 +138,10 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.setAttribute("data-slot-id", slot.id);
 
             slotElement.innerHTML = `
-            <p>${slot.time}</p>
-            <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
-            <hr class="time-slots-hr">
-        `;
+                <p>${slot.time}</p>
+                <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
+                <hr class="time-slots-hr">
+            `;
 
             const selectButton = slotElement.querySelector('.select-button');
             selectButton.addEventListener('click', (event) => {
@@ -215,18 +166,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     function updateAvailableSlots() {
         if (selectedDate && selectedService) {
-            fetchAvailableSlotsForDate(selectedDate).then(slots => {
-                if (selectedService === 'microblading' || selectedService === 'threading') {
-                    slots = filterSlotsForService(slots, selectedService);
-                }
-                renderSlots(slots);
-            }).catch(error => {
-                console.error("Error fetching available slots:", error);
-                timeSlotsContainer.innerHTML = "<p>Error fetching available slots.</p>";
-            });
+            fetchAvailableSlotsForDate(selectedDate)
+                .then(slots => {
+                    if (selectedService === 'microblading' || selectedService === 'threading') {
+                        slots = filterSlotsForService(slots, selectedService);
+                    }
+                    renderSlots(slots);
+                })
+                .catch(error => {
+                    console.error("Error fetching available slots:", error);
+                    timeSlotsContainer.innerHTML = "<p>Error fetching available slots.</p>";
+                });
         }
     }
 
@@ -246,8 +198,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
-        const confirmationId = uuidv4(); // Generate a unique confirmation ID
-        console.log('Generated UUID:', confirmationId);
 
         if (!selectedDate || !selectedService || !selectedSlotId) {
             messageDiv.textContent = "Please select a date, service, and time slot.";
@@ -256,73 +206,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const availabilityRef = doc(db, "availability", selectedDate);
-            const slotDoc = await getDoc(availabilityRef);
+            messageDiv.textContent = "Booking appointment...";
+            messageDiv.classList.remove("error", "success");
 
-            if (!slotDoc.exists()) {
-                console.error("No such document!");
-                messageDiv.textContent = "No available slots for the selected date.";
-                messageDiv.classList.add("error");
-                return;
-            }
-
-            const availableSlotsData = slotDoc.data().availableSlots || {};
-            console.log("Available Slots Data:", availableSlotsData);
-
-            // Define service durations
-            const serviceDurations = {
-                'microblading': 3 * 60 * 60 * 1000, // 3 hours
-                'threading': 1 * 60 * 60 * 1000,    // 1 hour
-                // Add other services here with their respective durations
-            };
-
-            // Calculate end slot time based on selected service
-            const startSlot = parseTimeTo24Hour(selectedSlotId);
-            let endSlot = new Date(startSlot.getTime() + (serviceDurations[selectedService] || 1 * 60 * 60 * 1000));
-            // Check if all consecutive slots are available
-            let currentSlot = new Date(startSlot.getTime());
-
-            while (currentSlot < endSlot) {
-                const timeKey = formatTimeTo24HourString(currentSlot);
-                const slotStatus = availableSlotsData[timeKey]?.status;
-
-                if (slotStatus !== 'unbooked') {
-                    messageDiv.textContent = "Someone already booked this slot.";
-                    messageDiv.classList.add("error");
-                    return; // Exit if any slot in the range is already booked
-                }
-
-                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
-            }
-
-            currentSlot = new Date(startSlot.getTime());
-            const updatedSlotsData = { ...availableSlotsData };
-
-            // Mark slots as booked
-            while (currentSlot < endSlot) {
-                const timeKey = formatTimeTo24HourString(currentSlot);
-                if (updatedSlotsData[timeKey]) {
-                    updatedSlotsData[timeKey] = {
-                        ...updatedSlotsData[timeKey],
-                        status: "booked",
-                        service: selectedService,
-                        name: name,
-                        email: email,
-                        phone: phone,
-                        confirmationId: confirmationId
-                    };
-                }
-                currentSlot = new Date(currentSlot.getTime() + 30 * 60 * 1000); // Increment by 30 minutes
-            }
-
-            // Update Firestore with new slot data
-            await updateDoc(availabilityRef, { availableSlots: updatedSlotsData });
-
-            // Notify user of successful booking
-            messageDiv.textContent = "Appointment booked successfully.";
-            messageDiv.classList.add("success");
-
-            // Send appointment data to your server endpoint
             const response = await fetch('/book_appointment', {
                 method: 'POST',
                 headers: {
@@ -334,24 +220,34 @@ document.addEventListener("DOMContentLoaded", function () {
                     phone,
                     service: selectedService,
                     date: selectedDate,
-                    slot: selectedSlotId,
-                    confirmationId: confirmationId
+                    slot: selectedSlotId
                 })
             });
 
-            const result = await response.text();
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to book appointment');
+            }
+
+            const result = await response.json();
             console.log("Server response:", result);
-            messageDiv.textContent = result;
+            
+            messageDiv.textContent = `Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}`;
             messageDiv.classList.add("success");
-            location.reload();
+            messageDiv.classList.remove("error");
+
+            // Reset form after successful booking
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
 
         } catch (error) {
             console.error("Error booking appointment:", error);
-            messageDiv.textContent = "Error booking appointment.";
+            messageDiv.textContent = error.message || "Error booking appointment. Please try again.";
             messageDiv.classList.add("error");
+            messageDiv.classList.remove("success");
         }
     }
-
 
     form.addEventListener("submit", function (event) {
         event.preventDefault();
