@@ -104,8 +104,8 @@ app.get('/api/available-slots/:date', async (req, res) => {
             [date]
         );
 
-        const availableSlots = result.rows.map(row => row.time_slot);
-        res.json({ availableSlots });
+        // Return the array directly with correct property names
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching available slots:', error);
         res.status(500).json({ error: 'Error fetching available slots' });
@@ -114,7 +114,11 @@ app.get('/api/available-slots/:date', async (req, res) => {
 
 // Endpoint to handle appointment booking
 app.post('/book_appointment', async (req, res) => {
-    const { name, email, phone, service, date, slot, confirmationId } = req.body;
+    const { name, email, phone, service, date, slot } = req.body;
+
+    // Generate confirmation ID on server side
+    const { v4: uuidv4 } = require('uuid');
+    const confirmationId = uuidv4();
 
     const connection = await pool.connect();
     
@@ -135,7 +139,7 @@ app.post('/book_appointment', async (req, res) => {
         // Create appointment
         const appointmentResult = await connection.query(
             `INSERT INTO appointments (confirmation_id, name, email, phone, service, appointment_date, time_slot, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, 'booked') RETURNING id`,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, 'booked') RETURNING id, confirmation_id`,
             [confirmationId, name, email, phone, service, date, slot]
         );
 

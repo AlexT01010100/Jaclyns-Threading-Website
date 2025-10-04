@@ -224,12 +224,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Failed to book appointment');
+                // Display user-friendly error message
+                const errorMessage = result.error || 'Failed to book appointment. Please try selecting a different time slot.';
+                throw new Error(errorMessage);
             }
 
-            const result = await response.json();
             console.log("Server response:", result);
             
             messageDiv.textContent = `Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}`;
@@ -243,9 +245,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         } catch (error) {
             console.error("Error booking appointment:", error);
-            messageDiv.textContent = error.message || "Error booking appointment. Please try again.";
+            // Show user-friendly error message
+            messageDiv.textContent = error.message || "Unable to book this time slot. It may have just been booked. Please select a different time.";
             messageDiv.classList.add("error");
             messageDiv.classList.remove("success");
+            
+            // Refresh available slots after error
+            updateAvailableSlots();
         }
     }
 
