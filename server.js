@@ -418,7 +418,7 @@ app.get('/api/appointment/:confirmationId', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT name, email, phone, service, appointment_date, time_slot, status FROM appointments WHERE confirmation_id = $1',
+            'SELECT name, email, phone, service, appointment_date, time_slot, status, confirmation_id FROM appointments WHERE confirmation_id = $1',
             [confirmationId]
         );
 
@@ -430,6 +430,64 @@ app.get('/api/appointment/:confirmationId', async (req, res) => {
     } catch (error) {
         console.error('Error fetching appointment:', error);
         res.status(500).json({ error: 'Error fetching appointment details' });
+    }
+});
+
+// Endpoint to update appointment user information
+app.put('/api/appointment/:confirmationId', async (req, res) => {
+    const { confirmationId } = req.params;
+    const { name, email, phone } = req.body;
+
+    if (!name || !email || !phone) {
+        return res.status(400).json({ error: 'Name, email, and phone are required' });
+    }
+
+    try {
+        // Update the appointment
+        const result = await pool.query(
+            'UPDATE appointments SET name = $1, email = $2, phone = $3 WHERE confirmation_id = $4 RETURNING *',
+            [name, email, phone, confirmationId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Appointment not found' });
+        }
+
+        // Send confirmation email
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        const appointment = result.rows[0];
+
+        let mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Appointment Information Updated',
+            html: `
+                <h2>Dear ${name},</h2>
+                <p>Your appointment information has been updated successfully.</p>
+                <p><strong>Service:</strong> ${appointment.service}</p>
+                <p><strong>Date:</strong> ${appointment.appointment_date}</p>
+                <p><strong>Time:</strong> ${appointment.time_slot}</p>
+                <p>Confirmation ID: <strong>${confirmationId}</strong></p>
+                <br>
+                <p>Thank you!</p>
+                <p>Jaclyn's Threading Salon</p>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({ success: true, message: 'Appointment updated successfully', appointment: result.rows[0] });
+
+    } catch (error) {
+        console.error('Error updating appointment:', error);
+        res.status(500).json({ error: 'Error updating appointment' });
     }
 });
 

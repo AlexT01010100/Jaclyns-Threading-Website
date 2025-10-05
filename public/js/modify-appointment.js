@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const confirmationId = urlParams.get('confirmationId');
     const messageDiv = document.getElementById('message');
+    let currentAppointment = null;
 
     if (!confirmationId) {
         messageDiv.textContent = 'No confirmation ID provided.';
@@ -9,19 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Display the confirmation ID
-    document.getElementById('confirmationId').value = confirmationId;
+    // Display the confirmation ID if element exists
+    const confirmationIdInput = document.getElementById('confirmationId');
+    if (confirmationIdInput) {
+        confirmationIdInput.value = confirmationId;
+    }
 
     // Fetch and display appointment details
     fetchAppointmentDetails(confirmationId);
-
-    // Cancel button handler
-    document.getElementById('cancel-button').addEventListener('click', async function () {
-        if (confirm('Are you sure you want to cancel this appointment?')) {
-            await cancelAppointment(confirmationId);
-        }
-    });
-
+ 
     async function fetchAppointmentDetails(confirmationId) {
         try {
             const response = await fetch(`/api/appointment/${confirmationId}`);
@@ -30,8 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('Appointment not found');
             }
 
-            const appointment = await response.json();
-            displayAppointmentDetails(appointment);
+            currentAppointment = await response.json();
+            console.log('Fetched appointment:', currentAppointment); // Debug log
+            displayAppointmentDetails(currentAppointment);
         } catch (error) {
             console.error('Error fetching appointment:', error);
             messageDiv.textContent = 'Error fetching appointment details. Please check your confirmation ID.';
@@ -42,16 +40,119 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayAppointmentDetails(appointment) {
         const detailsDiv = document.getElementById('appointment-details');
         if (detailsDiv) {
+            // Format the date to remove T00:00:00.000Z
+            const formattedDate = appointment.appointment_date.split('T')[0];
+            
+            // Capitalize first letter of service
+            const capitalizedService = appointment.service.charAt(0).toUpperCase() + appointment.service.slice(1);
+            
+            // Check if appointment is cancelled
+            const isCancelled = appointment.status === 'cancelled';
+            
             detailsDiv.innerHTML = `
                 <h3>Appointment Details</h3>
-                <p><strong>Name:</strong> ${appointment.name}</p>
-                <p><strong>Email:</strong> ${appointment.email}</p>
-                <p><strong>Phone:</strong> ${appointment.phone}</p>
-                <p><strong>Service:</strong> ${appointment.service}</p>
-                <p><strong>Date:</strong> ${appointment.appointment_date}</p>
-                <p><strong>Time:</strong> ${appointment.time_slot}</p>
-                <p><strong>Status:</strong> ${appointment.status}</p>
+                
+                <!-- Read-only fields -->
+                <div class="detail-group read-only">
+                    <p><strong>🔖 Confirmation ID:</strong> ${appointment.confirmation_id || confirmationId}</p>
+                    <p><strong>💼 Service:</strong> ${capitalizedService}</p>
+                    <p><strong>📅 Date:</strong> ${formattedDate}</p>
+                    <p><strong>🕒 Time:</strong> ${appointment.time_slot}</p>
+                    <p><strong>📊 Status:</strong> <span class="status-${appointment.status}">${appointment.status.toUpperCase()}</span></p>
+                </div>
+
+                ${!isCancelled ? `
+                <!-- Editable fields (only shown if not cancelled) -->
+                <div class="detail-group editable">
+                    <h4>Edit Your Information:</h4>
+                    <div class="form-group">
+                        <label for="edit-name">👤 Name:</label>
+                        <input type="text" id="edit-name" value="${appointment.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">📧 Email:</label>
+                        <input type="email" id="edit-email" value="${appointment.email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-phone">📱 Phone:</label>
+                        <input type="tel" id="edit-phone" value="${appointment.phone}" required>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="update-button" class="btn btn-primary">💾 Update Information</button>
+                    <button id="cancel-button" class="btn btn-danger">❌ Cancel Appointment</button>
+                </div>
+                ` : `
+                <div class="button-group">
+                    <button class="btn btn-danger" disabled>❌ Appointment Canceled</button>
+                </div>
+                `}
             `;
+
+            // Re-attach event listeners after DOM update (only if not cancelled)
+            if (!isCancelled) {
+                document.getElementById('update-button').addEventListener('click', async function () {
+                    await updateAppointment(confirmationId);
+                });
+
+                document.getElementById('cancel-button').addEventListener('click', async function () {
+                    if (confirm('Are you sure you want to cancel this appointment?')) {
+                        await cancelAppointment(confirmationId);
+                    }
+                });
+            }
+        }
+    }
+
+    async function updateAppointment(confirmationId) {
+        const name = document.getElementById('edit-name').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+
+        if (!name || !email || !phone) {
+            messageDiv.textContent = 'Please fill in all fields.';
+            messageDiv.classList.add('error');
+            messageDiv.classList.remove('success');
+            return;
+        }
+
+        try {
+            messageDiv.textContent = 'Updating appointment...';
+            messageDiv.classList.remove('error', 'success');
+
+            // Use confirmation ID to update
+            const response = await fetch(`/api/appointment/${confirmationId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to update appointment');
+            }
+
+            messageDiv.textContent = 'Appointment updated successfully! ✅';
+            messageDiv.classList.add('success');
+            messageDiv.classList.remove('error');
+
+            // Refresh appointment details without clearing the success message
+            setTimeout(() => {
+                fetchAppointmentDetails(confirmationId);
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error updating appointment:', error);
+            messageDiv.textContent = error.message || 'Error updating appointment. Please try again.';
+            messageDiv.classList.add('error');
+            messageDiv.classList.remove('success');
         }
     }
 
@@ -60,27 +161,23 @@ document.addEventListener('DOMContentLoaded', function () {
             messageDiv.textContent = 'Canceling appointment...';
             messageDiv.classList.remove('error', 'success');
 
-            const response = await fetch('/cancel-appointment', {
+            const date = currentAppointment.appointment_date;
+            const response = await fetch(`/cancel-appointment?confirmationId=${confirmationId}&date=${date}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ confirmationId })
+                }
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Failed to cancel appointment');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to cancel appointment');
             }
 
             const result = await response.json();
-            messageDiv.textContent = result.message || 'Appointment canceled successfully!';
+            messageDiv.textContent = result.message || 'Appointment canceled successfully! ✅';
             messageDiv.classList.add('success');
             messageDiv.classList.remove('error');
-
-            // Disable the cancel button after successful cancellation
-            document.getElementById('cancel-button').disabled = true;
-            document.getElementById('cancel-button').textContent = 'Appointment Canceled';
 
             // Refresh appointment details
             setTimeout(() => {
