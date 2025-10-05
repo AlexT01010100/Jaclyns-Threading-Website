@@ -57,6 +57,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
     }
 
+    function convertTo24Hour(time12) {
+        const [time, period] = time12.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+        
+        if (period === 'PM' && hours !== 12) {
+            hours += 12;
+        } else if (period === 'AM' && hours === 12) {
+            hours = 0;
+        }
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
     // Fetch all slots for admin view
     async function fetchAdminSlots(date) {
         try {
@@ -93,8 +106,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Sort by time slot to preserve time order
-        slots.sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+        // Sort by time slot properly (handles 12-hour format)
+        slots.sort((a, b) => {
+            const timeA = convertTo24Hour(a.time_slot);
+            const timeB = convertTo24Hour(b.time_slot);
+            return timeA.localeCompare(timeB);
+        });
 
         slots.forEach(slot => {
             const slotElement = document.createElement('div');
