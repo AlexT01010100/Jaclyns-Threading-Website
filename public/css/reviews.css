@@ -310,8 +310,8 @@ body::-webkit-scrollbar-thumb {
     overflow: hidden;
 }
 
-/* Make 5th card (last in row of 5) span full width */
-.review-card:nth-child(5):last-child {
+/* Make card span full width when alone in a row */
+.review-row .review-card:only-child {
     flex: 1 1 100%;
     max-width: 100%;
 }
