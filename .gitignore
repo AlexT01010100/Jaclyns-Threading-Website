@@ -5,7 +5,6 @@ node_modules
 jaclyns-threading-firebase-admin.json
 firebase.json
 .firebaserc
-server-sql.js
 
 # IDE
 .vscode/
