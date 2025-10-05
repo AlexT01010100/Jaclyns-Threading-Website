@@ -241,18 +241,28 @@ body::-webkit-scrollbar-thumb {
     }
 }
 
-.slot-item .info-row, .slot-item .details-row{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    flex-wrap: wrap; /* Allow wrapping of content */
+/* Status header - centered at top */
+.slot-item .status-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
 }
 
-.slot-item .info-row > div, .slot-item .details-row > div {
-    flex: 1;
+/* Details rows - 3 columns per row */
+.slot-item .details-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.slot-item .details-row > div {
     word-wrap: break-word;
     overflow-wrap: break-word;
-    min-width: 0; /* Allow shrinking of flex items */
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
 }
 
 .slot-item:hover {
@@ -269,18 +279,17 @@ body::-webkit-scrollbar-thumb {
 
 /* Slot item buttons */
 .slot-item .delete-button,
+.slot-item .toggle-button,
 .slot-item .book-button,
-.slot-item .edit-name-button,
-.slot-item .edit-email-button,
-.slot-item .edit-service-button,
-.slot-item .edit-phone-button {
-    padding: 8px 12px;
-    font-size: 14px;
+button[class*="edit-"] {
+    padding: 8px 16px;
+    font-size: 13px;
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .slot-item .delete-button {
@@ -289,7 +298,18 @@ body::-webkit-scrollbar-thumb {
 
 .slot-item .delete-button:hover {
     background-color: #c82333;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.slot-item .toggle-button {
+    background-color: #17a2b8;
+}
+
+.slot-item .toggle-button:hover {
+    background-color: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
 }
 
 .slot-item .book-button {
@@ -298,22 +318,60 @@ body::-webkit-scrollbar-thumb {
 
 .slot-item .book-button:hover {
     background-color: #218838;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
-.slot-item .edit-name-button,
-.slot-item .edit-email-button,
-.slot-item .edit-service-button,
-.slot-item .edit-phone-button {
-    background-color: #fd7e14; /* Orange color */
+button[class*="edit-"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-left: 8px;
+    font-size: 12px;
+    padding: 6px 12px;
 }
 
-.slot-item .edit-name-button:hover,
-.slot-item .edit-email-button:hover,
-.slot-item .edit-service-button:hover,
-.slot-item .edit-phone-button:hover {
-    background-color: #e86c0c; /* Darker orange */
-    transform: scale(1.05);
+button[class*="edit-"]:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* Status badges */
+.status-booked {
+    background-color: #28a745;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-available {
+    background-color: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-unavailable {
+    background-color: #6c757d;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Enhanced slot item styling */
+.slot-item {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-left: 4px solid #007bff;
+}
+
+.slot-item:hover {
+    border-left-color: #0056b3;
+    transform: translateX(2px);
 }
 
 /* Slot details */

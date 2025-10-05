@@ -93,6 +93,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Sort by time slot to preserve time order
+        slots.sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+
         slots.forEach(slot => {
             const slotElement = document.createElement('div');
             slotElement.classList.add('slot-item');
@@ -101,22 +104,38 @@ document.addEventListener('DOMContentLoaded', function () {
             const buttonText = slot.is_available ? 'Mark as Unavailable' : 'Mark as Available';
 
             slotElement.innerHTML = `
-                <div class="info-row">
-                    <div><strong>Time:</strong> ${slot.time_slot}</div>
-                    <div><strong>Status:</strong> <span class="status-${status}">${status}</span></div>
-                    <div><strong>Service:</strong> ${slot.service || 'N/A'}</div>
+                <div class="status-header">
+                    <span class="status-${status}">${status.toUpperCase()}</span>
                 </div>
                 <div class="details-row">
-                    <div><strong>Name:</strong> ${slot.name || 'N/A'}</div>
-                    <div><strong>Email:</strong> ${slot.email || 'N/A'}</div>
-                    <div><strong>Phone:</strong> ${slot.phone || 'N/A'}</div>
+                    <div>
+                        <strong>🕒 Time:</strong> ${slot.time_slot}
+                    </div>
+                    <div>
+                        <strong>👤 Name:</strong> ${slot.name || 'N/A'}
+                        ${slot.appointment_id ? `<button type="button" class="edit-name-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
+                    </div>
+                    <div>
+                        <strong>📧 Email:</strong> ${slot.email || 'N/A'}
+                        ${slot.appointment_id ? `<button type="button" class="edit-email-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
+                    </div>
+                </div>
+                <div class="details-row">
+                    <div>
+                        <strong>📱 Phone:</strong> ${slot.phone || 'N/A'}
+                        ${slot.appointment_id ? `<button type="button" class="edit-phone-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
+                    </div>
+                    <div>
+                        <strong>💼 Service:</strong> ${slot.service || 'N/A'}
+                        ${slot.appointment_id ? `<button type="button" class="edit-service-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
+                    </div>
+                    <div>
+                        <strong>🔖 Confirmation:</strong> ${slot.confirmation_id || 'N/A'}
+                    </div>
                 </div>
                 <div class="button-container">
                     <button type="button" class="toggle-button" data-slot-time="${slot.time_slot}">${buttonText}</button>
-                    <button type="button" class="delete-button" data-slot-time="${slot.time_slot}">Delete Slot</button>
-                    ${slot.appointment_id ? `
-                        <button type="button" class="edit-button" data-appointment-id="${slot.appointment_id}">Edit Details</button>
-                    ` : ''}
+                    <button type="button" class="delete-button" data-slot-time="${slot.time_slot}">🗑️ Delete</button>
                 </div>
             `;
 
@@ -128,10 +147,25 @@ document.addEventListener('DOMContentLoaded', function () {
             const deleteButton = slotElement.querySelector('.delete-button');
             deleteButton.addEventListener('click', () => deleteSlot(slot.time_slot));
 
-            // Edit appointment details
-            if (slot.appointment_id) {
-                const editButton = slotElement.querySelector('.edit-button');
-                editButton.addEventListener('click', () => editAppointment(slot));
+            // Edit individual fields - ALL slots are now editable
+            const editNameBtn = slotElement.querySelector('.edit-name-btn');
+            if (editNameBtn) {
+                editNameBtn.addEventListener('click', () => editField(slot.appointment_id, 'name', slot.name));
+            }
+
+            const editEmailBtn = slotElement.querySelector('.edit-email-btn');
+            if (editEmailBtn) {
+                editEmailBtn.addEventListener('click', () => editField(slot.appointment_id, 'email', slot.email));
+            }
+
+            const editPhoneBtn = slotElement.querySelector('.edit-phone-btn');
+            if (editPhoneBtn) {
+                editPhoneBtn.addEventListener('click', () => editField(slot.appointment_id, 'phone', slot.phone));
+            }
+
+            const editServiceBtn = slotElement.querySelector('.edit-service-btn');
+            if (editServiceBtn) {
+                editServiceBtn.addEventListener('click', () => editField(slot.appointment_id, 'service', slot.service));
             }
 
             slotsListContainer.appendChild(slotElement);
@@ -186,36 +220,47 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function editAppointment(slot) {
-        const newName = prompt('Enter new name:', slot.name);
-        if (newName === null) return;
+    async function editField(appointmentId, fieldName, currentValue) {
+        const fieldLabel = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+        const newValue = prompt(`Enter new ${fieldLabel}:`, currentValue);
         
-        const newEmail = prompt('Enter new email:', slot.email);
-        if (newEmail === null) return;
-        
-        const newPhone = prompt('Enter new phone:', slot.phone);
-        if (newPhone === null) return;
-        
-        const newService = prompt('Enter new service:', slot.service);
-        if (newService === null) return;
+        if (newValue === null || newValue === currentValue) return;
 
         try {
-            const response = await fetch(`/api/admin/appointments/${slot.appointment_id}`, {
+            // Get current appointment data
+            const slots = await fetchAdminSlots(slotDateInput.value);
+            const slot = slots.find(s => s.appointment_id === appointmentId);
+            
+            if (!slot) {
+                alert('Appointment not found');
+                return;
+            }
+
+            // Prepare updated data
+            const updateData = {
+                name: slot.name,
+                email: slot.email,
+                phone: slot.phone,
+                service: slot.service
+            };
+            updateData[fieldName] = newValue;
+
+            const response = await fetch(`/api/admin/appointments/${appointmentId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newName, email: newEmail, phone: newPhone, service: newService })
+                body: JSON.stringify(updateData)
             });
 
             if (response.ok) {
-                alert('Appointment updated');
-                const slots = await fetchAdminSlots(slotDateInput.value);
-                renderSlots(slots);
+                alert(`${fieldLabel} updated successfully`);
+                const updatedSlots = await fetchAdminSlots(slotDateInput.value);
+                renderSlots(updatedSlots);
             } else {
-                alert('Error updating appointment');
+                alert(`Error updating ${fieldLabel}`);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error updating appointment');
+            alert(`Error updating ${fieldLabel}`);
         }
     }
 
