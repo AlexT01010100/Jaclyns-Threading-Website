@@ -57,7 +57,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             const slots = await response.json();
-            console.log("Fetched slots:", slots);
+            console.log("Fetched slots from server:", slots);
+            console.log("Number of slots:", slots.length);
+            
+            // Log each slot's availability status
+            slots.forEach(slot => {
+                console.log(`Slot ${slot.time_slot}: is_available = ${slot.is_available}`);
+            });
+            
             return slots;
         } catch (error) {
             console.error("Error fetching available slots:", error);
@@ -66,7 +73,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function filterSlotsForService(slots, service) {
-        if (slots.length === 0) return [];
+        console.log("Filtering slots for service:", service);
+        console.log("Input slots:", slots.length);
+        
+        if (slots.length === 0) {
+            console.log("No slots to filter");
+            return [];
+        }
+
+        // First, filter out any unavailable slots (safety check)
+        // The server should already only send available slots, but double-check
+        const availableSlots = slots.filter(slot => {
+            const isAvailable = slot.is_available === true;
+            if (!isAvailable) {
+                console.warn("Found unavailable slot in response:", slot);
+            }
+            return isAvailable;
+        });
+        
+        console.log("After availability filter:", availableSlots.length, "slots");
+        
+        if (availableSlots.length === 0) {
+            console.log("No available slots after filtering");
+            return [];
+        }
 
         // Define durations for different services (in milliseconds)
         const serviceDurations = {
@@ -79,8 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const duration = serviceDurations[service.toLowerCase()] || 1 * 60 * 60 * 1000;
 
         // Convert slot times to Date objects and sort them
-        const timeSlots = slots
-            .filter(slot => slot.is_available)
+        const timeSlots = availableSlots
             .map(slot => ({
                 time: parseTimeTo24Hour(slot.time_slot),
                 original: slot.time_slot
@@ -170,10 +199,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (selectedDate && selectedService) {
             fetchAvailableSlotsForDate(selectedDate)
                 .then(slots => {
-                    if (selectedService === 'microblading' || selectedService === 'threading') {
-                        slots = filterSlotsForService(slots, selectedService);
-                    }
-                    renderSlots(slots);
+                    // Always filter slots through the service-specific logic
+                    // This ensures proper duration checking for all services
+                    const filteredSlots = filterSlotsForService(slots, selectedService);
+                    renderSlots(filteredSlots);
                 })
                 .catch(error => {
                     console.error("Error fetching available slots:", error);
@@ -194,20 +223,28 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAvailableSlots();
     });
 
+    function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = ''; // Clear all classes
+        if (type) {
+            messageDiv.classList.add(type);
+        }
+        // Scroll message into view
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
     async function bookAppointment() {
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
 
         if (!selectedDate || !selectedService || !selectedSlotId) {
-            messageDiv.textContent = "Please select a date, service, and time slot.";
-            messageDiv.classList.add("error");
+            showMessage("Please select a date, service, and time slot.", "error");
             return;
         }
 
         try {
-            messageDiv.textContent = "Booking appointment...";
-            messageDiv.classList.remove("error", "success");
+            showMessage("Booking appointment...", "");
 
             const response = await fetch('/book_appointment', {
                 method: 'POST',
@@ -234,21 +271,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             console.log("Server response:", result);
             
-            messageDiv.textContent = `Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}`;
-            messageDiv.classList.add("success");
-            messageDiv.classList.remove("error");
+            showMessage(`✓ Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}. Check your email for details.`, "success");
 
             // Reset form after successful booking
             setTimeout(() => {
                 location.reload();
-            }, 3000);
+            }, 4000);
 
         } catch (error) {
             console.error("Error booking appointment:", error);
             // Show user-friendly error message
-            messageDiv.textContent = error.message || "Unable to book this time slot. It may have just been booked. Please select a different time.";
-            messageDiv.classList.add("error");
-            messageDiv.classList.remove("success");
+            showMessage(error.message || "Unable to book this time slot. It may have just been booked. Please select a different time.", "error");
             
             // Refresh available slots after error
             updateAvailableSlots();
@@ -260,15 +293,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!selectedSlotId) {
             console.error("No slot selected.");
-            messageDiv.textContent = "Please select a slot.";
-            messageDiv.classList.add("error");
+            showMessage("Please select a time slot.", "error");
             return;
         }
 
         if (!selectedDate || !selectedService) {
             console.error("Date or service not selected.");
-            messageDiv.textContent = "Please select both date and service.";
-            messageDiv.classList.add("error");
+            showMessage("Please select both date and service.", "error");
             return;
         }
 

@@ -16,6 +16,11 @@ document.addEventListener('click', function(event) {
 //form handling
 document.addEventListener('DOMContentLoaded', function() {
     var contactForm = document.getElementById('contactForm');
+    
+    // Check if the contact form exists on this page
+    if (!contactForm) {
+        return; // Exit if not on contact page
+    }
 
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission behavior

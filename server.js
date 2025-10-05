@@ -99,13 +99,26 @@ app.get('/api/available-slots/:date', async (req, res) => {
     const { date } = req.params;
 
     try {
+        // Query with explicit check for is_available = true AND appointment_id IS NULL
+        // This ensures we don't show slots that are linked to any appointment
         const result = await pool.query(
-            'SELECT time_slot, is_available FROM time_slots WHERE slot_date = $1 AND is_available = true ORDER BY time_slot',
+            `SELECT time_slot, is_available 
+             FROM time_slots 
+             WHERE slot_date = $1 
+             AND is_available = true 
+             AND appointment_id IS NULL
+             ORDER BY time_slot`,
             [date]
         );
 
-        // Return the array directly with correct property names
-        res.json(result.rows);
+        console.log(`Available slots for ${date}:`, result.rows.length, 'slots found');
+        
+        // Extra safety: ensure we only return truly available slots
+        const availableSlots = result.rows.filter(slot => slot.is_available === true);
+        
+        console.log(`Returning ${availableSlots.length} available slots`);
+        
+        res.json(availableSlots);
     } catch (error) {
         console.error('Error fetching available slots:', error);
         res.status(500).json({ error: 'Error fetching available slots' });
