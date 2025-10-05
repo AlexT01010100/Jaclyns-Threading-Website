@@ -89,8 +89,40 @@ body::-webkit-scrollbar-thumb {
   font-size: 2vh;
   text-align: center;
   padding: 2rem;
-  max-width: 100%; /* prevent overflow */
+  max-width: 100%;
   margin-bottom: -10rem;
+}
+
+.why-jaclyn h1, .why-jaclyn h2, .why-jaclyn p, .why-jaclyn .booking-button-homepage {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.why-jaclyn h1 {
+  animation-delay: 0.2s;
+}
+
+.why-jaclyn h2 {
+  animation-delay: 0.4s;
+}
+
+.why-jaclyn .booking-button-homepage {
+  animation-delay: 0.6s;
+}
+
+.why-jaclyn p {
+  animation-delay: 0.8s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -251,12 +283,49 @@ body::-webkit-scrollbar-thumb {
 .info-section,
 .info-section-reversed {
   display: flex;
-  flex-direction: column; /* Stack items vertically on smaller screens */
+  flex-direction: column;
   align-items: center;
   text-align: center;
   padding: 20px;
   margin-top: 130px;
   background: white;
+}
+
+.info-section h1, .info-section h2, .info-section p, .info-section .learn-more-button,
+.info-section-reversed h1, .info-section-reversed h2, .info-section-reversed p, .info-section-reversed .learn-more-button-reversed {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.info-section h1, .info-section-reversed h1 {
+  animation-delay: 0.2s;
+}
+
+.info-section h2, .info-section-reversed h2 {
+  animation-delay: 0.4s;
+}
+
+.info-section p, .info-section-reversed p {
+  animation-delay: 0.6s;
+}
+
+.info-section .learn-more-button, .info-section-reversed .learn-more-button-reversed {
+  animation-delay: 0.8s;
+}
+
+.info-section img, .info-section-reversed img {
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .info-section-reversed {
@@ -574,15 +643,33 @@ body::-webkit-scrollbar-thumb {
 }
 
 #homepage-footer-container {
+  position: relative;
   top: 9rem;
 }
 
 #homepage-footer-button {
-  top: -3rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6rem;
 }
 
 #homepage-footer-copyright-text {
+  position: relative;
   top: 6.5rem;
+}
+
+/* Prevent text selection from causing layout jumps */
+.why-jaclyn, .why-jaclyn * {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.why-jaclyn h1, .why-jaclyn h2, .why-jaclyn p {
+  position: static;
+  margin: 1rem auto;
 }
 
 /* Homepage Google Reviews Section */
@@ -703,4 +790,22 @@ body::-webkit-scrollbar-thumb {
   .review-title-homepage {
     font-size: 2rem;
   }
+}
+
+/* Book Now Button in Navbar */
+.navbar-menu .book-now-nav {
+    background: linear-gradient(135deg, #ffd700, #c2a76b) !important;
+    color: #000 !important;
+    font-weight: bold;
+    padding: 0.7rem 1.5rem !important;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.navbar-menu .book-now-nav:hover {
+    background: linear-gradient(135deg, #ffed4e, #ffd700) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    color: #000 !important;
 }
