@@ -12,9 +12,42 @@ function fadeInOnScroll() {
 
 document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".gallery-item");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const gallerySections = document.querySelectorAll(".gallery-section");
 
     // Initial check on page load
     fadeInOnScroll();
+
+    // Service filter functionality
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const service = button.getAttribute('data-service');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Filter sections
+            if (service === 'all') {
+                gallerySections.forEach(section => {
+                    section.classList.remove('hidden');
+                });
+            } else {
+                gallerySections.forEach(section => {
+                    if (section.getAttribute('data-service') === service) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Re-trigger fade-in effect for visible items
+            setTimeout(() => {
+                fadeInOnScroll();
+            }, 100);
+        });
+    });
 
     galleryItems.forEach((item) => {
         item.addEventListener('click', (event) => {
@@ -63,4 +96,3 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
-

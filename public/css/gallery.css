@@ -122,6 +122,17 @@ body::-webkit-scrollbar-thumb {
     font-family: 'Spectral', serif;
 }
 
+.page-subtitle {
+    margin: 0;
+    position: relative;
+    top: 130px;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #d4c08d;
+    font-family: 'Spectral', serif;
+    margin-bottom: 2rem;
+}
+
 /* Media query to adjust margin when logo wraps */
 @media screen and (max-width: 1080px) and (min-width: 800px){
     .page-title-container {
@@ -129,21 +140,121 @@ body::-webkit-scrollbar-thumb {
     }
 }
 
+/* Service Filter Navigation */
+.service-filter {
+    position: relative;
+    top: 150px;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn {
+    padding: 12px 24px;
+    background-color: #f5f5f5;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    background-color: #e0e0e0;
+    border-color: #c2a76b;
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background-color: #c2a76b;
+    color: white;
+    border-color: #c2a76b;
+    box-shadow: 0 4px 8px rgba(194, 167, 107, 0.3);
+}
+
+@media screen and (max-width: 768px) {
+    .service-filter {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .filter-btn {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+}
+
 /* Gallery section*/
-.gallery-container {
+.gallery-wrapper {
+    position: relative;
+    top: 160px;
+    max-width: 1400px;
+    margin: 0 auto;
     padding-bottom: 100px;
 }
 
+.gallery-section {
+    margin-bottom: 60px;
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.gallery-section.hidden {
+    display: none;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #c2a76b;
+    padding-bottom: 20px;
+}
+
+.section-title {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-family: 'Spectral', serif;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: #666;
+    font-style: italic;
+}
+
 .gallery {
-    position: relative;
-    top: 10rem;
-    max-width: 1400px;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
-    padding: 20px;
-    background: white;
+}
+
+@media screen and (max-width: 768px) {
+    .gallery-section {
+        padding: 20px 15px;
+        margin-bottom: 40px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-description {
+        font-size: 1rem;
+    }
 }
 .gallery-item {
     overflow: hidden;
@@ -247,7 +358,7 @@ body.modal-open {
 /* Footer Section */
 .contact-me-container-gallery {
     position: relative;
-    top: 12rem;
+    top: 170px;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../images/microblading-footer.jpg") no-repeat center center;
     background-size: cover;
     background-position: 70%;
@@ -348,7 +459,7 @@ body.modal-open {
 footer p {
     position: relative;
     color: white;
-    top: 154px;
+    top: 180px;
     font-size: 14px;
     text-align: right; /* Align text to the right */
 }
