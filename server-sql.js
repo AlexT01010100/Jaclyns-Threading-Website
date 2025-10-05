@@ -768,6 +768,39 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
     }
 });
 
+// Google Reviews API endpoint
+app.get('/api/reviews', async (req, res) => {
+    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Threading Salon
+    
+    if (!process.env.GOOGLE_API_KEY) {
+        return res.status(500).json({ 
+            error: 'Google API key not configured',
+            message: 'Please add GOOGLE_API_KEY to your .env file' 
+        });
+    }
+
+    try {
+        const fetch = require('node-fetch');
+        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,user_ratings_total,reviews&key=${process.env.GOOGLE_API_KEY}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.status === 'OK' && data.result) {
+            res.json(data.result);
+        } else {
+            console.error('Google API Error:', data.status, data.error_message);
+            res.status(400).json({ 
+                error: data.status,
+                message: data.error_message || 'Failed to fetch reviews'
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching Google reviews:', error);
+        res.status(500).json({ error: 'Error fetching reviews from Google' });
+    }
+});
+
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {

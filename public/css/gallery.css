@@ -415,10 +415,9 @@ body.modal-open {
 }
 
 .contact-button-footer-gallery {
-    position: relative;
-    margin-top: 0.5rem; /* Adjust as needed to raise the button */
-    left: 50%;
-    transform: translate(-51%, -155%);
+    display: block;
+    margin: 0 auto;
+    margin-top: -15rem;
     background-color: #0f0f0f;
     color: white;
     height: 5rem;
@@ -427,6 +426,8 @@ body.modal-open {
     font-family: times, serif;
     z-index: 1;
     padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
 }
 
 

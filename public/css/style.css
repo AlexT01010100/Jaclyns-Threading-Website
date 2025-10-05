@@ -584,3 +584,123 @@ body::-webkit-scrollbar-thumb {
 #homepage-footer-copyright-text {
   top: 6.5rem;
 }
+
+/* Homepage Google Reviews Section */
+.reviews-section-homepage {
+  background-color: #ffffff;
+  padding: 60px 5%;
+  margin-top: 80px;
+}
+
+.review-title-homepage {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #c2a76b;
+  margin-bottom: 30px;
+  font-family: 'Spectral', serif;
+}
+
+.overall-rating-homepage {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.rating-summary-homepage {
+  display: inline-block;
+  padding: 15px 30px;
+  background: rgba(194, 167, 107, 0.1);
+  border-radius: 8px;
+}
+
+.stars-homepage {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.stars-homepage .star {
+  color: #ffd700;
+  margin-right: 5px;
+}
+
+.rating-text-homepage {
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.loading-state-homepage {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading-state-homepage i {
+  font-size: 36px;
+  color: #c2a76b;
+  margin-bottom: 15px;
+}
+
+.reviews-homepage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin: 0 auto;
+  max-width: 1400px;
+}
+
+.reviews-homepage .review-card {
+  flex: 1 1 300px;
+  max-width: 400px;
+  min-width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  min-height: 250px;
+}
+
+.reviews-homepage .review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.view-more-homepage {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.view-more-btn-homepage {
+  display: inline-block;
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #c2a76b, #8b7355);
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(194, 167, 107, 0.3);
+}
+
+.view-more-btn-homepage:hover {
+  background: linear-gradient(135deg, #d4c08d, #c2a76b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(194, 167, 107, 0.5);
+}
+
+.view-more-btn-homepage i {
+  margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+  .reviews-homepage {
+    grid-template-columns: 1fr;
+  }
+  
+  .review-title-homepage {
+    font-size: 2rem;
+  }
+}
