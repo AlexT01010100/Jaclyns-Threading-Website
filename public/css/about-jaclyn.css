@@ -424,6 +424,85 @@ footer p {
     margin-right: 8px;
 }
 
+/* Certificate Image Display */
+.certificate-preview {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.certificate-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.certificate-card:hover .certificate-image {
+    transform: scale(1.05);
+}
+
+/* Certificate Modal/Lightbox */
+.certificate-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.certificate-modal-content {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(194, 167, 107, 0.5);
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.certificate-modal-close {
+    position: absolute;
+    top: 30px;
+    right: 45px;
+    color: #c2a76b;
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10000;
+}
+
+.certificate-modal-close:hover,
+.certificate-modal-close:focus {
+    color: #ffffff;
+}
+
+.certificate-modal-caption {
+    text-align: center;
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     .certifications-title {
@@ -441,5 +520,20 @@ footer p {
     
     .certificate-card {
         padding: 25px;
+    }
+    
+    .certificate-modal-content {
+        max-width: 95%;
+        max-height: 80vh;
+    }
+    
+    .certificate-modal-close {
+        top: 15px;
+        right: 20px;
+        font-size: 40px;
+    }
+    
+    .certificate-modal-caption {
+        font-size: 1.2rem;
     }
 }
