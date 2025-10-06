@@ -84,7 +84,7 @@ body::-webkit-scrollbar-thumb {
   position: relative;
   top: -30vh;
   height: auto;
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   color: black;
   font-size: 2vh;
   text-align: center;
@@ -94,7 +94,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .why-jaclyn h1, .why-jaclyn h2, .why-jaclyn p, .why-jaclyn .booking-button-homepage {
-  opacity: 0;
+  opacity: 1;
   animation: fadeInUp 0.8s ease forwards;
 }
 
@@ -220,7 +220,7 @@ body::-webkit-scrollbar-thumb {
 .booking-button-homepage {
   display: block;
   margin: 20px auto; /* Adjusts space above and below the button */
-  bottom: 20px;
+  bottom: 0px;
   position: relative;;
   background-color: #0f0f0f;
   color: white;
