@@ -215,20 +215,21 @@ body::-webkit-scrollbar-thumb {
 
 .why-jaclyn a {
   text-decoration: none;
+  display: inline-block;
+  margin: 20px auto;
 }
 
 .booking-button-homepage {
   display: block;
-  margin: 20px auto; /* Adjusts space above and below the button */
-  bottom: 0px;
-  position: relative;;
+  margin: 0;
   background-color: #0f0f0f;
   color: white;
   height: 7rem;
   width: 12rem;
   font-size: 25px;
   font-family: times, serif;
-  z-index: 1;
+  border: none;
+  cursor: pointer;
   text-align: center;
 }
 
