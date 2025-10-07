@@ -95,4 +95,54 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     }
+    
+    // Before/After Slider Functionality
+    initializeBeforeAfterSliders();
 });
+
+function initializeBeforeAfterSliders() {
+    const sliders = document.querySelectorAll('.before-after-slider');
+    
+    sliders.forEach(slider => {
+        const container = slider.closest('.before-after-container');
+        const afterImage = slider.querySelector('.after-image');
+        const handle = slider.querySelector('.slider-handle');
+        let isDragging = false;
+        
+        // Mouse events
+        container.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        
+        // Touch events
+        container.addEventListener('touchstart', startDrag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('touchend', stopDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            updateSlider(e);
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            updateSlider(e);
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+        }
+        
+        function updateSlider(e) {
+            const rect = container.getBoundingClientRect();
+            const x = (e.type.includes('touch') ? e.touches[0].clientX : e.clientX) - rect.left;
+            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            
+            // Update clip path for after image
+            afterImage.style.clipPath = `polygon(0 0, ${percentage}% 0, ${percentage}% 100%, 0 100%)`;
+            
+            // Update handle position
+            handle.style.left = `${percentage}%`;
+        }
+    });
+}

@@ -638,3 +638,149 @@ body.modal-open {
         font-size: 1.2rem;
     }
 }
+
+/* Before/After Slider Styles */
+.before-after-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    cursor: ew-resize;
+    user-select: none;
+    background: #f5f5f5;
+}
+
+.before-after-slider {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* 4:3 aspect ratio */
+    overflow: hidden;
+}
+
+.before-image, .after-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.after-image {
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+.slider-handle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: #c2a76b;
+    transform: translateX(-50%);
+    z-index: 10;
+    cursor: ew-resize;
+}
+
+.slider-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: #c2a76b;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(194, 167, 107, 0.6);
+}
+
+.slider-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 3px solid #c2a76b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.slider-button:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 6px 16px rgba(194, 167, 107, 0.4);
+}
+
+.slider-button i {
+    color: #c2a76b;
+    font-size: 16px;
+}
+
+.slider-button i:first-child {
+    margin-right: -4px;
+}
+
+.slider-button i:last-child {
+    margin-left: -4px;
+}
+
+.slider-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.label-before, .label-after {
+    position: absolute;
+    top: 20px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.label-before {
+    left: 20px;
+}
+
+.label-after {
+    right: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    .slider-button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .slider-button i {
+        font-size: 14px;
+    }
+    
+    .label-before, .label-after {
+        font-size: 12px;
+        padding: 6px 12px;
+        top: 15px;
+    }
+    
+    .label-before {
+        left: 15px;
+    }
+    
+    .label-after {
+        right: 15px;
+    }
+}
