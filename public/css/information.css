@@ -184,7 +184,7 @@
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .services {
         flex-direction: column;
         align-items: center;
@@ -206,26 +206,41 @@
     .flip-card {
         flex: 1 1 100%; /* 1 card per row */
         max-width: 90%;
-        height: 400px;
+        height: 500px;
+    }
+
+    .flip-card-front img {
+        height: 220px;
+    }
+
+    .front-content {
+        padding: 15px;
     }
 
     .front-content h2 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .flip-card-back {
-        padding: 20px;
+        padding: 18px;
     }
 
     .flip-card-back h2 {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
     }
 
     .back-description {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        line-height: 1.35;
     }
 
     .back-details li {
+        font-size: 0.75rem;
+        padding: 5px 0;
+    }
+
+    .price-tag {
+        padding: 6px 12px;
         font-size: 0.8rem;
     }
 }
