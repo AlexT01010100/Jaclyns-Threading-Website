@@ -191,10 +191,38 @@ body::-webkit-scrollbar-thumb {
 
 .slot-item .details-row > div {
     text-align: left;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Ensure proper wrapping for all text elements */
+.slot-item .details-row > div > span,
+.slot-item .info-row > div > span,
+.slot-item .status-header > span {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: block;
+    max-width: 100%;
+}
+
+/* Responsive design for tablets */
+@media (max-width: 900px) {
+    .slot-item .details-row {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    }
 }
 
 /* Ensure small screens have proper display of time and other info */
 @media (max-width: 700px) {
+    .manage-slots {
+        padding: 30px 20px;
+    }
+    
+    .slot-item .details-row {
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 10px;
+    }
     .slot-item .info-row,
     .slot-item .details-row {
         flex-direction: column; /* Stack label and value vertically */
