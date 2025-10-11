@@ -82,19 +82,18 @@ body::-webkit-scrollbar-thumb {
 }
 
 .navbar-menu .book-now-nav {
-    background: linear-gradient(135deg, #ffd700, #c2a76b);
+    background: linear-gradient(135deg, #c5a663, #c2a76b);
     color: #000;
     font-weight: bold;
     padding: 0.7rem 1.5rem;
     border-radius: 25px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    box-shadow: #c2a76b
 }
 
 .navbar-menu .book-now-nav:hover {
-    background: linear-gradient(135deg, #ffed4e, #ffd700);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    box-shadow: 0 6px 20px rgba(242, 242, 242, 0.6);
     color: #000;
 }
 
