@@ -80,6 +80,13 @@ body::-webkit-scrollbar-thumb {
   height: 100%;
 }
 
+/* Zoom out slider images 1 and 3 to show more of the image */
+#slide-1,
+#slide-3 {
+  object-fit: contain;
+  background-color: #000;
+}
+
 .why-jaclyn {
   position: relative;
   top: -30vh;
@@ -347,6 +354,12 @@ body::-webkit-scrollbar-thumb {
   display: block;
   margin: 0 auto;
   margin-top: 20px;
+}
+
+/* Make the services image bigger */
+.info-section img {
+  max-width: 120%;
+  width: 750px;
 }
 
 
