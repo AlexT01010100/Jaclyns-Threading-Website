@@ -143,9 +143,6 @@ body {
     display: inline-block;
 }
 
-.logo:hover {
-    animation: pulse 1s ease-in-out;
-}
 
 /* Navigation menu animations */
 .navbar-menu a {
