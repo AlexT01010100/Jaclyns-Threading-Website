@@ -234,36 +234,6 @@ button:active,
     transform: translateY(-1px) scale(0.98);
 }
 
-/* Section animations - Fade in on scroll */
-.why-jaclyn,
-.info-section,
-.info-section-reversed,
-.reviews-section,
-.contact-location {
-    opacity: 0;
-    animation: fadeInUp 0.8s ease-out forwards;
-}
-
-.why-jaclyn {
-    animation-delay: 0.2s;
-}
-
-.info-section {
-    animation-delay: 0.3s;
-}
-
-.info-section-reversed {
-    animation-delay: 0.4s;
-}
-
-.reviews-section {
-    animation-delay: 0.5s;
-}
-
-.contact-location {
-    animation-delay: 0.6s;
-}
-
 /* Review card animations */
 .review-card {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);

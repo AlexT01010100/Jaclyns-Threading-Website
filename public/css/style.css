@@ -94,7 +94,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .why-jaclyn h1, .why-jaclyn h2, .why-jaclyn p, .why-jaclyn .booking-button-homepage {
-  opacity: 1;
+  opacity: 0;
   animation: fadeInUp 0.8s ease forwards;
 }
 
@@ -112,17 +112,6 @@ body::-webkit-scrollbar-thumb {
 
 .why-jaclyn p {
   animation-delay: 0.8s;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 1000px) {
@@ -318,15 +307,6 @@ body::-webkit-scrollbar-thumb {
   opacity: 0;
   animation: fadeIn 1s ease forwards;
   animation-delay: 0.3s;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .info-section-reversed {
