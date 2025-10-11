@@ -1,7 +1,7 @@
 {
   "name": "jaclyns-threading-website",
   "version": "2.0.0",
-  "description": "Jaclyn's Threading Salon booking website with PostgreSQL",
+  "description": "Jaclyn's Beauty booking website with PostgreSQL",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

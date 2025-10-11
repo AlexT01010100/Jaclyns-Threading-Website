@@ -262,7 +262,7 @@ app.post('/book_appointment', async (req, res) => {
                 <p>Confirmation ID: <strong>${confirmationId}</strong></p>
                 <br>
                 <p>Thank you!</p>
-                <p>Jaclyn's Threading Salon</p>
+                <p>Jaclyn's Beauty</p>
             `
         };
 
@@ -370,7 +370,7 @@ app.post('/cancel-appointment', async (req, res) => {
                 <p>If you'd like to reschedule, please visit our booking page.</p>
                 <br>
                 <p>Thank you!</p>
-                <p>Jaclyn's Threading Salon</p>
+                <p>Jaclyn's Beauty</p>
             `
         };
 
@@ -468,7 +468,7 @@ app.post('/edit-appointment', async (req, res) => {
                 <p>Confirmation ID: <strong>${confirmationId}</strong></p>
                 <br>
                 <p>Thank you!</p>
-                <p>Jaclyn's Threading Salon</p>
+                <p>Jaclyn's Beauty</p>
             `
         };
 
@@ -550,7 +550,7 @@ app.put('/api/appointment/:confirmationId', async (req, res) => {
                 <p>Confirmation ID: <strong>${confirmationId}</strong></p>
                 <br>
                 <p>Thank you!</p>
-                <p>Jaclyn's Threading Salon</p>
+                <p>Jaclyn's Beauty</p>
             `
         };
 
@@ -566,7 +566,7 @@ app.put('/api/appointment/:confirmationId', async (req, res) => {
 
 // Google Reviews API endpoint
 app.get('/api/reviews', async (req, res) => {
-    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Threading Salon
+    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Beauty
     
     if (!process.env.GOOGLE_API_KEY) {
         return res.status(500).json({ 

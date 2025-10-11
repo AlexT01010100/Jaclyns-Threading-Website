@@ -1,4 +1,4 @@
-# 🚀 Quick Setup Guide - Jaclyn's Threading Salon
+# 🚀 Quick Setup Guide - Jaclyn's Beauty
 
 This is the **easiest way** to get your application running with PostgreSQL. Everything is automated!
 

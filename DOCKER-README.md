@@ -1,4 +1,4 @@
-# Jaclyn's Threading Salon - Docker & PostgreSQL Setup
+# Jaclyn's Beauty - Docker & PostgreSQL Setup
 
 This guide explains how to run the application using Docker with PostgreSQL instead of Firebase.
 

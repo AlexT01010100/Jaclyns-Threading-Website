@@ -1,4 +1,4 @@
--- Create database schema for Jaclyn's Threading Salon
+-- Create database schema for Jaclyn's Beauty
 
 -- Appointments table
 CREATE TABLE IF NOT EXISTS appointments (

@@ -333,7 +333,7 @@ app.post('/book_appointment', async (req, res) => {
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
-                    <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                    <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
             `
         };
@@ -443,7 +443,7 @@ app.post('/cancel-appointment', async (req, res) => {
                     <p style="color: #000000;">If you'd like to reschedule, please visit our booking page.</p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
-                    <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                    <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
             `
         };
@@ -565,7 +565,7 @@ app.post('/edit-appointment', async (req, res) => {
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
-                    <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                    <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
             `
         };
@@ -649,7 +649,7 @@ app.put('/api/appointment/:confirmationId', async (req, res) => {
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
-                    <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                    <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
             `
         };
@@ -797,7 +797,7 @@ app.delete('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                             <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
                             <br>
                             <p style="color: #000000;">We apologize for any inconvenience.</p>
-                            <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                            <p style="color: #000000;">Jaclyn's Beauty</p>
                         </div>
                     `
                 };
@@ -905,7 +905,7 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                             <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
                             <br>
                             <p style="color: #000000;">We apologize for any inconvenience.</p>
-                            <p style="color: #000000;">Jaclyn's Threading Salon</p>
+                            <p style="color: #000000;">Jaclyn's Beauty</p>
                         </div>
                     `
                 };
@@ -934,7 +934,7 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
 
 // Google Reviews API endpoint
 app.get('/api/reviews', async (req, res) => {
-    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Threading Salon
+    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Beauty
     
     if (!process.env.GOOGLE_API_KEY) {
         return res.status(500).json({ 
