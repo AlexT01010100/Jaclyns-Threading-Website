@@ -4,11 +4,25 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const { Pool } = require('pg');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
 
 // PostgreSQL connection pool
 const pool = new Pool({
@@ -35,7 +49,66 @@ pool.connect((err, client, release) => {
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+    if (req.session && req.session.isAuthenticated) {
+        return next();
+    }
+    // Redirect to login page instead of returning JSON
+    res.redirect('/admin-login.html');
+};
+
+// Protected route for manage-booking - must come BEFORE express.static
+app.get('/manage-booking.html', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'manage-booking.html'));
+});
+
+// Serve static files
 app.use(express.static('public'));
+
+// Admin login endpoint
+app.post('/admin/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // Get credentials from environment variables
+        const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'change-this-password';
+
+        // In production, use bcrypt for password hashing
+        // For now, simple comparison (you should hash passwords in production)
+        if (username === adminUsername && password === adminPassword) {
+            req.session.isAuthenticated = true;
+            req.session.username = username;
+            res.json({ success: true, message: 'Login successful' });
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
+
+// Admin logout endpoint
+app.post('/admin/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Logout failed' });
+        }
+        res.json({ success: true, message: 'Logged out successfully' });
+    });
+});
+
+// Check authentication status
+app.get('/admin/check-auth', (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        res.json({ authenticated: true, username: req.session.username });
+    } else {
+        res.json({ authenticated: false });
+    }
+});
 
 // Serve the index.html file from the root URL
 app.get('/', (req, res) => {

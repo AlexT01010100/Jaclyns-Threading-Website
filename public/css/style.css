@@ -220,6 +220,7 @@ body::-webkit-scrollbar-thumb {
   border: none;
   cursor: pointer;
   text-align: center;
+  opacity: 1 !important;
 }
 
 .booking-button-homepage:hover {

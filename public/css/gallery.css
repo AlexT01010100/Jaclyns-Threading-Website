@@ -452,6 +452,27 @@ body.modal-open {
     text-decoration: none;
 }
 
+.admin-button-footer {
+    display: block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 10px auto;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    width: 200px;
+}
+
+.admin-button-footer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
 .contact-button-footer-gallery {
     display: block;
     margin: 20px auto;
@@ -491,6 +512,16 @@ body.modal-open {
     color: #999;
     font-size: 14px;
     margin: 0;
+}
+
+.admin-link-discrete {
+    color: #999;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.admin-link-discrete:hover {
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 768px) {

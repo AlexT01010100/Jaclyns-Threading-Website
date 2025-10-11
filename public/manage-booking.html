@@ -30,6 +30,9 @@
 
 <section class="manage-slots" id="manage-slots">
     <h2 class="heading">Manage Time Slots</h2>
+    <button type="button" id="logoutBtn" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ff5252); margin-bottom: 20px;">
+        <i class='bx bx-log-out'></i> Logout
+    </button>
     <form id="slotForm" class="slot-form">
         <div class="input-box">
             <label for="slotDate">Select Date:</label>
@@ -87,5 +90,37 @@
 <script src="js/contact-me.js"></script>
 <script src="js/animations.js"></script>
 <script src="js/manage-booking.js"></script>
+<script>
+    // Add logout functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                if (confirm('Are you sure you want to logout?')) {
+                    try {
+                        const response = await fetch('/admin/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            window.location.href = '/admin-login.html';
+                        } else {
+                            alert('Logout failed. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                        alert('Logout failed. Please try again.');
+                    }
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
