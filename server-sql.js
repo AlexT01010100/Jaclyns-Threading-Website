@@ -381,6 +381,28 @@ app.post('/cancel-appointment', async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
+        // Send admin notification email
+        let adminMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
+            subject: 'Customer Cancelled Appointment',
+            html: `
+                <div style="color: #000000; font-family: Arial, sans-serif;">
+                    <h2 style="color: #000000;">Appointment Cancellation Notice</h2>
+                    <p style="color: #000000;">A customer has cancelled their appointment:</p>
+                    <p style="color: #000000;"><strong>Customer Name:</strong> ${appointment.name}</p>
+                    <p style="color: #000000;"><strong>Email:</strong> ${appointment.email}</p>
+                    <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
+                    <p style="color: #000000;"><strong>Time:</strong> ${appointment.time_slot}</p>
+                    <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
+                    <br>
+                    <p style="color: #000000;">The time slot has been freed up and is now available for booking.</p>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(adminMailOptions);
+
         res.json({ success: true, message: 'Appointment cancelled successfully' });
 
     } catch (error) {
