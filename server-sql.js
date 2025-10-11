@@ -212,15 +212,82 @@ app.post('/book_appointment', async (req, res) => {
     try {
         await connection.query('BEGIN');
 
-        // Check if slot is still available
-        const slotCheck = await connection.query(
-            'SELECT is_available FROM time_slots WHERE slot_date = $1 AND time_slot = $2 FOR UPDATE',
-            [date, slot]
+        // Define service durations (in 30-minute slots)
+        const serviceDurationSlots = {
+            // Threading services - 1 slot (30 minutes) each
+            'threading - eyebrows ($14)': 1,
+            'threading - upper lip ($7)': 1,
+            'threading - lower lip ($6)': 1,
+            'threading - chin ($8)': 1,
+            'threading - neck ($8)': 1,
+            'threading - forehead ($7)': 1,
+            'threading - sideburns ($12)': 1,
+            'threading - fullface special ($38)': 2, // 1 hour
+            
+            // Permanent Makeup - 5 slots (2.5 hours)
+            'microblading ($380)': 5,
+            'machine hair strokes ($395)': 5,
+            
+            // Lash services
+            'lash lift + tint ($150)': 2, // 1 hour
+            'lash tint ($25)': 1, // 30 minutes
+            
+            // Brow services
+            'brow lamination + tint ($120)': 2, // 1 hour
+            'brow tint ($18)': 1, // 30 minutes
+            
+            // Microneedling - 3 slots (1.5 hours)
+            'microneedling ($250)': 3,
+            'microneedling + nano brows ($390)': 4, // 2 hours
+            'phibright microneedling ($270)': 3,
+            
+            // Bioneedling - 3 slots (1.5 hours)
+            'bioneedling ($220)': 3
+        };
+
+        const slotsNeeded = serviceDurationSlots[service.toLowerCase()] || 2;
+
+        // Parse the start time and calculate required consecutive slots
+        const startTime = slot;
+        const [time, period] = startTime.split(' ');
+        let [hour, minute] = time.split(':').map(Number);
+        
+        if (period === 'PM' && hour !== 12) hour += 12;
+        else if (period === 'AM' && hour === 12) hour = 0;
+
+        // Get all slots for this date, ordered by time
+        const allSlotsResult = await connection.query(
+            'SELECT time_slot FROM time_slots WHERE slot_date = $1 ORDER BY time_slot',
+            [date]
         );
 
-        if (slotCheck.rows.length === 0 || !slotCheck.rows[0].is_available) {
+        const allSlots = allSlotsResult.rows.map(row => row.time_slot);
+        const startIndex = allSlots.indexOf(startTime);
+
+        if (startIndex === -1) {
             await connection.query('ROLLBACK');
-            return res.status(400).json({ error: 'This time slot is no longer available' });
+            return res.status(400).json({ error: 'Invalid time slot' });
+        }
+
+        // Get the consecutive slots needed
+        const slotsToBook = allSlots.slice(startIndex, startIndex + slotsNeeded);
+
+        if (slotsToBook.length < slotsNeeded) {
+            await connection.query('ROLLBACK');
+            return res.status(400).json({ error: 'Not enough consecutive time slots available for this service' });
+        }
+
+        // Check if all required slots are available
+        for (const timeSlot of slotsToBook) {
+            const slotCheck = await connection.query(
+                'SELECT is_available FROM time_slots WHERE slot_date = $1 AND time_slot = $2 FOR UPDATE',
+                [date, timeSlot]
+            );
+
+            if (slotCheck.rows.length === 0 || !slotCheck.rows[0].is_available) {
+                await connection.query('ROLLBACK');
+                return res.status(400).json({ error: `Time slot ${timeSlot} is no longer available. Please select a different time.` });
+            }
         }
 
         // Create appointment
@@ -232,11 +299,13 @@ app.post('/book_appointment', async (req, res) => {
 
         const appointmentId = appointmentResult.rows[0].id;
 
-        // Update time slot availability
-        await connection.query(
-            'UPDATE time_slots SET is_available = false, appointment_id = $1 WHERE slot_date = $2 AND time_slot = $3',
-            [appointmentId, date, slot]
-        );
+        // Update all required time slots
+        for (const timeSlot of slotsToBook) {
+            await connection.query(
+                'UPDATE time_slots SET is_available = false, appointment_id = $1 WHERE slot_date = $2 AND time_slot = $3',
+                [appointmentId, date, timeSlot]
+            );
+        }
 
         await connection.query('COMMIT');
 
