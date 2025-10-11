@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var urlEncodedData = new URLSearchParams(formData).toString();
 
         // Send form data to the server
-        fetch('http://localhost:63342/send_email', {  // Updated port
+        fetch('/send_email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
