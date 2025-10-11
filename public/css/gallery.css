@@ -439,13 +439,12 @@ body.modal-open {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
 }
 
 .social-media-gallery a:hover {
-    background: linear-gradient(135deg, #ffd700, #c2a76b);
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
-    color: #000;
+    box-shadow: 0 8px 20px rgba(245, 244, 242, 0.6);
+    color: white;
 }
 
 .contact-me-container-gallery a {
@@ -535,7 +534,7 @@ body.modal-open {
     }
 }
 
-@media screen and (min-width: 769px) and (max-width: 1300px) {
+@media screen and (min-width: 769px) and (max-width: 1500px) {
     .navbar-menu a {
         font-size: 1.5rem;
         text-decoration: none;
