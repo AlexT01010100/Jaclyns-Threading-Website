@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             currentAppointment = await response.json();
-            console.log('Fetched appointment:', currentAppointment); // Debug log
             displayAppointmentDetails(currentAppointment);
         } catch (error) {
             console.error('Error fetching appointment:', error);

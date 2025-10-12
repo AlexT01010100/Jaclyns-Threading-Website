@@ -204,9 +204,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
-
-    // Console log for debugging
-    console.log('✨ Animations initialized successfully!');
 });
 
 // Add page transition effect

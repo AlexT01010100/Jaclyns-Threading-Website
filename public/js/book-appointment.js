@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded and parsed");
     const form = document.getElementById("appointment-form");
     const timeSlotsContainer = document.getElementById("time-slots");
     const dateInput = document.getElementById("date");
@@ -48,8 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function fetchAvailableSlotsForDate(date) {
-        console.log("Fetching available slots for date:", date);
-
         try {
             const response = await fetch(`/api/available-slots/${date}`);
             if (!response.ok) {
@@ -57,14 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             const slots = await response.json();
-            console.log("Fetched slots from server:", slots);
-            console.log("Number of slots:", slots.length);
-            
-            // Log each slot's availability status
-            slots.forEach(slot => {
-                console.log(`Slot ${slot.time_slot}: is_available = ${slot.is_available}`);
-            });
-            
             return slots;
         } catch (error) {
             console.error("Error fetching available slots:", error);
@@ -73,11 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function filterSlotsForService(slots, service) {
-        console.log("Filtering slots for service:", service);
-        console.log("Input slots:", slots.length);
-        
         if (slots.length === 0) {
-            console.log("No slots to filter");
             return [];
         }
 
@@ -91,10 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return isAvailable;
         });
         
-        console.log("After availability filter:", availableSlots.length, "slots");
-        
         if (availableSlots.length === 0) {
-            console.log("No available slots after filtering");
             return [];
         }
 
@@ -142,8 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }))
             .sort((a, b) => a.time - b.time);
 
-        console.log("Available time slots for service:", timeSlots);
-
         const availableBlocks = [];
 
         function isSlotAvailable(time) {
@@ -175,7 +155,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        console.log("Available blocks for service:", availableBlocks);
         return availableBlocks;
     }
 
@@ -239,13 +218,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     dateInput.addEventListener("change", function () {
         selectedDate = dateInput.value;
-        console.log("Date input changed, selected date:", selectedDate);
         updateAvailableSlots();
     });
 
     serviceSelect.addEventListener("change", function () {
         selectedService = serviceSelect.value;
-        console.log("Service select changed, selected service:", selectedService);
         updateAvailableSlots();
     });
 
@@ -294,8 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const errorMessage = result.error || 'Failed to book appointment. Please try selecting a different time slot.';
                 throw new Error(errorMessage);
             }
-
-            console.log("Server response:", result);
             
             showMessage(`✓ Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}. Check your email for details.`, "success");
 
@@ -318,18 +293,15 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         if (!selectedSlotId) {
-            console.error("No slot selected.");
             showMessage("Please select a time slot.", "error");
             return;
         }
 
         if (!selectedDate || !selectedService) {
-            console.error("Date or service not selected.");
             showMessage("Please select both date and service.", "error");
             return;
         }
 
-        console.log("Form submitted with selected slotId:", selectedSlotId);
         bookAppointment();
     });
 });
