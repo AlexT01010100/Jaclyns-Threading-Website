@@ -356,10 +356,28 @@ body::-webkit-scrollbar-thumb {
   margin-top: 20px;
 }
 
-/* Make the services image bigger */
+/* Make the services image bigger on desktop */
 .info-section img {
-  max-width: 120%;
+  max-width: 100%;
   width: 750px;
+}
+
+/* Responsive image sizing for tablets and smaller */
+@media (max-width: 768px) {
+  .info-section img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .info-section img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
 }
 
 
