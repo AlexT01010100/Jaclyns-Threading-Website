@@ -1,5 +1,6 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
@@ -8,6 +9,52 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    console.log('✓ SendGrid initialized');
+} else {
+    console.warn('⚠ SENDGRID_API_KEY not set - emails will fail');
+}
+
+// Helper function to send emails via SendGrid
+async function sendEmail(to, subject, html) {
+    try {
+        if (process.env.SENDGRID_API_KEY) {
+            // Use SendGrid
+            const msg = {
+                to,
+                from: process.env.EMAIL_USER,
+                subject,
+                html
+            };
+            await sgMail.send(msg);
+            console.log(`✓ SendGrid email sent to: ${to}`);
+            return true;
+        } else {
+            // Fallback to nodemailer (for local development)
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to,
+                subject,
+                html
+            });
+            console.log(`✓ Nodemailer email sent to: ${to}`);
+            return true;
+        }
+    } catch (error) {
+        console.error('✗ Error sending email:', error.message);
+        return false;
+    }
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -309,70 +356,69 @@ app.post('/book_appointment', async (req, res) => {
 
         await connection.query('COMMIT');
 
-        // Send confirmation emails and SMS
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+        // Send success response immediately
+        res.json({ success: true, message: 'Appointment booked successfully', confirmationId });
+
+        // Send emails and SMS asynchronously (don't block response)
+        setImmediate(async () => {
+            try {
+                const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+                
+                // Send customer confirmation email
+                const userEmailHtml = `
+                    <div style="color: #000000; font-family: Arial, sans-serif;">
+                        <h2 style="color: #000000;">Dear ${name},</h2>
+                        <p style="color: #000000;">Your appointment for <strong>${service}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${slot}</strong>.</p>
+                        <p style="color: #000000;">You can manage your appointment using the following link:</p>
+                        <p style="color: #000000;"><a href="${baseUrl}/modify-appointment.html?confirmationId=${confirmationId}&date=${date}" style="color: #0066cc;">Manage Appointment</a></p>
+                        <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
+                        <br>
+                        <p style="color: #000000;">Thank you!</p>
+                        <p style="color: #000000;">Jaclyn's Beauty</p>
+                    </div>
+                `;
+                
+                await sendEmail(email, 'Appointment Confirmation', userEmailHtml);
+                
+                // Send admin notification email
+                const adminEmailHtml = `
+                    <div style="color: #000000; font-family: Arial, sans-serif;">
+                        <h2 style="color: #000000;">New Appointment Booking</h2>
+                        <p style="color: #000000;"><strong>Name:</strong> ${name}</p>
+                        <p style="color: #000000;"><strong>Email:</strong> ${email}</p>
+                        <p style="color: #000000;"><strong>Phone:</strong> ${phone}</p>
+                        <p style="color: #000000;"><strong>Service:</strong> ${service}</p>
+                        <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${slot}</p>
+                        <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
+                    </div>
+                `;
+                
+                await sendEmail(process.env.ADMIN_EMAIL || 'alexterry179@gmail.com', 'New Appointment Booking', adminEmailHtml);
+
+                // Send SMS notifications if Twilio is configured
+                if (process.env.TWILIO_PHONE_NUMBER) {
+                    try {
+                        await client.messages.create({
+                            body: `Hi ${name}, your appointment for ${service} is confirmed on ${date} at ${slot}. Confirmation: ${confirmationId}`,
+                            from: process.env.TWILIO_PHONE_NUMBER,
+                            to: phone
+                        });
+                        
+                        await client.messages.create({
+                            body: `New appointment: ${name}, ${service}, ${date} at ${slot}`,
+                            from: process.env.TWILIO_PHONE_NUMBER,
+                            to: process.env.ADMIN_PHONE_NUMBER
+                        });
+                        console.log('✓ SMS notifications sent');
+                    } catch (smsError) {
+                        console.error('✗ Error sending SMS:', smsError.message);
+                    }
+                }
+            } catch (error) {
+                console.error('✗ Error in background email/SMS:', error.message);
             }
         });
-
-        const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-        
-        let userMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: `Appointment Confirmation`,
-            html: `
-                <div style="color: #000000; font-family: Arial, sans-serif;">
-                    <h2 style="color: #000000;">Dear ${name},</h2>
-                    <p style="color: #000000;">Your appointment for <strong>${service}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${slot}</strong>.</p>
-                    <p style="color: #000000;">You can manage your appointment using the following link:</p>
-                    <p style="color: #000000;"><a href="${baseUrl}/modify-appointment.html?confirmationId=${confirmationId}&date=${date}" style="color: #0066cc;">Manage Appointment</a></p>
-                    <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
-                    <br>
-                    <p style="color: #000000;">Thank you!</p>
-                    <p style="color: #000000;">Jaclyn's Beauty</p>
-                </div>
-            `
-        };
-
-        let adminMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
-            subject: `New Appointment Booking`,
-            text: `New appointment booking:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nDate: ${date}\nSlot: ${slot}\nConfirmation ID: ${confirmationId}\n\nPlease review the booking.`
-        };
-
-        // Send emails
-        await transporter.sendMail(userMailOptions);
-        await transporter.sendMail(adminMailOptions);
-
-        // Send SMS notifications if Twilio is configured
-        if (process.env.TWILIO_PHONE_NUMBER) {
-            const userSmsOptions = {
-                body: `Hi ${name}, your appointment for ${service} is confirmed on ${date} at ${slot}. Confirmation: ${confirmationId}`,
-                from: process.env.TWILIO_PHONE_NUMBER,
-                to: phone
-            };
-
-            const adminSmsOptions = {
-                body: `New appointment: ${name}, ${service}, ${date} at ${slot}`,
-                from: process.env.TWILIO_PHONE_NUMBER,
-                to: process.env.ADMIN_PHONE_NUMBER
-            };
-
-            try {
-                await client.messages.create(userSmsOptions);
-                await client.messages.create(adminSmsOptions);
-            } catch (smsError) {
-                console.error('Error sending SMS:', smsError);
-                // Continue even if SMS fails
-            }
-        }
-
-        res.json({ success: true, message: 'Appointment booked successfully', confirmationId });
 
     } catch (error) {
         await connection.query('ROLLBACK');
