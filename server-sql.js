@@ -185,28 +185,28 @@ app.post('/send_email', async (req, res) => {
             [fullName, phoneNumber, email, message]
         );
 
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // Send success response immediately
+        res.send('Email sent successfully.');
 
-        let mailOptions = {
-            from: email,
-            to: process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
-            subject: `Contact Form Submission from ${fullName}`,
-            text: `Name: ${fullName}\nPhone: ${phoneNumber}\nEmail: ${email}\n\nMessage:\n${message}`
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-                return res.status(500).send('Failed to send email.');
-            }
-            console.log('Email sent:', info.response);
-            res.send('Email sent successfully.');
+        // Send email asynchronously
+        setImmediate(async () => {
+            const emailHtml = `
+                <div style="color: #000000; font-family: Arial, sans-serif;">
+                    <h2 style="color: #000000;">Contact Form Submission</h2>
+                    <p style="color: #000000;"><strong>Name:</strong> ${fullName}</p>
+                    <p style="color: #000000;"><strong>Phone:</strong> ${phoneNumber}</p>
+                    <p style="color: #000000;"><strong>Email:</strong> ${email}</p>
+                    <br>
+                    <p style="color: #000000;"><strong>Message:</strong></p>
+                    <p style="color: #000000;">${message}</p>
+                </div>
+            `;
+            
+            await sendEmail(
+                process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
+                `Contact Form Submission from ${fullName}`,
+                emailHtml
+            );
         });
     } catch (error) {
         console.error('Error processing contact form:', error);
@@ -469,20 +469,13 @@ app.post('/cancel-appointment', async (req, res) => {
 
         await connection.query('COMMIT');
 
-        // Send cancellation email
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // Send success response immediately
+        res.json({ success: true, message: 'Appointment cancelled successfully' });
 
-        let mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: appointment.email,
-            subject: 'Appointment Cancelled',
-            html: `
+        // Send emails asynchronously
+        setImmediate(async () => {
+            // Send cancellation email to customer
+            const userEmailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Dear ${appointment.name},</h2>
                     <p style="color: #000000;">Your appointment on <strong>${date}</strong> at <strong>${appointment.time_slot}</strong> has been cancelled.</p>
@@ -491,17 +484,12 @@ app.post('/cancel-appointment', async (req, res) => {
                     <p style="color: #000000;">Thank you!</p>
                     <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
-            `
-        };
+            `;
+            
+            await sendEmail(appointment.email, 'Appointment Cancelled', userEmailHtml);
 
-        await transporter.sendMail(mailOptions);
-
-        // Send admin notification email
-        let adminMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
-            subject: 'Customer Cancelled Appointment',
-            html: `
+            // Send admin notification email
+            const adminEmailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Appointment Cancellation Notice</h2>
                     <p style="color: #000000;">A customer has cancelled their appointment:</p>
@@ -513,12 +501,14 @@ app.post('/cancel-appointment', async (req, res) => {
                     <br>
                     <p style="color: #000000;">The time slot has been freed up and is now available for booking.</p>
                 </div>
-            `
-        };
-
-        await transporter.sendMail(adminMailOptions);
-
-        res.json({ success: true, message: 'Appointment cancelled successfully' });
+            `;
+            
+            await sendEmail(
+                process.env.ADMIN_EMAIL || 'alexterry179@gmail.com',
+                'Customer Cancelled Appointment',
+                adminEmailHtml
+            );
+        });
 
     } catch (error) {
         await connection.query('ROLLBACK');
@@ -588,20 +578,12 @@ app.post('/edit-appointment', async (req, res) => {
 
         await connection.query('COMMIT');
 
-        // Send update confirmation email
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // Send success response immediately
+        res.json({ success: true, message: 'Appointment updated successfully' });
 
-        let mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: appointment.email,
-            subject: 'Appointment Updated',
-            html: `
+        // Send email asynchronously
+        setImmediate(async () => {
+            const emailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Dear ${appointment.name},</h2>
                     <p style="color: #000000;">Your appointment has been updated:</p>
@@ -613,12 +595,10 @@ app.post('/edit-appointment', async (req, res) => {
                     <p style="color: #000000;">Thank you!</p>
                     <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
-            `
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.json({ success: true, message: 'Appointment updated successfully' });
+            `;
+            
+            await sendEmail(appointment.email, 'Appointment Updated', emailHtml);
+        });
 
     } catch (error) {
         await connection.query('ROLLBACK');
@@ -670,22 +650,14 @@ app.put('/api/appointment/:confirmationId', async (req, res) => {
             return res.status(404).json({ error: 'Appointment not found' });
         }
 
-        // Send confirmation email
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
         const appointment = result.rows[0];
 
-        let mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Appointment Information Updated',
-            html: `
+        // Send success response immediately
+        res.json({ success: true, message: 'Appointment updated successfully', appointment: result.rows[0] });
+
+        // Send confirmation email asynchronously
+        setImmediate(async () => {
+            const emailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Dear ${name},</h2>
                     <p style="color: #000000;">Your appointment information has been updated successfully.</p>
@@ -697,12 +669,10 @@ app.put('/api/appointment/:confirmationId', async (req, res) => {
                     <p style="color: #000000;">Thank you!</p>
                     <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
-            `
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.json({ success: true, message: 'Appointment updated successfully', appointment: result.rows[0] });
+            `;
+            
+            await sendEmail(email, 'Appointment Information Updated', emailHtml);
+        });
 
     } catch (error) {
         console.error('Error updating appointment:', error);
@@ -819,36 +789,25 @@ app.delete('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                     ['cancelled', appointmentId]
                 );
 
-                // Send cancellation email
-                let transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: process.env.EMAIL_USER,
-                        pass: process.env.EMAIL_PASS
-                    }
+                // Send cancellation email asynchronously
+                const emailHtml = `
+                    <div style="color: #000000; font-family: Arial, sans-serif;">
+                        <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                        <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
+                        <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
+                        <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
+                        <br>
+                        <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
+                        <br>
+                        <p style="color: #000000;">We apologize for any inconvenience.</p>
+                        <p style="color: #000000;">Jaclyn's Beauty</p>
+                    </div>
+                `;
+                
+                setImmediate(async () => {
+                    await sendEmail(appointment.email, 'Appointment Cancelled - Please Contact Jaclyn', emailHtml);
                 });
-
-                let mailOptions = {
-                    from: process.env.EMAIL_USER,
-                    to: appointment.email,
-                    subject: 'Appointment Cancelled - Please Contact Jaclyn',
-                    html: `
-                        <div style="color: #000000; font-family: Arial, sans-serif;">
-                            <h2 style="color: #000000;">Dear ${appointment.name},</h2>
-                            <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
-                            <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
-                            <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                            <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
-                            <br>
-                            <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
-                            <br>
-                            <p style="color: #000000;">We apologize for any inconvenience.</p>
-                            <p style="color: #000000;">Jaclyn's Beauty</p>
-                        </div>
-                    `
-                };
-
-                await transporter.sendMail(mailOptions);
             }
         }
 
@@ -927,36 +886,25 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                     ['cancelled', slot.appointment_id]
                 );
 
-                // Send cancellation email
-                let transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: process.env.EMAIL_USER,
-                        pass: process.env.EMAIL_PASS
-                    }
+                // Send cancellation email asynchronously
+                const emailHtml = `
+                    <div style="color: #000000; font-family: Arial, sans-serif;">
+                        <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                        <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
+                        <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
+                        <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
+                        <br>
+                        <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
+                        <br>
+                        <p style="color: #000000;">We apologize for any inconvenience.</p>
+                        <p style="color: #000000;">Jaclyn's Beauty</p>
+                    </div>
+                `;
+                
+                setImmediate(async () => {
+                    await sendEmail(appointment.email, 'Appointment Cancelled - Please Contact Jaclyn', emailHtml);
                 });
-
-                let mailOptions = {
-                    from: process.env.EMAIL_USER,
-                    to: appointment.email,
-                    subject: 'Appointment Cancelled - Please Contact Jaclyn',
-                    html: `
-                        <div style="color: #000000; font-family: Arial, sans-serif;">
-                            <h2 style="color: #000000;">Dear ${appointment.name},</h2>
-                            <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
-                            <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
-                            <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                            <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
-                            <br>
-                            <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
-                            <br>
-                            <p style="color: #000000;">We apologize for any inconvenience.</p>
-                            <p style="color: #000000;">Jaclyn's Beauty</p>
-                        </div>
-                    `
-                };
-
-                await transporter.sendMail(mailOptions);
             }
         }
 
