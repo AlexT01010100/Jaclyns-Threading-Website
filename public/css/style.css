@@ -80,8 +80,9 @@ body::-webkit-scrollbar-thumb {
   height: 100%;
 }
 
-/* Zoom out slider images 1 and 3 to show more of the image */
+/* Zoom out all slider images to show more of the image */
 #slide-1,
+#slide-2,
 #slide-3 {
   object-fit: contain;
   background-color: #000;
