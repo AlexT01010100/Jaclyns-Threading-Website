@@ -4,6 +4,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  padding-top: 80px;
   overflow-x: hidden;
   overflow-y: auto;
   font-family: Arial, sans-serif;
@@ -45,6 +46,7 @@ body::-webkit-scrollbar-thumb {
   scrollbar-width: none;
 }
 
+
 .sliding-image-container::-webkit-scrollbar {
   display: none;
 }
@@ -55,23 +57,6 @@ body::-webkit-scrollbar-thumb {
   height: 100vh; /* Adjust as needed */
 }
 
-.sliding-image-container {
-  display: flex;
-  overflow-x: scroll;
-  width: 100%;
-  height: 90%;
-  scroll-snap-type: x mandatory;
-  box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
-  position: relative;
-  overflow-y: hidden;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.sliding-image-container::-webkit-scrollbar {
-  display: none;
-}
-
 .sliding-image-container img {
   flex: 0 0 100%;
   scroll-snap-align: start;
@@ -80,12 +65,11 @@ body::-webkit-scrollbar-thumb {
   height: 100%;
 }
 
-/* Zoom out all slider images to show more of the image */
+/* Make slider images fill the screen without black borders */
 #slide-1,
 #slide-2,
 #slide-3 {
-  object-fit: contain;
-  background-color: #000;
+  object-fit: cover;
 }
 
 .why-jaclyn {
