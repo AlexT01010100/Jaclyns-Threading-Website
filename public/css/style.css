@@ -69,7 +69,7 @@ body::-webkit-scrollbar-thumb {
 #slide-1,
 #slide-2,
 #slide-3 {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .why-jaclyn {
