@@ -60,6 +60,51 @@ body::-webkit-scrollbar-thumb {
   height: 100%;
 }
 
+/* Tablet 450px-1023px - show 2 static images side by side */
+@media (min-width: 450px) and (max-width: 1023px) {
+  .sliding-image-container {
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    background-color: #373434;
+    height: 60vh;
+  }
+  
+  .sliding-image-container img {
+    flex: 0 0 50%;
+    object-fit: cover;
+    width: 50%;
+    height: 100%;
+  }
+  
+  .sliding-image-container img:nth-child(3) {
+    display: none;
+  }
+}
+
+/* Desktop 1024px+ - show 3 static images side by side */
+@media (min-width: 1024px) {
+  .sliding-image-container {
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    background-color: #373434;
+    height: 60vh;
+  }
+  
+  .sliding-image-container img {
+    flex: 0 0 33.33%;
+    object-fit: cover;
+    width: 33.33%;
+    height: 100%;
+  }
+}
+
+/* Desktop 1300px+ - maintain 3 images with larger height */
+@media (min-width: 1300px) {
+  .sliding-image-container {
+    height: 70vh;
+  }
+}
+
 .why-jaclyn {
   position: relative;
   top: 0;

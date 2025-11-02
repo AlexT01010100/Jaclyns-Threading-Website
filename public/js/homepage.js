@@ -31,18 +31,47 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
-    // Auto slide
-    if (images.length > 1) {
-        slideInterval = setInterval(nextSlide, intervalTime);
-    }
+    // Function to check if we should use static display (tablet: 450px+, desktop: 1024px+)
+    const shouldUseStaticDisplay = () => {
+        return window.innerWidth >= 450;
+    };
 
-    // Allow clicking on images to scroll to them
+    // Function to start or stop sliding based on viewport width
+    const handleSliding = () => {
+        if (shouldUseStaticDisplay()) {
+            // Stop auto-scrolling for static display (tablet and desktop)
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                slideInterval = null;
+            }
+            // Reset scroll position to show all images
+            const container = document.querySelector(".sliding-image-container");
+            if (container) {
+                container.scrollLeft = 0;
+            }
+        } else {
+            // Start auto-scrolling for mobile screens (below 450px)
+            if (!slideInterval && images.length > 1) {
+                slideInterval = setInterval(nextSlide, intervalTime);
+            }
+        }
+    };
+
+    // Initial check
+    handleSliding();
+
+    // Listen for window resize to toggle between sliding and static
+    window.addEventListener('resize', handleSliding);
+
+    // Allow clicking on images to scroll to them (only when not in static mode)
     images.forEach((img, index) => {
         img.addEventListener('click', () => {
-            currentIndex = index;
-            scrollToImage(currentIndex);
-            clearInterval(slideInterval);
-            slideInterval = setInterval(nextSlide, intervalTime);
+            if (!shouldUseStaticDisplay()) {
+                currentIndex = index;
+                scrollToImage(currentIndex);
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, intervalTime);
+            }
         });
     });
 });
