@@ -60,6 +60,9 @@ async function sendEmail(to, subject, html) {
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Trust proxy - required when behind nginx/load balancer
+app.set('trust proxy', 1);
+
 // PostgreSQL connection pool
 const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
@@ -123,18 +126,47 @@ app.use(express.static('public'));
 app.post('/admin/login', async (req, res) => {
     const { username, password } = req.body;
 
+    console.log('Login attempt:', { 
+        username, 
+        hasSession: !!req.session,
+        sessionID: req.sessionID,
+        cookies: req.headers.cookie
+    });
+
     try {
         // Get credentials from environment variables
         const adminUsername = process.env.ADMIN_USERNAME;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
+        console.log('Comparing credentials...');
+
         // In production, use bcrypt for password hashing
         // For now, simple comparison (you should hash passwords in production)
         if (username === adminUsername && password === adminPassword) {
-            req.session.isAuthenticated = true;
-            req.session.username = username;
-            res.json({ success: true, message: 'Login successful' });
+            console.log('Credentials valid, setting session...');
+            
+            // Regenerate session ID for security
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error('Session regeneration error:', err);
+                    return res.status(500).json({ error: 'Login failed - session error' });
+                }
+                
+                req.session.isAuthenticated = true;
+                req.session.username = username;
+                
+                // Save session before sending response
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res.status(500).json({ error: 'Login failed - session error' });
+                    }
+                    console.log('Session saved successfully, sessionID:', req.sessionID);
+                    res.json({ success: true, message: 'Login successful', sessionID: req.sessionID });
+                });
+            });
         } else {
+            console.log('Invalid credentials provided');
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (error) {
