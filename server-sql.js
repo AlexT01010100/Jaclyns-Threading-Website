@@ -8,6 +8,8 @@ const { Pool } = require('pg');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const bcrypt = require('bcrypt');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 require('dotenv').config();
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
@@ -60,6 +62,39 @@ async function sendEmail(to, subject, html) {
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Apply helmet for security headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Disable for now to avoid breaking existing functionality
+    crossOriginEmbedderPolicy: false
+}));
+
+// Global rate limiter - prevents DoS attacks
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Stricter rate limiter for sensitive endpoints
+const strictLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per windowMs
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Even stricter rate limiter for booking endpoints
+const bookingLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 booking attempts per windowMs
+    message: 'Too many booking attempts, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 // Trust proxy - required when behind nginx/load balancer
 app.set('trust proxy', 1);
 
@@ -91,6 +126,9 @@ app.use(session({
     }
 }));
 
+// Apply global rate limiter to all requests - AFTER SESSION
+app.use(globalLimiter);
+
 // Test database connection
 pool.connect((err, client, release) => {
     if (err) {
@@ -101,16 +139,58 @@ pool.connect((err, client, release) => {
     }
 });
 
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// Security headers and cache control
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    
+    // Cache control headers to fix browser back button issue
+    // Prevent caching of HTML pages
+    if (req.path.endsWith('.html') || req.path === '/') {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+    
+    if (process.env.NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+    next();
+});
+
+// CORS configuration - must allow credentials for sessions to work
+app.use(cors({
+    origin: true, // In production, specify your domain
+    credentials: true
+}));
+
+// Request size limits to prevent DoS attacks through large payloads
+app.use(bodyParser.urlencoded({ 
+    extended: false,
+    limit: '1mb' // Limit request body size to 1MB
+}));
+app.use(bodyParser.json({ 
+    limit: '1mb' // Limit JSON payload size to 1MB
+}));
 
 // Authentication middleware
 const requireAuth = (req, res, next) => {
+    console.log('requireAuth middleware:', {
+        hasSession: !!req.session,
+        isAuthenticated: req.session?.isAuthenticated,
+        sessionID: req.sessionID,
+        cookies: req.headers.cookie,
+        path: req.path
+    });
+    
     if (req.session && req.session.isAuthenticated) {
+        console.log('Authentication successful, proceeding to protected route');
         return next();
     }
-    // Redirect to login page instead of returning JSON
+    
+    console.log('Authentication failed, redirecting to login page');
     res.redirect('/admin-login.html');
 };
 
@@ -119,11 +199,18 @@ app.get('/manage-booking.html', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'manage-booking.html'));
 });
 
-// Serve static files
-app.use(express.static('public'));
+// Serve static files with proper cache headers
+app.use(express.static('public', {
+    setHeaders: (res, path) => {
+        // Cache static assets (CSS, JS, images) for 1 day
+        if (path.endsWith('.css') || path.endsWith('.js') || path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+        }
+    }
+}));
 
-// Admin login endpoint
-app.post('/admin/login', async (req, res) => {
+// Admin login endpoint with rate limiting
+app.post('/admin/login', strictLimiter, async (req, res) => {
     const { username, password } = req.body;
 
     console.log('Login attempt:', { 
@@ -211,8 +298,8 @@ app.use((req, res, next) => {
     }
 });
 
-// Endpoint to handle contact form submission
-app.post('/send_email', async (req, res) => {
+// Endpoint to handle contact form submission with rate limiting
+app.post('/send_email', strictLimiter, async (req, res) => {
     const { fullName, phoneNumber, email, message } = req.body;
 
     try {
@@ -283,8 +370,8 @@ app.get('/api/available-slots/:date', async (req, res) => {
     }
 });
 
-// Endpoint to handle appointment booking
-app.post('/book_appointment', async (req, res) => {
+// Endpoint to handle appointment booking with strict rate limiting
+app.post('/book_appointment', bookingLimiter, async (req, res) => {
     const { name, email, phone, service, date, slot } = req.body;
 
     // Generate confirmation ID on server side
@@ -466,8 +553,8 @@ app.post('/book_appointment', async (req, res) => {
     }
 });
 
-// Endpoint to cancel an appointment
-app.post('/cancel-appointment', async (req, res) => {
+// Endpoint to cancel an appointment with rate limiting
+app.post('/cancel-appointment', strictLimiter, async (req, res) => {
     const { confirmationId, date } = req.query;
 
     if (!confirmationId || !date) {
@@ -556,8 +643,8 @@ app.post('/cancel-appointment', async (req, res) => {
     }
 });
 
-// Endpoint to edit/reschedule an appointment
-app.post('/edit-appointment', async (req, res) => {
+// Endpoint to edit/reschedule an appointment with rate limiting
+app.post('/edit-appointment', strictLimiter, async (req, res) => {
     const { confirmationId, currentDate, newDate, newSlot, newService } = req.body;
 
     if (!confirmationId || !currentDate || !newDate || !newSlot || !newService) {
@@ -667,8 +754,8 @@ app.get('/api/appointment/:confirmationId', async (req, res) => {
     }
 });
 
-// Endpoint to update appointment user information
-app.put('/api/appointment/:confirmationId', async (req, res) => {
+// Endpoint to update appointment user information with rate limiting
+app.put('/api/appointment/:confirmationId', strictLimiter, async (req, res) => {
     const { confirmationId } = req.params;
     const { name, email, phone } = req.body;
 
@@ -963,8 +1050,8 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
     }
 });
 
-// Google Reviews API endpoint
-app.get('/api/reviews', async (req, res) => {
+// Google Reviews API endpoint with rate limiting
+app.get('/api/reviews', strictLimiter, async (req, res) => {
     const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Beauty
     
     if (!process.env.GOOGLE_API_KEY) {
@@ -1017,4 +1104,6 @@ process.on('SIGTERM', () => {
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+    console.log('DoS/DDoS protection enabled with rate limiting');
+    console.log('Request size limits: 1MB');
 });
