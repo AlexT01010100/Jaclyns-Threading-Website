@@ -383,18 +383,34 @@ body::-webkit-scrollbar-thumb {
   margin-top: 20px;
 }
 
-/* Make the services image bigger on desktop */
-.info-section img {
+/* Make both section images the same size on desktop */
+.info-section img,
+.info-section-reversed img {
   max-width: 100%;
   width: 750px;
+  height: 500px;
+  object-fit: cover;
 }
 
-/* Responsive image sizing for tablets and smaller */
+/* Tablet-specific image sizing to prevent scaling issues */
+@media (max-width: 1000px) and (min-width: 769px) {
+  .info-section img,
+  .info-section-reversed img {
+    max-width: 600px;
+    width: 600px;
+    height: 400px;
+    object-fit: cover;
+  }
+}
+
+/* Responsive image sizing for mobile and smaller tablets */
 @media (max-width: 768px) {
-  .info-section img {
+  .info-section img,
+  .info-section-reversed img {
     max-width: 100%;
     width: 100%;
-    height: auto;
+    height: 300px;
+    object-fit: cover;
   }
 }
 
