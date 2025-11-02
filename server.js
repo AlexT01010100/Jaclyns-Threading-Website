@@ -47,13 +47,16 @@ const bookingLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// Trust proxy - required when behind nginx/load balancer
+app.set('trust proxy', 1);
+
 // Session configuration - MUST BE BEFORE RATE LIMITERS
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Set to false for development (localhost), true for production with HTTPS
+        secure: process.env.NODE_ENV === 'production', // Auto-detect: true for production/HTTPS, false for dev
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         sameSite: 'lax' // Allow cookies in same-site requests
