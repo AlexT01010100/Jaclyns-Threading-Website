@@ -6,6 +6,7 @@ const cors = require('cors');
 const path = require('path');
 const { Pool } = require('pg');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -59,18 +60,6 @@ async function sendEmail(to, subject, html) {
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Session configuration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false, // Set to true only when using HTTPS
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-}));
-
 // PostgreSQL connection pool
 const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
@@ -82,6 +71,22 @@ const pool = new Pool({
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
 });
+
+// Session configuration with PostgreSQL store
+app.use(session({
+    store: new pgSession({
+        pool: pool,
+        tableName: 'session'
+    }),
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production with HTTPS
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
 
 // Test database connection
 pool.connect((err, client, release) => {
