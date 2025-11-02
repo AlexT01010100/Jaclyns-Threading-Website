@@ -154,7 +154,15 @@ app.post('/admin/login', strictLimiter, async (req, res) => {
         if (username === adminUsername && password === adminPassword) {
             req.session.isAuthenticated = true;
             req.session.username = username;
-            res.json({ success: true, message: 'Login successful' });
+            
+            // Save session before sending response
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Session save error:', err);
+                    return res.status(500).json({ error: 'Login failed - session error' });
+                }
+                res.json({ success: true, message: 'Login successful' });
+            });
         } else {
             res.status(401).json({ error: 'Invalid credentials' });
         }
