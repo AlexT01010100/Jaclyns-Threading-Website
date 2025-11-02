@@ -123,10 +123,20 @@ app.use(bodyParser.json({
 
 // Authentication middleware
 const requireAuth = (req, res, next) => {
+    console.log('requireAuth middleware:', {
+        hasSession: !!req.session,
+        isAuthenticated: req.session?.isAuthenticated,
+        sessionID: req.sessionID,
+        cookies: req.headers.cookie,
+        path: req.path
+    });
+    
     if (req.session && req.session.isAuthenticated) {
+        console.log('Authentication successful, proceeding to protected route');
         return next();
     }
-    // Redirect to login page instead of returning JSON
+    
+    console.log('Authentication failed, redirecting to login page');
     res.redirect('/admin-login.html');
 };
 
@@ -149,7 +159,12 @@ app.use(express.static('public', {
 app.post('/admin/login', strictLimiter, async (req, res) => {
     const { username, password } = req.body;
 
-    console.log('Login attempt:', { username, hasSession: !!req.session });
+    console.log('Login attempt:', { 
+        username, 
+        hasSession: !!req.session,
+        sessionID: req.sessionID,
+        cookies: req.headers.cookie
+    });
 
     try {
         // Get credentials from environment variables
@@ -162,17 +177,26 @@ app.post('/admin/login', strictLimiter, async (req, res) => {
         // For now, simple comparison (you should hash passwords in production)
         if (username === adminUsername && password === adminPassword) {
             console.log('Credentials valid, setting session...');
-            req.session.isAuthenticated = true;
-            req.session.username = username;
             
-            // Save session before sending response
-            req.session.save((err) => {
+            // Regenerate session ID for security
+            req.session.regenerate((err) => {
                 if (err) {
-                    console.error('Session save error:', err);
+                    console.error('Session regeneration error:', err);
                     return res.status(500).json({ error: 'Login failed - session error' });
                 }
-                console.log('Session saved successfully, sessionID:', req.sessionID);
-                res.json({ success: true, message: 'Login successful' });
+                
+                req.session.isAuthenticated = true;
+                req.session.username = username;
+                
+                // Save session before sending response
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res.status(500).json({ error: 'Login failed - session error' });
+                    }
+                    console.log('Session saved successfully, sessionID:', req.sessionID);
+                    res.json({ success: true, message: 'Login successful', sessionID: req.sessionID });
+                });
             });
         } else {
             console.log('Invalid credentials provided');

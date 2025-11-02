@@ -279,9 +279,12 @@
 
             if (response.ok) {
                 showAlert('Login successful! Redirecting...', 'success');
+                console.log('Login successful, sessionID:', data.sessionID);
+                // Wait longer to ensure session cookie is established
                 setTimeout(() => {
+                    console.log('Redirecting to manage-booking page...');
                     window.location.href = '/manage-booking.html';
-                }, 1000);
+                }, 2000);
             } else {
                 throw new Error(data.error || 'Login failed');
             }
