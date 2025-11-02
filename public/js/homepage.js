@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function getVisibleCount() {
         const width = window.innerWidth;
         if (width >= 1024) return 3; // Desktop: 3 images
-        if (width >= 768) return 2;  // Tablet: 2 images
+        if (width >= 450) return 2;  // Tablet: 2 images (matches CSS @media query)
         return 1;                      // Mobile: 1 image
     }
     
@@ -87,23 +87,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const maxIndex = getMaxIndex();
         if (currentIndex < maxIndex) {
             currentIndex++;
-            updateCarousel();
         } else {
             // Loop back to start
             currentIndex = 0;
-            updateCarousel();
         }
+        updateCarousel();
     }
     
     function slidePrev() {
+        const maxIndex = getMaxIndex();
         if (currentIndex > 0) {
             currentIndex--;
-            updateCarousel();
         } else {
             // Loop to end
-            currentIndex = getMaxIndex();
-            updateCarousel();
+            currentIndex = maxIndex;
         }
+        updateCarousel();
     }
     
     // Auto-play functionality

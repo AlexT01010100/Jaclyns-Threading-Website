@@ -95,7 +95,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 /* Tablet 768px-1023px - show 2 images at a time */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 450px) and (max-width: 1023px) {
   .sliding-image-container {
     height: 60vh;
   }
