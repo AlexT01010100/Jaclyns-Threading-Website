@@ -73,7 +73,7 @@ body::-webkit-scrollbar-thumb {
   font-size: 24px;
   padding: 15px 20px;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1;
   transition: background-color 0.3s ease;
   outline: none;
 }
