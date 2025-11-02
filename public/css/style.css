@@ -35,8 +35,8 @@ body::-webkit-scrollbar-thumb {
 
 /* Homepage-specific header styling */
 .header {
-  margin-bottom: 20px;
-  z-index: 1;
+  margin: 0;
+  padding: 0;
 }
 
 .sliding-image-container {
@@ -49,8 +49,8 @@ body::-webkit-scrollbar-thumb {
   overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  z-index: 1;
   padding-top: 0;
+  margin-top: 0;
 }
 
 .sliding-image-container::-webkit-scrollbar {
@@ -60,9 +60,7 @@ body::-webkit-scrollbar-thumb {
 .sliding-image-container img {
   flex: 0 0 100%;
   scroll-snap-align: start;
-  object-fit: cover;
-  object-position: center top;
-  margin-top: 60px;
+  margin: 0;
   width: 100%;
   height: 100%;
 }
@@ -78,7 +76,6 @@ body::-webkit-scrollbar-thumb {
   
   .sliding-image-container img {
     flex: 0 0 50%;
-    object-fit: cover;
     width: 50%;
     height: 100%;
   }
@@ -99,7 +96,6 @@ body::-webkit-scrollbar-thumb {
   
   .sliding-image-container img {
     flex: 0 0 33.33%;
-    object-fit: cover;
     width: 33.33%;
     height: 100%;
   }
@@ -386,20 +382,17 @@ body::-webkit-scrollbar-thumb {
 /* Make both section images the same size on desktop */
 .info-section img,
 .info-section-reversed img {
-  max-width: 100%;
   width: 750px;
   height: 500px;
-  object-fit: cover;
+  display: block;
 }
 
 /* Tablet-specific image sizing to prevent scaling issues */
 @media (max-width: 1000px) and (min-width: 769px) {
   .info-section img,
   .info-section-reversed img {
-    max-width: 600px;
     width: 600px;
     height: 400px;
-    object-fit: cover;
   }
 }
 
@@ -407,10 +400,8 @@ body::-webkit-scrollbar-thumb {
 @media (max-width: 768px) {
   .info-section img,
   .info-section-reversed img {
-    max-width: 100%;
     width: 100%;
     height: 300px;
-    object-fit: cover;
   }
 }
 

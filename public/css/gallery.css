@@ -30,14 +30,12 @@ body::-webkit-scrollbar-thumb {
 }
 
 .header {
-    position: fixed;
     width: 100%;
     padding: 1.5rem 5%;
     background: #404040;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 3;
     box-sizing: border-box;
 }
 
