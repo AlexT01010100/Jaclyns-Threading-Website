@@ -10,70 +10,154 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Image Carousel Functionality
 document.addEventListener("DOMContentLoaded", function () {
+    const container = document.querySelector(".sliding-image-container");
     const images = document.querySelectorAll(".sliding-image-container img");
-
+    const prevButton = document.querySelector(".carousel-nav.prev");
+    const nextButton = document.querySelector(".carousel-nav.next");
+    
+    if (!container || images.length === 0) return;
+    
     let currentIndex = 0;
-    const intervalTime = 3000; // Time between slides in milliseconds
-    let slideInterval;
-
-    const nextSlide = () => {
-        currentIndex = currentIndex < images.length - 1 ? currentIndex + 1 : 0;
-        scrollToImage(currentIndex);
-    };
-
-    const scrollToImage = (index) => {
-        const container = document.querySelector(".sliding-image-container");
-        const image = images[index];
-        container.scroll({
-            left: image.offsetLeft,
-            behavior: 'smooth'
-        });
-    };
-
-    // Function to check if we should use static display (tablet: 450px+, desktop: 1024px+)
-    const shouldUseStaticDisplay = () => {
-        return window.innerWidth >= 450;
-    };
-
-    // Function to start or stop sliding based on viewport width
-    const handleSliding = () => {
-        if (shouldUseStaticDisplay()) {
-            // Stop auto-scrolling for static display (tablet and desktop)
-            if (slideInterval) {
-                clearInterval(slideInterval);
-                slideInterval = null;
-            }
-            // Reset scroll position to show all images
-            const container = document.querySelector(".sliding-image-container");
-            if (container) {
-                container.scrollLeft = 0;
-            }
-        } else {
-            // Start auto-scrolling for mobile screens (below 450px)
-            if (!slideInterval && images.length > 1) {
-                slideInterval = setInterval(nextSlide, intervalTime);
-            }
+    let autoPlayInterval;
+    const autoPlayDelay = 4000; // 4 seconds between auto-slides
+    
+    // Get number of visible images based on screen width
+    function getVisibleCount() {
+        const width = window.innerWidth;
+        if (width >= 1024) return 3; // Desktop: 3 images
+        if (width >= 768) return 2;  // Tablet: 2 images
+        return 1;                      // Mobile: 1 image
+    }
+    
+    // Get maximum index we can slide to
+    function getMaxIndex() {
+        return images.length - getVisibleCount();
+    }
+    
+    // Update carousel position
+    function updateCarousel(animate = true) {
+        const visibleCount = getVisibleCount();
+        const maxIndex = getMaxIndex();
+        
+        // Ensure currentIndex is within bounds
+        if (currentIndex > maxIndex) {
+            currentIndex = maxIndex;
         }
-    };
-
-    // Initial check
-    handleSliding();
-
-    // Listen for window resize to toggle between sliding and static
-    window.addEventListener('resize', handleSliding);
-
-    // Allow clicking on images to scroll to them (only when not in static mode)
-    images.forEach((img, index) => {
-        img.addEventListener('click', () => {
-            if (!shouldUseStaticDisplay()) {
-                currentIndex = index;
-                scrollToImage(currentIndex);
-                clearInterval(slideInterval);
-                slideInterval = setInterval(nextSlide, intervalTime);
-            }
+        if (currentIndex < 0) {
+            currentIndex = 0;
+        }
+        
+        const imageWidth = images[0].offsetWidth;
+        const offset = -(currentIndex * imageWidth);
+        
+        if (animate) {
+            container.style.transition = 'transform 0.5s ease-in-out';
+        } else {
+            container.style.transition = 'none';
+        }
+        
+        container.style.transform = `translateX(${offset}px)`;
+        
+        // Update button states
+        updateButtonStates();
+    }
+    
+    // Update button visibility/state
+    function updateButtonStates() {
+        const maxIndex = getMaxIndex();
+        
+        // Always show and enable buttons for continuous looping
+        if (prevButton) {
+            prevButton.style.display = maxIndex > 0 ? 'block' : 'none';
+            prevButton.disabled = false;
+            prevButton.style.opacity = '1';
+        }
+        
+        if (nextButton) {
+            nextButton.style.display = maxIndex > 0 ? 'block' : 'none';
+            nextButton.disabled = false;
+            nextButton.style.opacity = '1';
+        }
+    }
+    
+    // Navigation functions
+    function slideNext() {
+        const maxIndex = getMaxIndex();
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+            updateCarousel();
+        } else {
+            // Loop back to start
+            currentIndex = 0;
+            updateCarousel();
+        }
+    }
+    
+    function slidePrev() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        } else {
+            // Loop to end
+            currentIndex = getMaxIndex();
+            updateCarousel();
+        }
+    }
+    
+    // Auto-play functionality
+    function startAutoPlay() {
+        stopAutoPlay(); // Clear any existing interval first
+        autoPlayInterval = setInterval(slideNext, autoPlayDelay);
+    }
+    
+    function stopAutoPlay() {
+        if (autoPlayInterval) {
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+        }
+    }
+    
+    // Event listeners for navigation buttons
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            slideNext();
+            startAutoPlay(); // Restart the timer
         });
+    }
+    
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            slidePrev();
+            startAutoPlay(); // Restart the timer
+        });
+    }
+    
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            updateCarousel(false);
+            startAutoPlay(); // Ensure auto-play continues after resize
+        }, 250);
     });
+    
+    // Pause auto-play on hover, resume on mouse leave
+    const carouselWrapper = document.querySelector('.carousel-wrapper');
+    if (carouselWrapper) {
+        carouselWrapper.addEventListener('mouseenter', () => {
+            stopAutoPlay();
+        });
+        carouselWrapper.addEventListener('mouseleave', () => {
+            startAutoPlay();
+        });
+    }
+    
+    // Initialize carousel and start auto-play
+    updateCarousel(false);
+    startAutoPlay();
 });
 
 // Load Google Reviews for Homepage

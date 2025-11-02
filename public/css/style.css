@@ -39,68 +39,82 @@ body::-webkit-scrollbar-thumb {
   padding: 0;
 }
 
-.sliding-image-container {
-  display: flex;
-  overflow-x: scroll;
-  width: 100%;
-  height: 50vh;
-  scroll-snap-type: x mandatory;
+/* Carousel wrapper */
+.carousel-wrapper {
   position: relative;
-  overflow-y: hidden;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  padding-top: 0;
-  margin-top: 0;
+  width: 100%;
+  overflow: hidden;
+  background-color: #373434;
 }
 
-.sliding-image-container::-webkit-scrollbar {
-  display: none;
+.sliding-image-container {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+  height: 50vh;
+  position: relative;
 }
 
 .sliding-image-container img {
   flex: 0 0 100%;
-  scroll-snap-align: start;
-  margin: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  margin: 0;
 }
 
-/* Tablet 450px-1023px - show 2 static images side by side */
-@media (min-width: 450px) and (max-width: 1023px) {
+/* Navigation buttons */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 24px;
+  padding: 15px 20px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+  outline: none;
+}
+
+.carousel-nav:hover {
+  background-color: rgba(194, 167, 107, 0.8);
+}
+
+.carousel-nav:focus {
+  outline: none;
+}
+
+.carousel-nav.prev {
+  left: 10px;
+}
+
+.carousel-nav.next {
+  right: 10px;
+}
+
+/* Tablet 768px-1023px - show 2 images at a time */
+@media (min-width: 768px) and (max-width: 1023px) {
   .sliding-image-container {
-    overflow-x: hidden;
-    scroll-snap-type: none;
-    background-color: #373434;
     height: 60vh;
   }
   
   .sliding-image-container img {
     flex: 0 0 50%;
     width: 50%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .sliding-image-container img:nth-child(3) {
-    display: none;
   }
 }
 
-/* Desktop 1024px+ - show 3 static images side by side */
+/* Desktop 1024px+ - show 3 images at a time */
 @media (min-width: 1024px) {
   .sliding-image-container {
-    overflow-x: hidden;
-    scroll-snap-type: none;
-    background-color: #373434;
     height: 60vh;
   }
   
   .sliding-image-container img {
-    flex: 0 0 33.33%;
-    width: 33.33%;
-    height: 100%;
-    object-fit: cover;
+    flex: 0 0 33.333%;
+    width: 33.333%;
   }
 }
 
