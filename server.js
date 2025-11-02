@@ -47,20 +47,21 @@ const bookingLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Apply global rate limiter to all requests
-app.use(globalLimiter);
-
-// Session configuration
+// Session configuration - MUST BE BEFORE RATE LIMITERS
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        secure: false, // Set to false for development (localhost), true for production with HTTPS
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: 'lax' // Allow cookies in same-site requests
     }
 }));
+
+// Apply global rate limiter to all requests - AFTER SESSION
+app.use(globalLimiter);
 
 // PostgreSQL connection pool
 const pool = new Pool({
@@ -105,7 +106,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors());
+// CORS configuration - must allow credentials for sessions to work
+app.use(cors({
+    origin: true, // In production, specify your domain
+    credentials: true
+}));
 
 // Request size limits to prevent DoS attacks through large payloads
 app.use(bodyParser.urlencoded({ 
@@ -144,14 +149,19 @@ app.use(express.static('public', {
 app.post('/admin/login', strictLimiter, async (req, res) => {
     const { username, password } = req.body;
 
+    console.log('Login attempt:', { username, hasSession: !!req.session });
+
     try {
         // Get credentials from environment variables
         const adminUsername = process.env.ADMIN_USERNAME || 'admin';
         const adminPassword = process.env.ADMIN_PASSWORD || 'change-this-password';
 
+        console.log('Comparing credentials...');
+
         // In production, use bcrypt for password hashing
         // For now, simple comparison (you should hash passwords in production)
         if (username === adminUsername && password === adminPassword) {
+            console.log('Credentials valid, setting session...');
             req.session.isAuthenticated = true;
             req.session.username = username;
             
@@ -161,9 +171,11 @@ app.post('/admin/login', strictLimiter, async (req, res) => {
                     console.error('Session save error:', err);
                     return res.status(500).json({ error: 'Login failed - session error' });
                 }
+                console.log('Session saved successfully, sessionID:', req.sessionID);
                 res.json({ success: true, message: 'Login successful' });
             });
         } else {
+            console.log('Invalid credentials provided');
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (error) {
