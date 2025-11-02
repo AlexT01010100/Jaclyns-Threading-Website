@@ -15,8 +15,8 @@ DECLARE
     slot TEXT;
 BEGIN
     WHILE start_date <= end_date LOOP
-        -- Skip Sundays (0) and Mondays (1) if closed on those days
-        IF EXTRACT(DOW FROM start_date) NOT IN (0, 1) THEN
+        -- Skip Saturdays (6) and Sundays (0) - Open Monday to Friday only
+        IF EXTRACT(DOW FROM start_date) NOT IN (0, 6) THEN
             FOREACH slot IN ARRAY time_slots
             LOOP
                 INSERT INTO time_slots (slot_date, time_slot, is_available)
