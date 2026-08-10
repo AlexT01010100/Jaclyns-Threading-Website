@@ -1069,36 +1069,66 @@ app.put('/api/admin/slots/:date/:timeSlot', requireApiAuth, async (req, res) => 
     }
 });
 
-// Google Reviews API endpoint with rate limiting
-app.get('/api/reviews', strictLimiter, async (req, res) => {
-    const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Beauty
-    
+// Google Reviews API endpoint - serves from an in-memory cache refreshed
+// periodically instead of calling Google on every page load. Place Details
+// (with the reviews/rating fields) is a paid, billed API call, and reviews
+// don't change minute to minute, so there's no reason to pay for a fresh
+// call per visitor.
+const PLACE_ID = 'ChIJFTDty1sL04kR8m9QnBmHYKY'; // Jaclyn's Beauty
+const REVIEWS_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+let reviewsCache = null; // { data } - last successful Google response
+
+async function fetchGoogleReviews() {
+    const fetch = require('node-fetch');
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,user_ratings_total,reviews&key=${process.env.GOOGLE_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === 'OK' && data.result) {
+        return data.result;
+    }
+    const error = new Error(data.error_message || 'Failed to fetch reviews');
+    error.status = 400;
+    error.body = { error: data.status, message: data.error_message || 'Failed to fetch reviews' };
+    throw error;
+}
+
+async function refreshReviewsCache() {
     if (!process.env.GOOGLE_API_KEY) {
-        return res.status(500).json({ 
+        console.warn('⚠ GOOGLE_API_KEY not set - reviews cache will stay empty');
+        return;
+    }
+    try {
+        reviewsCache = { data: await fetchGoogleReviews() };
+        console.log('✓ Google reviews cache refreshed');
+    } catch (error) {
+        console.error('✗ Error refreshing Google reviews cache:', error.message);
+    }
+}
+refreshReviewsCache();
+setInterval(refreshReviewsCache, REVIEWS_CACHE_TTL_MS);
+
+app.get('/api/reviews', strictLimiter, async (req, res) => {
+    if (reviewsCache) {
+        return res.json(reviewsCache.data);
+    }
+
+    if (!process.env.GOOGLE_API_KEY) {
+        return res.status(500).json({
             error: 'Google API key not configured',
-            message: 'Please add GOOGLE_API_KEY to your .env file' 
+            message: 'Please add GOOGLE_API_KEY to your .env file'
         });
     }
 
+    // Cache hasn't been populated yet (cold start, or Google was unavailable
+    // at boot) - fetch on demand this one time so the page isn't left empty.
     try {
-        const fetch = require('node-fetch');
-        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,user_ratings_total,reviews&key=${process.env.GOOGLE_API_KEY}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.status === 'OK' && data.result) {
-            res.json(data.result);
-        } else {
-            console.error('Google API Error:', data.status, data.error_message);
-            res.status(400).json({ 
-                error: data.status,
-                message: data.error_message || 'Failed to fetch reviews'
-            });
-        }
+        const data = await fetchGoogleReviews();
+        reviewsCache = { data };
+        res.json(data);
     } catch (error) {
-        console.error('Error fetching Google reviews:', error);
-        res.status(500).json({ error: 'Error fetching reviews from Google' });
+        console.error('Error fetching Google reviews:', error.message);
+        res.status(error.status || 500).json(error.body || { error: 'Error fetching reviews from Google' });
     }
 });
 
