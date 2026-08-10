@@ -398,6 +398,10 @@ app.get('/api/available-slots/:date', async (req, res) => {
 app.post('/book_appointment', bookingLimiter, async (req, res) => {
     const { name, email, phone, service, date, slot } = req.body;
 
+    if (!name?.trim() || !email?.trim() || !phone?.trim() || !service || !date || !slot) {
+        return res.status(400).json({ error: 'Name, email, phone, service, date, and time slot are all required.' });
+    }
+
     // Generate confirmation ID on server side
     const { v4: uuidv4 } = require('uuid');
     const confirmationId = uuidv4();
@@ -758,12 +762,12 @@ app.get('/api/appointment/:confirmationId', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT name, email, phone, service, appointment_date, time_slot, status, confirmation_id FROM appointments WHERE confirmation_id = $1 AND status != $2',
-            [confirmationId, 'cancelled']
+            'SELECT name, email, phone, service, appointment_date, time_slot, status, confirmation_id FROM appointments WHERE confirmation_id = $1',
+            [confirmationId]
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Appointment not found or has been cancelled' });
+            return res.status(404).json({ error: 'Appointment not found' });
         }
 
         res.json(result.rows[0]);
