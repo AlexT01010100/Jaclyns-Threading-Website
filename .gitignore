@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.test
+.new-admin-credentials.txt
 
 # Firebase files (not needed with PostgreSQL)
 jaclyns-threading-firebase-admin.json

@@ -5,6 +5,16 @@ services:
     container_name: jaclyns-threading-db
     restart: unless-stopped
     environment:
+      # IMPORTANT: any value in .env containing a literal "$" - most notably
+      # ADMIN_PASSWORD_HASH, which is a bcrypt hash and *always* contains "$" -
+      # must have every "$" written as "$$" in .env. Compose parses .env
+      # values for $VAR-style references (so other .env entries can build on
+      # each other) regardless of whether the value reaches a container via
+      # this ${...} interpolation or via an env_file: list below; an
+      # unescaped "$word" is treated as a reference to an undefined variable
+      # and silently deleted, corrupting the value. Verify with:
+      # docker exec jaclyns-threading-db env | grep POSTGRES_PASSWORD
+      # docker exec jaclyns-threading-app env | grep ADMIN_PASSWORD_HASH
       POSTGRES_DB: ${DB_NAME:-jaclyns_threading}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -29,26 +39,22 @@ services:
     restart: unless-stopped
     ports:
       - "${PORT:-3000}:3000"
+    # Loads every var from .env with its name unchanged (DB_NAME, DB_USER,
+    # DB_PASSWORD, ADMIN_PASSWORD_HASH, SESSION_SECRET, etc. all match what
+    # server.js reads via process.env), instead of repeating every name via
+    # ${...} below. NOTE: this does NOT avoid the "$" escaping requirement -
+    # see the comment on the db service above. Any "$" in a value here must
+    # still be written as "$$" in .env.
+    env_file:
+      - .env
     environment:
+      # Compose-specific overrides that must differ from .env regardless of
+      # its contents - none of these can contain "$", so plain interpolation
+      # is fine here.
       NODE_ENV: production
       PORT: 3000
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-jaclyns_threading}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASS: ${EMAIL_PASS}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
-      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
-      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
-      ADMIN_PHONE_NUMBER: ${ADMIN_PHONE_NUMBER}
-      BASE_URL: ${BASE_URL:-http://localhost:3000}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-password}
-      SESSION_SECRET: ${SESSION_SECRET}
     depends_on:
       db:
         condition: service_healthy

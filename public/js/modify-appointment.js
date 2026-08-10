@@ -36,27 +36,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // The API returns time_slot as a 24-hour "HH:MM:SS" string (Postgres TIME column)
+    function formatTimeTo12Hour(timeString) {
+        const [hour, minute] = timeString.split(':').map(Number);
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
     function displayAppointmentDetails(appointment) {
         const detailsDiv = document.getElementById('appointment-details');
         if (detailsDiv) {
             // Format the date to remove T00:00:00.000Z
             const formattedDate = appointment.appointment_date.split('T')[0];
-            
+
             // Capitalize first letter of service
             const capitalizedService = appointment.service.charAt(0).toUpperCase() + appointment.service.slice(1);
-            
+
             // Check if appointment is cancelled
             const isCancelled = appointment.status === 'cancelled';
-            
+
             detailsDiv.innerHTML = `
                 <h3>Appointment Details</h3>
-                
+
                 <!-- Read-only fields -->
                 <div class="detail-group read-only">
                     <p><strong>🔖 Confirmation ID:</strong> ${appointment.confirmation_id || confirmationId}</p>
                     <p><strong>💼 Service:</strong> ${capitalizedService}</p>
                     <p><strong>📅 Date:</strong> ${formattedDate}</p>
-                    <p><strong>🕒 Time:</strong> ${appointment.time_slot}</p>
+                    <p><strong>🕒 Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p><strong>📊 Status:</strong> <span class="status-${appointment.status}">${appointment.status.toUpperCase()}</span></p>
                 </div>
 

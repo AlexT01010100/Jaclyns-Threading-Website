@@ -11,7 +11,17 @@ const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 require('dotenv').config();
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Initialize Twilio - optional, SMS notifications are a non-critical feature
+// and a missing/invalid credential here must not prevent the server from
+// starting (it previously did, taking down the whole site).
+let client = null;
+if (process.env.TWILIO_ACCOUNT_SID?.startsWith('AC') && process.env.TWILIO_AUTH_TOKEN) {
+    client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    console.log('✓ Twilio initialized');
+} else {
+    console.warn('⚠ TWILIO_ACCOUNT_SID/TWILIO_AUTH_TOKEN not set or invalid - SMS notifications will be skipped');
+}
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -57,6 +67,15 @@ async function sendEmail(to, subject, html) {
         console.error('✗ Error sending email:', error.message);
         return false;
     }
+}
+
+// time_slot is stored as a Postgres TIME column and comes back as a 24-hour
+// "HH:MM:SS" string - format it for customer-facing emails/SMS/messages
+function formatTimeTo12Hour(timeString) {
+    const [hour, minute] = timeString.split(':').map(Number);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
 }
 
 const app = express();
@@ -139,6 +158,22 @@ pool.connect((err, client, release) => {
     }
 });
 
+// Keep the booking calendar rolling 90 days out. The initial seed only ever
+// runs once (docker-entrypoint-initdb.d only executes against an empty
+// volume), so without this the calendar would quietly run dry 90 days after
+// deployment. Runs once at startup, then once a day.
+const DAY_MS = 24 * 60 * 60 * 1000;
+async function topUpTimeSlots() {
+    try {
+        await pool.query(`SELECT ensure_time_slots(CURRENT_DATE, (CURRENT_DATE + INTERVAL '90 days')::date)`);
+        console.log('✓ Time slots topped up through +90 days');
+    } catch (error) {
+        console.error('✗ Error topping up time slots:', error.message);
+    }
+}
+topUpTimeSlots();
+setInterval(topUpTimeSlots, DAY_MS);
+
 // Security headers and cache control
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -175,23 +210,21 @@ app.use(bodyParser.json({
     limit: '1mb' // Limit JSON payload size to 1MB
 }));
 
-// Authentication middleware
+// Authentication middleware for HTML pages - redirects to login on failure
 const requireAuth = (req, res, next) => {
-    console.log('requireAuth middleware:', {
-        hasSession: !!req.session,
-        isAuthenticated: req.session?.isAuthenticated,
-        sessionID: req.sessionID,
-        cookies: req.headers.cookie,
-        path: req.path
-    });
-    
     if (req.session && req.session.isAuthenticated) {
-        console.log('Authentication successful, proceeding to protected route');
         return next();
     }
-    
-    console.log('Authentication failed, redirecting to login page');
     res.redirect('/admin-login.html');
+};
+
+// Authentication middleware for admin JSON APIs - returns 401 instead of
+// redirecting, since a fetch() call can't follow a redirect to an HTML page
+const requireApiAuth = (req, res, next) => {
+    if (req.session && req.session.isAuthenticated) {
+        return next();
+    }
+    res.status(401).json({ error: 'Authentication required' });
 };
 
 // Protected route for manage-booking - must come BEFORE express.static
@@ -213,47 +246,38 @@ app.use(express.static('public', {
 app.post('/admin/login', strictLimiter, async (req, res) => {
     const { username, password } = req.body;
 
-    console.log('Login attempt:', { 
-        username, 
-        hasSession: !!req.session,
-        sessionID: req.sessionID,
-        cookies: req.headers.cookie
-    });
-
     try {
-        // Get credentials from environment variables
         const adminUsername = process.env.ADMIN_USERNAME;
-        const adminPassword = process.env.ADMIN_PASSWORD;
+        const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-        console.log('Comparing credentials...');
+        if (!adminUsername || !adminPasswordHash) {
+            console.error('Login failed: ADMIN_USERNAME or ADMIN_PASSWORD_HASH not configured');
+            return res.status(500).json({ error: 'Login failed' });
+        }
 
-        // In production, use bcrypt for password hashing
-        // For now, simple comparison (you should hash passwords in production)
-        if (username === adminUsername && password === adminPassword) {
-            console.log('Credentials valid, setting session...');
-            
+        const passwordMatches = typeof password === 'string' && await bcrypt.compare(password, adminPasswordHash);
+
+        if (username === adminUsername && passwordMatches) {
             // Regenerate session ID for security
             req.session.regenerate((err) => {
                 if (err) {
                     console.error('Session regeneration error:', err);
                     return res.status(500).json({ error: 'Login failed - session error' });
                 }
-                
+
                 req.session.isAuthenticated = true;
                 req.session.username = username;
-                
+
                 // Save session before sending response
                 req.session.save((err) => {
                     if (err) {
                         console.error('Session save error:', err);
                         return res.status(500).json({ error: 'Login failed - session error' });
                     }
-                    console.log('Session saved successfully, sessionID:', req.sessionID);
-                    res.json({ success: true, message: 'Login successful', sessionID: req.sessionID });
+                    res.json({ success: true, message: 'Login successful' });
                 });
             });
         } else {
-            console.log('Invalid credentials provided');
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (error) {
@@ -417,16 +441,10 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
         };
 
         const slotsNeeded = serviceDurationSlots[service.toLowerCase()] || 2;
-
-        // Parse the start time and calculate required consecutive slots
         const startTime = slot;
-        const [time, period] = startTime.split(' ');
-        let [hour, minute] = time.split(':').map(Number);
-        
-        if (period === 'PM' && hour !== 12) hour += 12;
-        else if (period === 'AM' && hour === 12) hour = 0;
 
-        // Get all slots for this date, ordered by time
+        // Get all slots for this date, ordered by time (TIME column sorts
+        // chronologically at the DB level, unlike the old "9:00 AM" strings)
         const allSlotsResult = await connection.query(
             'SELECT time_slot FROM time_slots WHERE slot_date = $1 ORDER BY time_slot',
             [date]
@@ -457,7 +475,7 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
 
             if (slotCheck.rows.length === 0 || !slotCheck.rows[0].is_available) {
                 await connection.query('ROLLBACK');
-                return res.status(400).json({ error: `Time slot ${timeSlot} is no longer available. Please select a different time.` });
+                return res.status(400).json({ error: `Time slot ${formatTimeTo12Hour(timeSlot)} is no longer available. Please select a different time.` });
             }
         }
 
@@ -487,12 +505,13 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
         setImmediate(async () => {
             try {
                 const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-                
+                const displayTime = formatTimeTo12Hour(slot);
+
                 // Send customer confirmation email
                 const userEmailHtml = `
                     <div style="color: #000000; font-family: Arial, sans-serif;">
                         <h2 style="color: #000000;">Dear ${name},</h2>
-                        <p style="color: #000000;">Your appointment for <strong>${service}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${slot}</strong>.</p>
+                        <p style="color: #000000;">Your appointment for <strong>${service}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${displayTime}</strong>.</p>
                         <p style="color: #000000;">You can manage your appointment using the following link:</p>
                         <p style="color: #000000;"><a href="${baseUrl}/modify-appointment.html?confirmationId=${confirmationId}&date=${date}" style="color: #0066cc;">Manage Appointment</a></p>
                         <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
@@ -513,7 +532,7 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
                         <p style="color: #000000;"><strong>Phone:</strong> ${phone}</p>
                         <p style="color: #000000;"><strong>Service:</strong> ${service}</p>
                         <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                        <p style="color: #000000;"><strong>Time:</strong> ${slot}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${displayTime}</p>
                         <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
                     </div>
                 `;
@@ -521,16 +540,16 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
                 await sendEmail(process.env.ADMIN_EMAIL || 'alexterry179@gmail.com', 'New Appointment Booking', adminEmailHtml);
 
                 // Send SMS notifications if Twilio is configured
-                if (process.env.TWILIO_PHONE_NUMBER) {
+                if (client && process.env.TWILIO_PHONE_NUMBER) {
                     try {
                         await client.messages.create({
-                            body: `Hi ${name}, your appointment for ${service} is confirmed on ${date} at ${slot}. Confirmation: ${confirmationId}`,
+                            body: `Hi ${name}, your appointment for ${service} is confirmed on ${date} at ${displayTime}. Confirmation: ${confirmationId}`,
                             from: process.env.TWILIO_PHONE_NUMBER,
                             to: phone
                         });
-                        
+
                         await client.messages.create({
-                            body: `New appointment: ${name}, ${service}, ${date} at ${slot}`,
+                            body: `New appointment: ${name}, ${service}, ${date} at ${displayTime}`,
                             from: process.env.TWILIO_PHONE_NUMBER,
                             to: process.env.ADMIN_PHONE_NUMBER
                         });
@@ -602,7 +621,7 @@ app.post('/cancel-appointment', strictLimiter, async (req, res) => {
             const userEmailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Dear ${appointment.name},</h2>
-                    <p style="color: #000000;">Your appointment on <strong>${date}</strong> at <strong>${appointment.time_slot}</strong> has been cancelled.</p>
+                    <p style="color: #000000;">Your appointment on <strong>${date}</strong> at <strong>${formatTimeTo12Hour(appointment.time_slot)}</strong> has been cancelled.</p>
                     <p style="color: #000000;">If you'd like to reschedule, please visit our booking page.</p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
@@ -620,7 +639,7 @@ app.post('/cancel-appointment', strictLimiter, async (req, res) => {
                     <p style="color: #000000;"><strong>Customer Name:</strong> ${appointment.name}</p>
                     <p style="color: #000000;"><strong>Email:</strong> ${appointment.email}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                    <p style="color: #000000;"><strong>Time:</strong> ${appointment.time_slot}</p>
+                    <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
                     <br>
                     <p style="color: #000000;">The time slot has been freed up and is now available for booking.</p>
@@ -713,7 +732,7 @@ app.post('/edit-appointment', strictLimiter, async (req, res) => {
                     <p style="color: #000000;">Your appointment has been updated:</p>
                     <p style="color: #000000;"><strong>Service:</strong> ${newService}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${newDate}</p>
-                    <p style="color: #000000;"><strong>Time:</strong> ${newSlot}</p>
+                    <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(newSlot)}</p>
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
@@ -787,7 +806,7 @@ app.put('/api/appointment/:confirmationId', strictLimiter, async (req, res) => {
                     <p style="color: #000000;">Your appointment information has been updated successfully.</p>
                     <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${appointment.appointment_date}</p>
-                    <p style="color: #000000;"><strong>Time:</strong> ${appointment.time_slot}</p>
+                    <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
                     <br>
                     <p style="color: #000000;">Thank you!</p>
@@ -805,7 +824,7 @@ app.put('/api/appointment/:confirmationId', strictLimiter, async (req, res) => {
 });
 
 // Endpoint to get all appointments for a specific date (for admin/manage booking page)
-app.get('/api/appointments/:date', async (req, res) => {
+app.get('/api/appointments/:date', requireApiAuth, async (req, res) => {
     const { date } = req.params;
 
     try {
@@ -833,7 +852,7 @@ app.get('/api/appointments/:date', async (req, res) => {
 });
 
 // Endpoint to get all time slots for a date (including booked ones for admin)
-app.get('/api/admin/slots/:date', async (req, res) => {
+app.get('/api/admin/slots/:date', requireApiAuth, async (req, res) => {
     const { date } = req.params;
 
     try {
@@ -864,7 +883,7 @@ app.get('/api/admin/slots/:date', async (req, res) => {
 });
 
 // Endpoint to add a new time slot
-app.post('/api/admin/slots', async (req, res) => {
+app.post('/api/admin/slots', requireApiAuth, async (req, res) => {
     const { date, timeSlot } = req.body;
 
     try {
@@ -881,7 +900,7 @@ app.post('/api/admin/slots', async (req, res) => {
 });
 
 // Endpoint to delete a time slot
-app.delete('/api/admin/slots/:date/:timeSlot', async (req, res) => {
+app.delete('/api/admin/slots/:date/:timeSlot', requireApiAuth, async (req, res) => {
     const { date, timeSlot } = req.params;
 
     const connection = await pool.connect();
@@ -920,7 +939,7 @@ app.delete('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                         <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
                         <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
                         <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                        <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(timeSlot)}</p>
                         <br>
                         <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
                         <br>
@@ -953,7 +972,7 @@ app.delete('/api/admin/slots/:date/:timeSlot', async (req, res) => {
 });
 
 // Endpoint to update appointment details
-app.put('/api/admin/appointments/:id', async (req, res) => {
+app.put('/api/admin/appointments/:id', requireApiAuth, async (req, res) => {
     const { id } = req.params;
     const { name, email, phone, service } = req.body;
 
@@ -971,7 +990,7 @@ app.put('/api/admin/appointments/:id', async (req, res) => {
 });
 
 // Endpoint to manually mark slot as available/unavailable
-app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
+app.put('/api/admin/slots/:date/:timeSlot', requireApiAuth, async (req, res) => {
     const { date, timeSlot } = req.params;
     const { isAvailable } = req.body;
 
@@ -1017,7 +1036,7 @@ app.put('/api/admin/slots/:date/:timeSlot', async (req, res) => {
                         <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
                         <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
                         <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
-                        <p style="color: #000000;"><strong>Time:</strong> ${timeSlot}</p>
+                        <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(timeSlot)}</p>
                         <br>
                         <p style="color: #000000;"><strong>Please contact Jaclyn for assistance with rescheduling or for more information.</strong></p>
                         <br>

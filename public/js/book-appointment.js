@@ -25,16 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setMinDate();
 
-    function parseTimeTo24Hour(timeString) {
-        const [time, period] = timeString.split(' ');
-        let [hour, minute] = time.split(':').map(Number);
-
-        if (period === 'PM' && hour !== 12) {
-            hour += 12;
-        } else if (period === 'AM' && hour === 12) {
-            hour = 0;
-        }
-
+    // The API returns time_slot as a 24-hour "HH:MM:SS" string (Postgres TIME column)
+    function parseTimeString(timeString) {
+        const [hour, minute] = timeString.split(':').map(Number);
         return new Date(1970, 0, 1, hour, minute);
     }
 
@@ -119,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Convert slot times to Date objects and sort them
         const timeSlots = availableSlots
             .map(slot => ({
-                time: parseTimeTo24Hour(slot.time_slot),
+                time: parseTimeString(slot.time_slot),
                 original: slot.time_slot
             }))
             .sort((a, b) => a.time - b.time);
@@ -171,8 +164,10 @@ document.addEventListener("DOMContentLoaded", function () {
             slotElement.classList.add("slot-item");
             slotElement.setAttribute("data-slot-id", slot.id);
 
+            const displayTime = formatTimeTo12Hour(parseTimeString(slot.time));
+
             slotElement.innerHTML = `
-                <p>${slot.time}</p>
+                <p>${displayTime}</p>
                 <button class="select-button" data-slot-id="${slot.id}">Select Slot</button>
                 <hr class="time-slots-hr">
             `;

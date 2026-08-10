@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot';
                 timeSlot.innerHTML = `
-                    <input type="checkbox" id="${time12}" name="timeSlots" value="${time12}">
+                    <input type="checkbox" id="${time12}" name="timeSlots" value="${time24}">
                     <label for="${time12}">${time12}</label>
                     <div class="slot-details" style="display: none;">
                         <div><input type="text" placeholder="Name" class="slot-name" /></div>
@@ -55,19 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const period = hours >= 12 ? 'PM' : 'AM';
         const displayHours = hours % 12 || 12;
         return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-    }
-
-    function convertTo24Hour(time12) {
-        const [time, period] = time12.split(' ');
-        let [hours, minutes] = time.split(':').map(Number);
-        
-        if (period === 'PM' && hours !== 12) {
-            hours += 12;
-        } else if (period === 'AM' && hours === 12) {
-            hours = 0;
-        }
-        
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
     // Fetch all slots for admin view
@@ -106,12 +93,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Sort by time slot properly (handles 12-hour format)
-        slots.sort((a, b) => {
-            const timeA = convertTo24Hour(a.time_slot);
-            const timeB = convertTo24Hour(b.time_slot);
-            return timeA.localeCompare(timeB);
-        });
+        // time_slot comes back from the API as a zero-padded 24-hour "HH:MM:SS"
+        // string (Postgres TIME column), so it already sorts correctly as text
+        slots.sort((a, b) => a.time_slot.localeCompare(b.time_slot));
 
         slots.forEach(slot => {
             const slotElement = document.createElement('div');
@@ -119,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const status = slot.appointment_id ? 'booked' : (slot.is_available ? 'available' : 'unavailable');
             const buttonText = slot.is_available ? 'Mark as Unavailable' : 'Mark as Available';
+            const displayTime = convertTo12HourFormat(slot.time_slot);
 
             slotElement.innerHTML = `
                 <div class="status-header">
@@ -126,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="details-row">
                     <div>
-                        <strong>🕒 Time:</strong> ${slot.time_slot}
+                        <strong>🕒 Time:</strong> ${displayTime}
                     </div>
                     <div>
                         <strong>👤 Name:</strong> ${slot.name || 'N/A'}
@@ -217,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedDate = slotDateInput.value;
         if (!selectedDate) return;
         
-        if (!confirm(`Delete slot ${timeSlot}?`)) return;
+        if (!confirm(`Delete slot ${convertTo12HourFormat(timeSlot)}?`)) return;
 
         try {
             const response = await fetch(`/api/admin/slots/${selectedDate}/${encodeURIComponent(timeSlot)}`, {
