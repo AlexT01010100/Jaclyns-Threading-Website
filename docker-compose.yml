@@ -50,8 +50,13 @@ services:
     environment:
       # Compose-specific overrides that must differ from .env regardless of
       # its contents - none of these can contain "$", so plain interpolation
-      # is fine here.
-      NODE_ENV: production
+      # is fine here. NODE_ENV defaults to production (the safe choice for a
+      # real deploy) but still honors .env's value if it sets one - this
+      # matters for local testing, since NODE_ENV=development is what makes
+      # session cookies work without HTTPS. A hardcoded "production" here
+      # would silently override .env.local.example's "development" and admin
+      # login would look like it works but never actually set a cookie.
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
       DB_HOST: db
       DB_PORT: 5432

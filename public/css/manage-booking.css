@@ -322,6 +322,8 @@ body::-webkit-scrollbar-thumb {
 .slot-item .delete-button,
 .slot-item .toggle-button,
 .slot-item .book-button,
+.slot-item .book-confirm-button,
+.slot-item .book-cancel-button,
 button[class*="edit-"] {
     padding: 8px 16px;
     font-size: 13px;
@@ -430,7 +432,47 @@ button[class*="edit-"]:hover {
     width: 100%;
 }
 
-.slot-details input:focus {
+.slot-details input:focus,
+.slot-details select:focus {
     border-color: #007bff;
     outline: none;
+}
+
+.slot-details select {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.book-form.slot-details {
+    padding: 12px;
+    background: #f0f7ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 6px;
+}
+
+.book-confirm-button {
+    background-color: #28a745;
+}
+
+.book-confirm-button:hover {
+    background-color: #218838;
+}
+
+.book-cancel-button {
+    background-color: #6c757d;
+}
+
+.book-cancel-button:hover {
+    background-color: #5a6268;
+}
+
+.book-confirm-button:disabled {
+    background-color: #94d3a2;
+    cursor: not-allowed;
 }

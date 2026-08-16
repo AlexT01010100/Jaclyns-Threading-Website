@@ -39,6 +39,28 @@
     <button type="button" id="logoutBtn" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ff5252); margin-bottom: 20px;">
         <i class='bx bx-log-out'></i> Logout
     </button>
+    <button type="button" id="changePasswordBtn" class="btn" style="margin-bottom: 20px; margin-left: 10px;">
+        <i class='bx bx-lock-alt'></i> Change Password
+    </button>
+
+    <div id="changePasswordPanel" class="active-slots" style="display: none;">
+        <h3>Change Admin Password</h3>
+        <div class="input-box">
+            <label for="currentPassword">Current Password:</label>
+            <input type="password" id="currentPassword" autocomplete="current-password">
+        </div>
+        <div class="input-box">
+            <label for="newPassword">New Password (min 10 characters):</label>
+            <input type="password" id="newPassword" autocomplete="new-password">
+        </div>
+        <div class="input-box">
+            <label for="confirmNewPassword">Confirm New Password:</label>
+            <input type="password" id="confirmNewPassword" autocomplete="new-password">
+        </div>
+        <button type="button" id="submitPasswordChange" class="btn">Update Password</button>
+        <p id="passwordChangeMessage" style="margin-top: 10px; font-weight: 500;"></p>
+    </div>
+
     <form id="slotForm" class="slot-form">
         <div class="input-box">
             <label for="slotDate">Select Date:</label>
@@ -122,6 +144,75 @@
                         console.error('Logout error:', error);
                         alert('Logout failed. Please try again.');
                     }
+                }
+            });
+        }
+
+        // Change password panel
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const changePasswordPanel = document.getElementById('changePasswordPanel');
+        const submitPasswordChange = document.getElementById('submitPasswordChange');
+        const passwordChangeMessage = document.getElementById('passwordChangeMessage');
+
+        if (changePasswordBtn && changePasswordPanel) {
+            changePasswordBtn.addEventListener('click', function() {
+                changePasswordPanel.style.display = changePasswordPanel.style.display === 'block' ? 'none' : 'block';
+                passwordChangeMessage.textContent = '';
+            });
+        }
+
+        if (submitPasswordChange) {
+            submitPasswordChange.addEventListener('click', async function() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+                passwordChangeMessage.style.color = '#dc3545';
+
+                if (!currentPassword || !newPassword || !confirmNewPassword) {
+                    passwordChangeMessage.textContent = 'Please fill in all fields.';
+                    return;
+                }
+
+                if (newPassword.length < 10) {
+                    passwordChangeMessage.textContent = 'New password must be at least 10 characters.';
+                    return;
+                }
+
+                if (newPassword !== confirmNewPassword) {
+                    passwordChangeMessage.textContent = 'New password and confirmation do not match.';
+                    return;
+                }
+
+                submitPasswordChange.disabled = true;
+                passwordChangeMessage.style.color = '#555';
+                passwordChangeMessage.textContent = 'Updating password...';
+
+                try {
+                    const response = await fetch('/admin/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ currentPassword, newPassword })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        passwordChangeMessage.style.color = '#28a745';
+                        passwordChangeMessage.textContent = 'Password updated successfully.';
+                        document.getElementById('currentPassword').value = '';
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmNewPassword').value = '';
+                    } else {
+                        passwordChangeMessage.style.color = '#dc3545';
+                        passwordChangeMessage.textContent = result.error || 'Error updating password.';
+                    }
+                } catch (error) {
+                    console.error('Error changing password:', error);
+                    passwordChangeMessage.style.color = '#dc3545';
+                    passwordChangeMessage.textContent = 'Error updating password.';
+                } finally {
+                    submitPasswordChange.disabled = false;
                 }
             });
         }

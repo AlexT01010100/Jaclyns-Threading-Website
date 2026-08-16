@@ -36,6 +36,20 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Admin users. Replaces static ADMIN_USERNAME/ADMIN_PASSWORD_HASH env vars so
+-- the admin can change their own password in-app (POST /admin/change-password)
+-- without a redeploy. Starts empty; server.js's seedAdminUserIfEmpty() seeds
+-- one row from .env the first time the app runs against an empty table, then
+-- never touches it again - see that function for why it's safe to call on
+-- every startup.
+CREATE TABLE IF NOT EXISTS admin_users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Reviews table (for future use)
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,

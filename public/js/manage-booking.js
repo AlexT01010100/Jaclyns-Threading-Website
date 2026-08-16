@@ -57,6 +57,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
     }
 
+    // Same service list/values as book-appointment.html's dropdown - values
+    // must match exactly since the server looks up duration by this string.
+    const SERVICE_OPTIONS = [
+        'Threading - Eyebrows ($14)', 'Threading - Upper Lip ($7)', 'Threading - Lower Lip ($6)',
+        'Threading - Chin ($8)', 'Threading - Neck ($8)', 'Threading - Forehead ($7)',
+        'Threading - Sideburns ($12)', 'Threading - Fullface Special ($38)',
+        'Microblading ($380)', 'Machine Hair Strokes ($395)',
+        'Lash Lift + Tint ($150)', 'Lash Tint ($25)',
+        'Brow Lamination + Tint ($120)', 'Brow Tint ($18)',
+        'Microneedling ($250)', 'Microneedling + Nano Brows ($390)', 'Phibright Microneedling ($270)',
+        'Bioneedling ($220)'
+    ];
+
     // Fetch all slots for admin view
     async function fetchAdminSlots(date) {
         try {
@@ -136,9 +149,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </div>
                 <div class="button-container">
+                    ${status === 'available' ? '<button type="button" class="book-button">📞 Book Appointment</button>' : ''}
                     <button type="button" class="toggle-button" data-slot-time="${slot.time_slot}">${buttonText}</button>
                     <button type="button" class="delete-button" data-slot-time="${slot.time_slot}">🗑️ Delete</button>
                 </div>
+                ${status === 'available' ? `
+                <div class="slot-details book-form">
+                    <div><input type="text" placeholder="Customer Name" class="book-name" required /></div>
+                    <div><input type="email" placeholder="Customer Email" class="book-email" required /></div>
+                    <div><input type="tel" placeholder="Customer Phone" class="book-phone" required /></div>
+                    <div>
+                        <select class="book-service" required>
+                            <option value="" disabled selected>Select a service</option>
+                            ${SERVICE_OPTIONS.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="book-confirm-button">Confirm Booking</button>
+                        <button type="button" class="book-cancel-button">Cancel</button>
+                    </div>
+                </div>
+                ` : ''}
             `;
 
             // Toggle availability
@@ -148,6 +179,23 @@ document.addEventListener('DOMContentLoaded', function () {
             // Delete slot
             const deleteButton = slotElement.querySelector('.delete-button');
             deleteButton.addEventListener('click', () => deleteSlot(slot.time_slot));
+
+            // Book an available slot for a phone-in customer
+            const bookButton = slotElement.querySelector('.book-button');
+            const bookForm = slotElement.querySelector('.book-form');
+            if (bookButton && bookForm) {
+                bookButton.addEventListener('click', () => {
+                    bookForm.style.display = bookForm.style.display === 'block' ? 'none' : 'block';
+                });
+
+                bookForm.querySelector('.book-cancel-button').addEventListener('click', () => {
+                    bookForm.style.display = 'none';
+                });
+
+                bookForm.querySelector('.book-confirm-button').addEventListener('click', () =>
+                    bookSlotForCustomer(slot.time_slot, bookForm)
+                );
+            }
 
             // Edit individual fields - ALL slots are now editable
             const editNameBtn = slotElement.querySelector('.edit-name-btn');
@@ -172,6 +220,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
             slotsListContainer.appendChild(slotElement);
         });
+    }
+
+    async function bookSlotForCustomer(timeSlot, bookForm) {
+        const selectedDate = slotDateInput.value;
+        if (!selectedDate) return;
+
+        const name = bookForm.querySelector('.book-name').value.trim();
+        const email = bookForm.querySelector('.book-email').value.trim();
+        const phone = bookForm.querySelector('.book-phone').value.trim();
+        const service = bookForm.querySelector('.book-service').value;
+
+        if (!name || !email || !phone || !service) {
+            alert('Please fill in name, email, phone, and service.');
+            return;
+        }
+
+        const confirmButton = bookForm.querySelector('.book-confirm-button');
+        confirmButton.disabled = true;
+        confirmButton.textContent = 'Booking...';
+
+        try {
+            const response = await fetch('/api/admin/book-appointment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, service, date: selectedDate, slot: timeSlot })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(`Appointment booked. Confirmation ID: ${result.confirmationId}`);
+                const slots = await fetchAdminSlots(selectedDate);
+                renderSlots(slots);
+            } else {
+                alert(result.error || 'Error booking appointment');
+                confirmButton.disabled = false;
+                confirmButton.textContent = 'Confirm Booking';
+            }
+        } catch (error) {
+            console.error('Error booking appointment:', error);
+            alert('Error booking appointment');
+            confirmButton.disabled = false;
+            confirmButton.textContent = 'Confirm Booking';
+        }
     }
 
     async function toggleSlotAvailability(timeSlot, isAvailable) {
