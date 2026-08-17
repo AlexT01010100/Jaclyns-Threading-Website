@@ -269,6 +269,16 @@ document.addEventListener("DOMContentLoaded", function () {
             
             showMessage(`✓ Appointment booked successfully! Your confirmation ID is: ${result.confirmationId}. Check your email for details.`, "success");
 
+            // Track the conversion in Google Analytics. gtag may not exist
+            // (skipped on localhost, blocked by an ad blocker, etc.), so
+            // guard with typeof rather than calling it directly.
+            if (typeof gtag === 'function') {
+                gtag('event', 'book_appointment', {
+                    service: selectedService,
+                    appointment_date: selectedDate
+                });
+            }
+
             // Reset form after successful booking
             setTimeout(() => {
                 location.reload();

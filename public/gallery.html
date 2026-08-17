@@ -4,6 +4,19 @@
 <!--Set up and imports-->
 
 <head>
+    <!-- Google Analytics (skipped on localhost so local testing doesn't count as real traffic) -->
+    <script>
+        if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
+            var gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-8QNQQXY7QN';
+            document.head.appendChild(gaScript);
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-8QNQQXY7QN');
+        }
+    </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
