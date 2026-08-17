@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="css/book-appointment.css">
   <link rel="stylesheet" href="css/gallery.css">
   <link rel="stylesheet" href="css/animations.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <!-- Navbar and header -->
@@ -124,6 +125,8 @@
         <label for="website">Leave this field blank</label>
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
       </div>
+
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAESKlSPPEcOVPDHX" style="margin: 15px 0;"></div>
 
       <div class="submit-button-container">
         <button type="submit">Book Appointment</button>

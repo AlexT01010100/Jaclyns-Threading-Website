@@ -109,6 +109,39 @@ function isBotSubmission(req) {
     return !formLoadedAt || !Number.isFinite(elapsed) || elapsed < MIN_FORM_SUBMIT_MS;
 }
 
+// Verifies a Cloudflare Turnstile token server-side - the client-side widget
+// alone proves nothing, since a bot can just POST directly to the endpoint
+// without ever loading the widget. Fails OPEN (skips verification, honeypot/
+// timing checks still apply) only when TURNSTILE_SECRET_KEY isn't configured
+// at all, since that's a deliberate/known state, not a bot signal - but
+// fails CLOSED (rejects) on a missing token or a real verification failure,
+// since those can't be distinguished from an actual attacker.
+async function verifyTurnstile(token, remoteIp) {
+    if (!process.env.TURNSTILE_SECRET_KEY) {
+        console.warn('⚠ TURNSTILE_SECRET_KEY not set - skipping Turnstile verification');
+        return true;
+    }
+    if (!token) return false;
+
+    try {
+        const fetch = require('node-fetch');
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                secret: process.env.TURNSTILE_SECRET_KEY,
+                response: token,
+                remoteip: remoteIp || ''
+            })
+        });
+        const data = await response.json();
+        return data.success === true;
+    } catch (error) {
+        console.error('✗ Error verifying Turnstile token:', error.message);
+        return false;
+    }
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -131,7 +164,7 @@ app.use(helmet({
         useDefaults: true,
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://www.googletagmanager.com'],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com'],
             styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.googleapis.com'],
             fontSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.gstatic.com'],
             // https://*.googleusercontent.com serves Google review authors'
@@ -139,8 +172,8 @@ app.use(helmet({
             // runtime (homepage.js), not from any static file, so grepping
             // the source for external hosts couldn't have found this one.
             imgSrc: ["'self'", 'data:', 'https://*.googleusercontent.com'],
-            connectSrc: ["'self'", 'https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://www.googletagmanager.com'],
-            frameSrc: ['https://www.google.com'], // Google Maps embed on the homepage
+            connectSrc: ["'self'", 'https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://www.googletagmanager.com', 'https://challenges.cloudflare.com'],
+            frameSrc: ['https://www.google.com', 'https://challenges.cloudflare.com'], // Google Maps embed + Turnstile challenge widget
             objectSrc: ["'none'"],
             baseUri: ["'self'"],
             formAction: ["'self'"],
@@ -542,6 +575,11 @@ app.post('/send_email', strictLimiter, async (req, res) => {
         return res.send('Email sent successfully.');
     }
 
+    if (!(await verifyTurnstile(req.body['cf-turnstile-response'], req.ip))) {
+        console.warn(`Contact form submission failed Turnstile verification from ${req.ip}`);
+        return res.send('Email sent successfully.');
+    }
+
     try {
         // Store contact message in database
         await pool.query(
@@ -813,6 +851,11 @@ app.post('/book_appointment', bookingLimiter, async (req, res) => {
 
     if (isBotSubmission(req)) {
         console.warn(`Bot-like booking submission blocked from ${req.ip}`);
+        return res.json({ success: true, message: 'Appointment booked successfully', confirmationId: randomUUID() });
+    }
+
+    if (!(await verifyTurnstile(req.body['cf-turnstile-response'], req.ip))) {
+        console.warn(`Booking submission failed Turnstile verification from ${req.ip}`);
         return res.json({ success: true, message: 'Appointment booked successfully', confirmationId: randomUUID() });
     }
 

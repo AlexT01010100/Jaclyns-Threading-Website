@@ -228,6 +228,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
         const website = document.getElementById("website")?.value || '';
+        // Turnstile auto-injects a hidden input with this name inside its
+        // widget div once solved.
+        const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
 
         if (!selectedDate || !selectedService || !selectedSlotId) {
             showMessage("Please select a date, service, and time slot.", "error");
@@ -250,7 +253,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     date: selectedDate,
                     slot: selectedSlotId,
                     website,
-                    formLoadedAt
+                    formLoadedAt,
+                    'cf-turnstile-response': turnstileToken
                 })
             });
 
