@@ -25,6 +25,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setMinDate();
 
+    // Service durations (in minutes) come from the server instead of being
+    // hardcoded here too, so the two can't silently drift out of sync -
+    // whoever adds/changes a service only has to update server.js.
+    let serviceDurationsMinutes = {};
+    async function loadServiceDurations() {
+        try {
+            const response = await fetch('/api/services');
+            if (response.ok) {
+                const services = await response.json();
+                serviceDurationsMinutes = Object.fromEntries(
+                    Object.entries(services).map(([name, minutes]) => [name.toLowerCase(), minutes])
+                );
+            }
+        } catch (error) {
+            console.error("Error loading service durations:", error);
+        }
+    }
+    loadServiceDurations();
+
     // The API returns time_slot as a 24-hour "HH:MM:SS" string (Postgres TIME column)
     function parseTimeString(timeString) {
         const [hour, minute] = timeString.split(':').map(Number);
@@ -73,41 +92,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return [];
         }
 
-        // Define durations for different services (in milliseconds)
         // Each service blocks out consecutive time slots based on its duration
-        const serviceDurations = {
-            // Threading services - 30 minutes each
-            'threading - eyebrows ($14)': 0.5 * 60 * 60 * 1000,
-            'threading - upper lip ($7)': 0.5 * 60 * 60 * 1000,
-            'threading - lower lip ($6)': 0.5 * 60 * 60 * 1000,
-            'threading - chin ($8)': 0.5 * 60 * 60 * 1000,
-            'threading - neck ($8)': 0.5 * 60 * 60 * 1000,
-            'threading - forehead ($7)': 0.5 * 60 * 60 * 1000,
-            'threading - sideburns ($12)': 0.5 * 60 * 60 * 1000,
-            'threading - fullface special ($38)': 1 * 60 * 60 * 1000, // 1 hour for full face
-            
-            // Permanent Makeup - 2-3 hours
-            'microblading ($380)': 2.5 * 60 * 60 * 1000,
-            'machine hair strokes ($395)': 2.5 * 60 * 60 * 1000,
-            
-            // Lash services - 45-60 minutes
-            'lash lift + tint ($150)': 1 * 60 * 60 * 1000,
-            'lash tint ($25)': 0.5 * 60 * 60 * 1000,
-            
-            // Brow services - 45-60 minutes
-            'brow lamination + tint ($120)': 1 * 60 * 60 * 1000,
-            'brow tint ($18)': 0.5 * 60 * 60 * 1000,
-            
-            // Microneedling - 60-90 minutes
-            'microneedling ($250)': 1.5 * 60 * 60 * 1000,
-            'microneedling + nano brows ($390)': 2 * 60 * 60 * 1000,
-            'phibright microneedling ($270)': 1.5 * 60 * 60 * 1000,
-            
-            // Bioneedling - 60-90 minutes
-            'bioneedling ($220)': 1.5 * 60 * 60 * 1000
-        };
-
-        const duration = serviceDurations[service.toLowerCase()] || 1 * 60 * 60 * 1000;
+        const durationMinutes = serviceDurationsMinutes[service.toLowerCase()] || 60;
+        const duration = durationMinutes * 60 * 1000;
 
         // Convert slot times to Date objects and sort them
         const timeSlots = availableSlots

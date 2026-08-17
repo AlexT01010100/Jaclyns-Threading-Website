@@ -10,6 +10,7 @@ const pgSession = require('connect-pg-simple')(session);
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const compression = require('compression');
 require('dotenv').config();
 
 // Initialize Twilio - optional, SMS notifications are a non-critical feature
@@ -87,13 +88,23 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false
 }));
 
-// Global rate limiter - prevents DoS attacks
+// Gzip/deflate compression for text responses (HTML/CSS/JS/JSON). Skips
+// already-compressed formats like jpg/png automatically via the default
+// filter, so this doesn't waste CPU re-compressing images.
+app.use(compression());
+
+// Global rate limiter - prevents DoS attacks. Skips static assets (css/js/
+// images/fonts) since a single page load pulls in a dozen of these - without
+// this, browsing a handful of pages exhausted the limit on assets alone and
+// legitimate visitors got locked out of the whole site. Page navigations and
+// API calls still count, which is what actually matters for abuse.
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    max: 300, // Limit each IP to 300 requests per windowMs
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => /\.(css|js|mjs|jpg|jpeg|png|gif|ico|svg|webp|avif|woff2?|ttf|map)$/i.test(req.path),
 });
 
 // Stricter rate limiter for sensitive endpoints
@@ -222,9 +233,25 @@ app.use((req, res, next) => {
     next();
 });
 
-// CORS configuration - must allow credentials for sessions to work
+// CORS configuration. The site's frontend and API are served from the same
+// origin, so browsers don't even send CORS headers for normal use - this
+// only matters for blocking OTHER origins from making authenticated
+// requests using a visitor's session cookie. The previous origin: true
+// reflected back whatever origin asked, which combined with
+// credentials: true let any website do exactly that.
+const allowedOrigins = [process.env.BASE_URL, 'http://localhost:3000', 'http://127.0.0.1:3000'].filter(Boolean);
 app.use(cors({
-    origin: true, // In production, specify your domain
+    origin: (origin, callback) => {
+        // requests with no Origin header (curl, server-to-server, same-origin
+        // navigation) aren't a cross-origin attack surface - allow them
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        const err = new Error('Not allowed by CORS');
+        err.status = 403;
+        err.isCorsRejection = true;
+        callback(err);
+    },
     credentials: true
 }));
 
@@ -263,7 +290,7 @@ app.get('/manage-booking.html', requireAuth, (req, res) => {
 app.use(express.static('public', {
     setHeaders: (res, path) => {
         // Cache static assets (CSS, JS, images) for 1 day
-        if (path.endsWith('.css') || path.endsWith('.js') || path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/)) {
+        if (path.endsWith('.css') || path.endsWith('.js') || path.match(/\.(jpg|jpeg|png|gif|ico|svg|webp|avif)$/)) {
             res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
         }
     }
@@ -511,8 +538,9 @@ app.get('/api/available-slots/:date', async (req, res) => {
     }
 });
 
-// Endpoint to handle appointment booking with strict rate limiting
-// Service durations, in 30-minute slots. Shared by both booking paths below.
+// Service durations, in 30-minute slots. Single source of truth - the
+// booking form fetches this via GET /api/services instead of keeping its
+// own hardcoded copy, so the two can no longer silently drift out of sync.
 const serviceDurationSlots = {
     // Threading services - 1 slot (30 minutes) each
     'threading - eyebrows ($14)': 1,
@@ -544,6 +572,16 @@ const serviceDurationSlots = {
     // Bioneedling - 3 slots (1.5 hours)
     'bioneedling ($220)': 3
 };
+
+// Exposes service durations (in minutes) so the client can compute how many
+// consecutive slots a service needs without hardcoding its own copy of this
+// table. Public - service names/durations aren't sensitive.
+app.get('/api/services', (req, res) => {
+    const services = Object.fromEntries(
+        Object.entries(serviceDurationSlots).map(([name, slots]) => [name, slots * 30])
+    );
+    res.json(services);
+});
 
 // Runs the actual booking transaction: locks the required consecutive slots,
 // inserts the appointment, and marks the slots unavailable. Shared by the
@@ -1306,17 +1344,63 @@ app.get('/health', async (req, res) => {
     }
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server');
-    pool.end(() => {
-        console.log('Database pool has ended');
-    });
+// Catch-all error handler for anything a route didn't handle itself (a
+// thrown error, a bodyParser JSON parse failure, etc.) - must be registered
+// after all routes. Without this, an error that reaches here in Express 4
+// just hangs the request instead of responding.
+app.use((err, req, res, next) => {
+    // CORS rejections happen routinely from bots/scanners probing origins -
+    // log them tersely instead of as a scary unhandled-error stack trace
+    if (err.isCorsRejection) {
+        console.warn(`CORS rejected origin: ${req.headers.origin}`);
+    } else {
+        console.error('Unhandled error:', err);
+    }
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(err.status || 500).json({ error: err.isCorsRejection ? 'Not allowed by CORS' : 'Something went wrong. Please try again.' });
+});
+
+// Process-level safety net. Node already terminates on an uncaught exception
+// or unhandled rejection by default - these handlers just guarantee it's
+// logged with full context first. The container restarts automatically
+// (restart: unless-stopped in docker-compose.yml), so a clean, logged exit
+// and restart is safer than the process limping along in an unknown state.
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise rejection:', reason);
+    process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught exception:', err);
+    process.exit(1);
 });
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
     console.log('DoS/DDoS protection enabled with rate limiting');
     console.log('Request size limits: 1MB');
+});
+
+// Graceful shutdown - stop accepting new connections and let in-flight
+// requests finish (server.close waits for them) before closing the DB pool,
+// instead of killing requests mid-transaction on every deploy like before.
+// Force-exits after 10s in case something hangs (a stuck connection, etc.)
+// so a deploy can never wedge waiting on this forever.
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+        console.log('HTTP server closed');
+        pool.end(() => {
+            console.log('Database pool has ended');
+            process.exit(0);
+        });
+    });
+
+    setTimeout(() => {
+        console.error('Forced shutdown after timeout - some connection did not close in time');
+        process.exit(1);
+    }, 10000).unref();
 });
