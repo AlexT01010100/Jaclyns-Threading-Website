@@ -147,18 +147,19 @@ const port = process.env.PORT || 3000;
 
 // Apply helmet for security headers
 //
-// CSP is deployed in REPORT-ONLY mode for now (Content-Security-Policy-Report-Only
-// header - logs violations to the browser console instead of blocking
-// anything). All pages here are static HTML with no server-side templating,
-// so there's no way to issue a per-request nonce for inline <script> blocks
-// (every page has at least one - including the GA snippet) or inline
-// style="" attributes, which is why 'unsafe-inline' is present below; a
-// stricter policy would need converting these to server-rendered templates.
-// This was built from a full audit of every external host actually
-// referenced (grep across public/*.html, public/css/*.css, public/js/*.js)
-// but was never verified in a real browser (no browser tooling available
-// here) - check the browser console on each page for CSP violation warnings
-// before switching reportOnly to false.
+// CSP is now ENFORCING (reportOnly: false below). It ran in report-only
+// mode first and was verified clean in a real browser (no blocked-resource
+// violations, only the expected/harmless "upgrade-insecure-requests is
+// ignored in report-only" notices) before being switched over.
+//
+// All pages here are static HTML with no server-side templating, so there's
+// no way to issue a per-request nonce for inline <script> blocks (every page
+// has at least one - including the GA snippet) or inline style="" attributes,
+// which is why 'unsafe-inline' is present below; a stricter policy would need
+// converting these to server-rendered templates. If a new external
+// resource/CDN is ever added to a page, it must be added to the matching
+// directive here too or it will be silently blocked, not just warned about -
+// check the browser console after any change that adds a new external host.
 app.use(helmet({
     contentSecurityPolicy: {
         useDefaults: true,
@@ -183,7 +184,7 @@ app.use(helmet({
             // enforcing, even though scriptSrc already allows unsafe-inline
             scriptSrcAttr: ["'unsafe-inline'"],
         },
-        reportOnly: true,
+        reportOnly: false,
     },
     crossOriginEmbedderPolicy: false
 }));
