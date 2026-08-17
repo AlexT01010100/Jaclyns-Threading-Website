@@ -93,22 +93,69 @@ CREATE TABLE IF NOT EXISTS "session" (
 
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
 
--- Generates 30-minute time slots (9:00 AM - 5:00 PM, Mon-Fri) for every date
--- in [start_date, end_date] that doesn't already have slots. Safe to call
--- repeatedly (e.g. from a daily job) to keep the booking calendar rolling
--- forward instead of running dry once the initial seed window passes.
-CREATE OR REPLACE FUNCTION ensure_time_slots(start_date DATE, end_date DATE)
+-- The admin's recurring weekly availability template - one row per day of
+-- the week (0=Sunday..6=Saturday). is_open=false days have no slots. This is
+-- what actually drives the rolling calendar now (see sync_time_slots_to_schedule
+-- below); it's editable via PUT /api/admin/weekly-schedule instead of being
+-- hardcoded, so changing hours doesn't require a code deploy.
+CREATE TABLE IF NOT EXISTS weekly_schedule (
+    day_of_week INTEGER PRIMARY KEY CHECK (day_of_week BETWEEN 0 AND 6),
+    is_open BOOLEAN NOT NULL DEFAULT FALSE,
+    start_time TIME,
+    end_time TIME,
+    CHECK (NOT is_open OR (start_time IS NOT NULL AND end_time IS NOT NULL AND start_time <= end_time))
+);
+
+-- Seed the template with the site's original hardcoded hours (Mon-Fri,
+-- 9:00-17:00) so deploying this doesn't silently change anything - the
+-- admin can then edit it from the admin panel.
+INSERT INTO weekly_schedule (day_of_week, is_open, start_time, end_time) VALUES
+    (0, FALSE, NULL, NULL),      -- Sunday
+    (1, TRUE, '09:00', '17:00'), -- Monday
+    (2, TRUE, '09:00', '17:00'), -- Tuesday
+    (3, TRUE, '09:00', '17:00'), -- Wednesday
+    (4, TRUE, '09:00', '17:00'), -- Thursday
+    (5, TRUE, '09:00', '17:00'), -- Friday
+    (6, FALSE, NULL, NULL)       -- Saturday
+ON CONFLICT (day_of_week) DO NOTHING;
+
+-- Syncs time_slots for [start_date, end_date] to match the current
+-- weekly_schedule template: adds any 30-minute slots that should exist per
+-- the template but don't yet, and removes any slot that's no longer part of
+-- the template - but ONLY if that slot is unbooked (appointment_id IS NULL).
+-- A slot tied to a real appointment is never touched by this function,
+-- regardless of what the template says, so changing your hours can never
+-- delete or orphan an existing booking. Safe to call repeatedly (e.g. once
+-- daily to keep the calendar rolling forward, and once immediately whenever
+-- the template itself is edited so the change takes effect right away
+-- instead of waiting up to 90 days for the rolling window to catch up).
+CREATE OR REPLACE FUNCTION sync_time_slots_to_schedule(start_date DATE, end_date DATE)
 RETURNS VOID AS $$
 BEGIN
-    INSERT INTO time_slots (slot_date, time_slot, is_available)
-    SELECT d::date, t::time, TRUE
+    CREATE TEMP TABLE _should_exist ON COMMIT DROP AS
+    SELECT d::date AS slot_date, t::time AS time_slot
     FROM generate_series(start_date, end_date, INTERVAL '1 day') AS d
-    CROSS JOIN generate_series(
-        '2000-01-01 09:00'::timestamp,
-        '2000-01-01 17:00'::timestamp,
+    JOIN weekly_schedule ws
+        ON ws.day_of_week = EXTRACT(DOW FROM d)::int
+        AND ws.is_open = TRUE
+    CROSS JOIN LATERAL generate_series(
+        (d::date + ws.start_time)::timestamp,
+        (d::date + ws.end_time)::timestamp,
         INTERVAL '30 minutes'
-    ) AS t
-    WHERE EXTRACT(DOW FROM d) NOT IN (0, 6) -- skip Saturday/Sunday
+    ) AS t;
+
+    INSERT INTO time_slots (slot_date, time_slot, is_available)
+    SELECT slot_date, time_slot, TRUE FROM _should_exist
     ON CONFLICT (slot_date, time_slot) DO NOTHING;
+
+    DELETE FROM time_slots ts
+    WHERE ts.slot_date BETWEEN start_date AND end_date
+      AND ts.appointment_id IS NULL
+      AND NOT EXISTS (
+          SELECT 1 FROM _should_exist se
+          WHERE se.slot_date = ts.slot_date AND se.time_slot = ts.time_slot
+      );
+
+    DROP TABLE _should_exist;
 END;
 $$ LANGUAGE plpgsql;

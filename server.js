@@ -270,17 +270,19 @@ pool.connect((err, client, release) => {
     }
 });
 
-// Keep the booking calendar rolling 90 days out. The initial seed only ever
-// runs once (docker-entrypoint-initdb.d only executes against an empty
-// volume), so without this the calendar would quietly run dry 90 days after
-// deployment. Runs once at startup, then once a day.
+// Keep the booking calendar rolling 90 days out, synced to the admin's
+// current weekly_schedule template. The initial seed only ever runs once
+// (docker-entrypoint-initdb.d only executes against an empty volume), so
+// without this the calendar would quietly run dry 90 days after deployment.
+// Runs once at startup, then once a day - also called immediately whenever
+// the schedule template itself changes, see PUT /api/admin/weekly-schedule.
 const DAY_MS = 24 * 60 * 60 * 1000;
 async function topUpTimeSlots() {
     try {
-        await pool.query(`SELECT ensure_time_slots(CURRENT_DATE, (CURRENT_DATE + INTERVAL '90 days')::date)`);
-        console.log('✓ Time slots topped up through +90 days');
+        await pool.query(`SELECT sync_time_slots_to_schedule(CURRENT_DATE, (CURRENT_DATE + INTERVAL '90 days')::date)`);
+        console.log('✓ Time slots synced to weekly schedule through +90 days');
     } catch (error) {
-        console.error('✗ Error topping up time slots:', error.message);
+        console.error('✗ Error syncing time slots:', error.message);
     }
 }
 topUpTimeSlots();
@@ -1181,6 +1183,79 @@ app.get('/api/appointments/:date', requireApiAuth, async (req, res) => {
 });
 
 // Endpoint to get all time slots for a date (including booked ones for admin)
+// Returns the recurring weekly availability template (one row per day of
+// week, 0=Sunday..6=Saturday).
+app.get('/api/admin/weekly-schedule', requireApiAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT day_of_week, is_open, start_time, end_time FROM weekly_schedule ORDER BY day_of_week');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching weekly schedule:', error);
+        res.status(500).json({ error: 'Error fetching weekly schedule' });
+    }
+});
+
+// Replaces the weekly availability template and immediately applies it to
+// the rolling 90-day window, so a schedule change takes effect right away
+// instead of only affecting slots generated after this point. Only ever
+// adds/removes UNBOOKED slots (see sync_time_slots_to_schedule) - an
+// existing appointment can never be deleted or orphaned by a schedule edit.
+app.put('/api/admin/weekly-schedule', requireApiAuth, async (req, res) => {
+    const { days } = req.body;
+
+    if (!Array.isArray(days) || days.length !== 7) {
+        return res.status(400).json({ error: 'Expected an array of 7 days (Sunday=0 through Saturday=6).' });
+    }
+
+    const seenDays = new Set();
+    for (const day of days) {
+        const { dayOfWeek, isOpen, startTime, endTime } = day;
+
+        if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
+            return res.status(400).json({ error: 'Each day needs a dayOfWeek from 0-6.' });
+        }
+        if (seenDays.has(dayOfWeek)) {
+            return res.status(400).json({ error: `Day ${dayOfWeek} was submitted more than once.` });
+        }
+        seenDays.add(dayOfWeek);
+
+        if (isOpen) {
+            const timePattern = /^([01]\d|2[0-3]):(00|30)$/;
+            if (!timePattern.test(startTime) || !timePattern.test(endTime)) {
+                return res.status(400).json({ error: 'Start/end times must be on the half-hour (e.g. 09:00, 09:30) for an open day.' });
+            }
+            if (startTime > endTime) {
+                return res.status(400).json({ error: 'Start time must be before end time.' });
+            }
+        }
+    }
+
+    const connection = await pool.connect();
+    try {
+        await connection.query('BEGIN');
+
+        for (const day of days) {
+            await connection.query(
+                `INSERT INTO weekly_schedule (day_of_week, is_open, start_time, end_time)
+                 VALUES ($1, $2, $3, $4)
+                 ON CONFLICT (day_of_week) DO UPDATE SET is_open = $2, start_time = $3, end_time = $4`,
+                [day.dayOfWeek, !!day.isOpen, day.isOpen ? day.startTime : null, day.isOpen ? day.endTime : null]
+            );
+        }
+
+        await connection.query(`SELECT sync_time_slots_to_schedule(CURRENT_DATE, (CURRENT_DATE + INTERVAL '90 days')::date)`);
+
+        await connection.query('COMMIT');
+        res.json({ success: true, message: 'Weekly schedule updated.' });
+    } catch (error) {
+        await connection.query('ROLLBACK');
+        console.error('Error updating weekly schedule:', error);
+        res.status(500).json({ error: 'Error updating weekly schedule' });
+    } finally {
+        connection.release();
+    }
+});
+
 app.get('/api/admin/slots/:date', requireApiAuth, async (req, res) => {
     const { date } = req.params;
 

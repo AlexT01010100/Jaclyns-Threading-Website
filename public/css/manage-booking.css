@@ -68,6 +68,45 @@
     font-weight: 500;
 }
 
+.weekly-schedule-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto 15px;
+}
+
+.weekly-schedule-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.weekly-schedule-day {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 110px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.weekly-schedule-row input[type="time"] {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.weekly-schedule-row input[type="time"]:disabled {
+    background: #eee;
+    color: #999;
+}
+
 /* Global styles */
 body {
     background-color: #373434;

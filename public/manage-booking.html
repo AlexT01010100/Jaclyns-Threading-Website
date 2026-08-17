@@ -59,6 +59,21 @@
         <button type="button" id="changeUsernameBtn" class="btn btn-secondary">
             <i class='bx bx-user'></i> Change Username
         </button>
+        <button type="button" id="weeklyScheduleBtn" class="btn btn-secondary">
+            <i class='bx bx-calendar'></i> Weekly Schedule
+        </button>
+    </div>
+
+    <div id="weeklySchedulePanel" class="active-slots account-panel" style="display: none;">
+        <h3>Weekly Availability</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 15px;">
+            This is your recurring schedule - it drives which slots get created automatically going forward.
+            One-off changes (a day off, extra hours one time) are still handled per-date below in "Active Slots",
+            not here.
+        </p>
+        <div id="weeklyScheduleRows" class="weekly-schedule-rows"></div>
+        <button type="button" id="submitWeeklySchedule" class="btn btn-confirm">Save Schedule</button>
+        <p id="weeklyScheduleMessage" class="account-panel-message"></p>
     </div>
 
     <div id="changePasswordPanel" class="active-slots account-panel" style="display: none;">
@@ -307,6 +322,109 @@
                     usernameChangeMessage.textContent = 'Error updating username.';
                 } finally {
                     submitUsernameChange.disabled = false;
+                }
+            });
+        }
+
+        // Weekly schedule panel
+        const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const weeklyScheduleBtn = document.getElementById('weeklyScheduleBtn');
+        const weeklySchedulePanel = document.getElementById('weeklySchedulePanel');
+        const weeklyScheduleRows = document.getElementById('weeklyScheduleRows');
+        const submitWeeklySchedule = document.getElementById('submitWeeklySchedule');
+        const weeklyScheduleMessage = document.getElementById('weeklyScheduleMessage');
+
+        function renderWeeklyScheduleRows(days) {
+            weeklyScheduleRows.innerHTML = '';
+            days.forEach(day => {
+                const row = document.createElement('div');
+                row.className = 'weekly-schedule-row';
+                row.dataset.dayOfWeek = day.day_of_week;
+
+                const startVal = (day.start_time || '09:00:00').slice(0, 5);
+                const endVal = (day.end_time || '17:00:00').slice(0, 5);
+
+                row.innerHTML = `
+                    <label class="weekly-schedule-day">
+                        <input type="checkbox" class="day-open-checkbox" ${day.is_open ? 'checked' : ''}>
+                        ${DAY_NAMES[day.day_of_week]}
+                    </label>
+                    <input type="time" class="day-start-time" value="${startVal}" step="1800" ${day.is_open ? '' : 'disabled'}>
+                    <span>to</span>
+                    <input type="time" class="day-end-time" value="${endVal}" step="1800" ${day.is_open ? '' : 'disabled'}>
+                `;
+
+                const checkbox = row.querySelector('.day-open-checkbox');
+                const startInput = row.querySelector('.day-start-time');
+                const endInput = row.querySelector('.day-end-time');
+                checkbox.addEventListener('change', () => {
+                    startInput.disabled = !checkbox.checked;
+                    endInput.disabled = !checkbox.checked;
+                });
+
+                weeklyScheduleRows.appendChild(row);
+            });
+        }
+
+        async function loadWeeklySchedule() {
+            weeklyScheduleRows.innerHTML = '<p>Loading...</p>';
+            try {
+                const response = await fetch('/api/admin/weekly-schedule');
+                if (!response.ok) throw new Error('Failed to load schedule');
+                const days = await response.json();
+                renderWeeklyScheduleRows(days);
+            } catch (error) {
+                console.error('Error loading weekly schedule:', error);
+                weeklyScheduleRows.innerHTML = '<p>Error loading schedule.</p>';
+            }
+        }
+
+        if (weeklyScheduleBtn && weeklySchedulePanel) {
+            weeklyScheduleBtn.addEventListener('click', () => {
+                const opening = weeklySchedulePanel.style.display !== 'block';
+                weeklySchedulePanel.style.display = opening ? 'block' : 'none';
+                weeklyScheduleMessage.textContent = '';
+                if (opening) {
+                    loadWeeklySchedule();
+                }
+            });
+        }
+
+        if (submitWeeklySchedule) {
+            submitWeeklySchedule.addEventListener('click', async () => {
+                const days = Array.from(weeklyScheduleRows.querySelectorAll('.weekly-schedule-row')).map(row => ({
+                    dayOfWeek: parseInt(row.dataset.dayOfWeek, 10),
+                    isOpen: row.querySelector('.day-open-checkbox').checked,
+                    startTime: row.querySelector('.day-start-time').value,
+                    endTime: row.querySelector('.day-end-time').value
+                }));
+
+                submitWeeklySchedule.disabled = true;
+                weeklyScheduleMessage.style.color = '#555';
+                weeklyScheduleMessage.textContent = 'Saving schedule...';
+
+                try {
+                    const response = await fetch('/api/admin/weekly-schedule', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ days })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        weeklyScheduleMessage.style.color = '#28a745';
+                        weeklyScheduleMessage.textContent = 'Schedule saved and applied to the next 90 days.';
+                    } else {
+                        weeklyScheduleMessage.style.color = '#dc3545';
+                        weeklyScheduleMessage.textContent = result.error || 'Error saving schedule.';
+                    }
+                } catch (error) {
+                    console.error('Error saving weekly schedule:', error);
+                    weeklyScheduleMessage.style.color = '#dc3545';
+                    weeklyScheduleMessage.textContent = 'Error saving schedule.';
+                } finally {
+                    submitWeeklySchedule.disabled = false;
                 }
             });
         }
