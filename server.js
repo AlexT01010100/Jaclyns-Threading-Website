@@ -4,6 +4,7 @@ const sgMail = require('@sendgrid/mail');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const { randomUUID } = require('crypto');
 const { Pool } = require('pg');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -83,8 +84,41 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Apply helmet for security headers
+//
+// CSP is deployed in REPORT-ONLY mode for now (Content-Security-Policy-Report-Only
+// header - logs violations to the browser console instead of blocking
+// anything). All pages here are static HTML with no server-side templating,
+// so there's no way to issue a per-request nonce for inline <script> blocks
+// (every page has at least one - including the GA snippet) or inline
+// style="" attributes, which is why 'unsafe-inline' is present below; a
+// stricter policy would need converting these to server-rendered templates.
+// This was built from a full audit of every external host actually
+// referenced (grep across public/*.html, public/css/*.css, public/js/*.js)
+// but was never verified in a real browser (no browser tooling available
+// here) - check the browser console on each page for CSP violation warnings
+// before switching reportOnly to false.
 app.use(helmet({
-    contentSecurityPolicy: false, // Disable for now to avoid breaking existing functionality
+    contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://www.googletagmanager.com'],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.googleapis.com'],
+            fontSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'data:'],
+            connectSrc: ["'self'", 'https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://www.googletagmanager.com'],
+            frameSrc: ['https://www.google.com'], // Google Maps embed on the homepage
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"],
+            // helmet's useDefaults sets this to 'none' separately from
+            // scriptSrc - without this override it would silently block
+            // every page's onclick="toggleMenu()" navbar button once
+            // enforcing, even though scriptSrc already allows unsafe-inline
+            scriptSrcAttr: ["'unsafe-inline'"],
+        },
+        reportOnly: true,
+    },
     crossOriginEmbedderPolicy: false
 }));
 
@@ -590,8 +624,7 @@ app.get('/api/services', (req, res) => {
 // Error with .status set for expected failures (bad slot, no longer
 // available) so callers can relay a proper 400 instead of a generic 500.
 async function createAppointment({ name, email, phone, service, date, slot }) {
-    const { v4: uuidv4 } = require('uuid');
-    const confirmationId = uuidv4();
+    const confirmationId = randomUUID();
     const connection = await pool.connect();
 
     try {
