@@ -94,6 +94,21 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
+// Detects bot-like form submissions: a filled honeypot field ("website" -
+// invisible to real visitors via CSS, but bots that blindly fill every field
+// they parse out of the HTML fill it in too), or a submission that arrived
+// faster than any human could plausibly have filled the form (formLoadedAt
+// is set client-side via Date.now() when the page loads). Used to silently
+// no-op instead of processing spam - callers return a normal-looking
+// success response so a bot gets no signal to adapt against.
+const MIN_FORM_SUBMIT_MS = 2000;
+function isBotSubmission(req) {
+    const { website, formLoadedAt } = req.body;
+    if (website) return true;
+    const elapsed = Date.now() - Number(formLoadedAt);
+    return !formLoadedAt || !Number.isFinite(elapsed) || elapsed < MIN_FORM_SUBMIT_MS;
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -522,6 +537,11 @@ app.use((req, res, next) => {
 app.post('/send_email', strictLimiter, async (req, res) => {
     const { fullName, phoneNumber, email, message } = req.body;
 
+    if (isBotSubmission(req)) {
+        console.warn(`Bot-like contact form submission blocked from ${req.ip}`);
+        return res.send('Email sent successfully.');
+    }
+
     try {
         // Store contact message in database
         await pool.query(
@@ -790,6 +810,11 @@ async function sendBookingNotifications({ confirmationId, name, email, phone, se
 
 app.post('/book_appointment', bookingLimiter, async (req, res) => {
     const { name, email, phone, service, date, slot } = req.body;
+
+    if (isBotSubmission(req)) {
+        console.warn(`Bot-like booking submission blocked from ${req.ip}`);
+        return res.json({ success: true, message: 'Appointment booked successfully', confirmationId: randomUUID() });
+    }
 
     if (!name?.trim() || !email?.trim() || !phone?.trim() || !service || !date || !slot) {
         return res.status(400).json({ error: 'Name, email, phone, service, date, and time slot are all required.' });

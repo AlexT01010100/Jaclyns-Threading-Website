@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return; // Exit if not on contact page
     }
 
+    // Records when the form became interactive, so the server can tell a
+    // human (who takes at least a couple seconds to fill this out) from a
+    // bot that fills and submits it instantly.
+    var formLoadedAtField = document.getElementById('formLoadedAt');
+    if (formLoadedAtField) {
+        formLoadedAtField.value = Date.now();
+    }
+
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission behavior
 

@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedService = null;
     let selectedSlotId = null;
 
+    // Records when the form became interactive, so the server can tell a
+    // human (who takes at least a couple seconds to fill this out) from a
+    // bot that fills and submits it instantly.
+    const formLoadedAt = Date.now();
+
     function setMinDate() {
         const today = new Date();
         const year = today.getFullYear();
@@ -222,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const phone = document.getElementById("phone").value;
+        const website = document.getElementById("website")?.value || '';
 
         if (!selectedDate || !selectedService || !selectedSlotId) {
             showMessage("Please select a date, service, and time slot.", "error");
@@ -242,7 +248,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     phone,
                     service: selectedService,
                     date: selectedDate,
-                    slot: selectedSlotId
+                    slot: selectedSlotId,
+                    website,
+                    formLoadedAt
                 })
             });
 
