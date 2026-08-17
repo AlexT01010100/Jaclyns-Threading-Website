@@ -2,6 +2,17 @@
 // This now calls your server endpoint which handles the Google API
 // You need to add GOOGLE_API_KEY to your .env file
 
+// Google review author names/text are set by whoever leaves the review -
+// anyone can set their Google account display name to anything, so this is
+// just as attacker-controlled as a form field, and it renders for every
+// visitor to this page. Must be escaped before going into innerHTML.
+function escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 // Function to generate star ratings
 function generateStars(rating) {
     let starsHTML = '';
@@ -49,17 +60,20 @@ function getInitials(name) {
 
 // Function to create review card
 function createReviewCard(review) {
-    const authorName = review.author_name || 'Anonymous';
+    // Compute initials from the raw name (correct first-letter behavior),
+    // then escape everything that goes into the template.
+    const rawAuthorName = review.author_name || 'Anonymous';
+    const initials = escapeHtml(getInitials(rawAuthorName));
+    const authorName = escapeHtml(rawAuthorName);
     const rating = review.rating || 0;
-    const text = review.text || 'No review text provided.';
-    const time = review.time ? getTimeAgo(review.time) : 'Recently';
-    const photoUrl = review.profile_photo_url || null;
-    const initials = getInitials(authorName);
-    
+    const text = escapeHtml(review.text || 'No review text provided.');
+    const time = escapeHtml(review.time ? getTimeAgo(review.time) : 'Recently');
+    const photoUrl = review.profile_photo_url ? escapeHtml(review.profile_photo_url) : null;
+
     return `
         <div class="review-card fade-in">
             <div class="review-header">
-                ${photoUrl 
+                ${photoUrl
                     ? `<img src="${photoUrl}" alt="${authorName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                        <div class="avatar-fallback" style="display: none;">${initials}</div>`
                     : `<div class="avatar-fallback">${initials}</div>`

@@ -80,6 +80,20 @@ function formatTimeTo12Hour(timeString) {
     return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
 }
 
+// Escapes user-supplied text before it's interpolated into an HTML email
+// template. Only for that use - never apply this to values before storing
+// them in the DB or putting them in an SMS body/JSON response, since HTML
+// entities like &#39; have no business in a customer's actual name.
+function escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -105,7 +119,11 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://www.googletagmanager.com'],
             styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.googleapis.com'],
             fontSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'https://unpkg.com', 'https://fonts.gstatic.com'],
-            imgSrc: ["'self'", 'data:'],
+            // https://*.googleusercontent.com serves Google review authors'
+            // profile photos - these come from the Places API response at
+            // runtime (homepage.js), not from any static file, so grepping
+            // the source for external hosts couldn't have found this one.
+            imgSrc: ["'self'", 'data:', 'https://*.googleusercontent.com'],
             connectSrc: ["'self'", 'https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://www.googletagmanager.com'],
             frameSrc: ['https://www.google.com'], // Google Maps embed on the homepage
             objectSrc: ["'none'"],
@@ -519,12 +537,12 @@ app.post('/send_email', strictLimiter, async (req, res) => {
             const emailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Contact Form Submission</h2>
-                    <p style="color: #000000;"><strong>Name:</strong> ${fullName}</p>
-                    <p style="color: #000000;"><strong>Phone:</strong> ${phoneNumber}</p>
-                    <p style="color: #000000;"><strong>Email:</strong> ${email}</p>
+                    <p style="color: #000000;"><strong>Name:</strong> ${escapeHtml(fullName)}</p>
+                    <p style="color: #000000;"><strong>Phone:</strong> ${escapeHtml(phoneNumber)}</p>
+                    <p style="color: #000000;"><strong>Email:</strong> ${escapeHtml(email)}</p>
                     <br>
                     <p style="color: #000000;"><strong>Message:</strong></p>
-                    <p style="color: #000000;">${message}</p>
+                    <p style="color: #000000;">${escapeHtml(message)}</p>
                 </div>
             `;
             
@@ -704,11 +722,18 @@ async function sendBookingNotifications({ confirmationId, name, email, phone, se
     try {
         const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
         const displayTime = formatTimeTo12Hour(slot);
+        // Escaped copies for HTML interpolation only - the raw name/email/
+        // phone/service are still used below for the SMS bodies and as the
+        // actual recipient address, which must not be HTML-entity-encoded.
+        const safeName = escapeHtml(name);
+        const safeEmail = escapeHtml(email);
+        const safePhone = escapeHtml(phone);
+        const safeService = escapeHtml(service);
 
         const userEmailHtml = `
             <div style="color: #000000; font-family: Arial, sans-serif;">
-                <h2 style="color: #000000;">Dear ${name},</h2>
-                <p style="color: #000000;">Your appointment for <strong>${service}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${displayTime}</strong>.</p>
+                <h2 style="color: #000000;">Dear ${safeName},</h2>
+                <p style="color: #000000;">Your appointment for <strong>${safeService}</strong> has been successfully booked on <strong>${date}</strong> at <strong>${displayTime}</strong>.</p>
                 <p style="color: #000000;">You can manage your appointment using the following link:</p>
                 <p style="color: #000000;"><a href="${baseUrl}/modify-appointment.html?confirmationId=${confirmationId}&date=${date}" style="color: #0066cc;">Manage Appointment</a></p>
                 <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
@@ -724,10 +749,10 @@ async function sendBookingNotifications({ confirmationId, name, email, phone, se
             const adminEmailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">New Appointment Booking</h2>
-                    <p style="color: #000000;"><strong>Name:</strong> ${name}</p>
-                    <p style="color: #000000;"><strong>Email:</strong> ${email}</p>
-                    <p style="color: #000000;"><strong>Phone:</strong> ${phone}</p>
-                    <p style="color: #000000;"><strong>Service:</strong> ${service}</p>
+                    <p style="color: #000000;"><strong>Name:</strong> ${safeName}</p>
+                    <p style="color: #000000;"><strong>Email:</strong> ${safeEmail}</p>
+                    <p style="color: #000000;"><strong>Phone:</strong> ${safePhone}</p>
+                    <p style="color: #000000;"><strong>Service:</strong> ${safeService}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
                     <p style="color: #000000;"><strong>Time:</strong> ${displayTime}</p>
                     <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
@@ -855,7 +880,7 @@ app.post('/cancel-appointment', strictLimiter, async (req, res) => {
             // Send cancellation email to customer
             const userEmailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
-                    <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                    <h2 style="color: #000000;">Dear ${escapeHtml(appointment.name)},</h2>
                     <p style="color: #000000;">Your appointment on <strong>${date}</strong> at <strong>${formatTimeTo12Hour(appointment.time_slot)}</strong> has been cancelled.</p>
                     <p style="color: #000000;">If you'd like to reschedule, please visit our booking page.</p>
                     <br>
@@ -863,7 +888,7 @@ app.post('/cancel-appointment', strictLimiter, async (req, res) => {
                     <p style="color: #000000;">Jaclyn's Beauty</p>
                 </div>
             `;
-            
+
             await sendEmail(appointment.email, 'Appointment Cancelled', userEmailHtml);
 
             // Send admin notification email
@@ -871,8 +896,8 @@ app.post('/cancel-appointment', strictLimiter, async (req, res) => {
                 <div style="color: #000000; font-family: Arial, sans-serif;">
                     <h2 style="color: #000000;">Appointment Cancellation Notice</h2>
                     <p style="color: #000000;">A customer has cancelled their appointment:</p>
-                    <p style="color: #000000;"><strong>Customer Name:</strong> ${appointment.name}</p>
-                    <p style="color: #000000;"><strong>Email:</strong> ${appointment.email}</p>
+                    <p style="color: #000000;"><strong>Customer Name:</strong> ${escapeHtml(appointment.name)}</p>
+                    <p style="color: #000000;"><strong>Email:</strong> ${escapeHtml(appointment.email)}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
                     <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p style="color: #000000;"><strong>Confirmation ID:</strong> ${confirmationId}</p>
@@ -963,9 +988,9 @@ app.post('/edit-appointment', strictLimiter, async (req, res) => {
         setImmediate(async () => {
             const emailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
-                    <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                    <h2 style="color: #000000;">Dear ${escapeHtml(appointment.name)},</h2>
                     <p style="color: #000000;">Your appointment has been updated:</p>
-                    <p style="color: #000000;"><strong>Service:</strong> ${newService}</p>
+                    <p style="color: #000000;"><strong>Service:</strong> ${escapeHtml(newService)}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${newDate}</p>
                     <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(newSlot)}</p>
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
@@ -1037,9 +1062,9 @@ app.put('/api/appointment/:confirmationId', strictLimiter, async (req, res) => {
         setImmediate(async () => {
             const emailHtml = `
                 <div style="color: #000000; font-family: Arial, sans-serif;">
-                    <h2 style="color: #000000;">Dear ${name},</h2>
+                    <h2 style="color: #000000;">Dear ${escapeHtml(name)},</h2>
                     <p style="color: #000000;">Your appointment information has been updated successfully.</p>
-                    <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
+                    <p style="color: #000000;"><strong>Service:</strong> ${escapeHtml(appointment.service)}</p>
                     <p style="color: #000000;"><strong>Date:</strong> ${appointment.appointment_date}</p>
                     <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p style="color: #000000;">Confirmation ID: <strong>${confirmationId}</strong></p>
@@ -1170,9 +1195,9 @@ app.delete('/api/admin/slots/:date/:timeSlot', requireApiAuth, async (req, res) 
                 // Send cancellation email asynchronously
                 const emailHtml = `
                     <div style="color: #000000; font-family: Arial, sans-serif;">
-                        <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                        <h2 style="color: #000000;">Dear ${escapeHtml(appointment.name)},</h2>
                         <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
-                        <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
+                        <p style="color: #000000;"><strong>Service:</strong> ${escapeHtml(appointment.service)}</p>
                         <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
                         <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(timeSlot)}</p>
                         <br>
@@ -1267,9 +1292,9 @@ app.put('/api/admin/slots/:date/:timeSlot', requireApiAuth, async (req, res) => 
                 // Send cancellation email asynchronously
                 const emailHtml = `
                     <div style="color: #000000; font-family: Arial, sans-serif;">
-                        <h2 style="color: #000000;">Dear ${appointment.name},</h2>
+                        <h2 style="color: #000000;">Dear ${escapeHtml(appointment.name)},</h2>
                         <p style="color: #000000;">We regret to inform you that your appointment has been cancelled.</p>
-                        <p style="color: #000000;"><strong>Service:</strong> ${appointment.service}</p>
+                        <p style="color: #000000;"><strong>Service:</strong> ${escapeHtml(appointment.service)}</p>
                         <p style="color: #000000;"><strong>Date:</strong> ${date}</p>
                         <p style="color: #000000;"><strong>Time:</strong> ${formatTimeTo12Hour(timeSlot)}</p>
                         <br>

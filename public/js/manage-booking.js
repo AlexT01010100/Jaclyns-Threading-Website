@@ -12,6 +12,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // Customer-submitted name/email/phone/service get rendered into this
+    // page's innerHTML below - without escaping, a booking with a name like
+    // "<img src=x onerror=...>" would execute in the admin's authenticated
+    // session. Uses the browser's own text encoding rather than a manual
+    // regex swap.
+    function escapeHtml(str) {
+        if (typeof str !== 'string') return str;
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     function setMinDate() {
         const today = new Date();
         const year = today.getFullYear();
@@ -127,21 +139,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         <strong>🕒 Time:</strong> ${displayTime}
                     </div>
                     <div>
-                        <strong>👤 Name:</strong> ${slot.name || 'N/A'}
+                        <strong>👤 Name:</strong> ${escapeHtml(slot.name) || 'N/A'}
                         ${slot.appointment_id ? `<button type="button" class="edit-name-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
                     </div>
                     <div>
-                        <strong>📧 Email:</strong> ${slot.email || 'N/A'}
+                        <strong>📧 Email:</strong> ${escapeHtml(slot.email) || 'N/A'}
                         ${slot.appointment_id ? `<button type="button" class="edit-email-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
                     </div>
                 </div>
                 <div class="details-row">
                     <div>
-                        <strong>📱 Phone:</strong> ${slot.phone || 'N/A'}
+                        <strong>📱 Phone:</strong> ${escapeHtml(slot.phone) || 'N/A'}
                         ${slot.appointment_id ? `<button type="button" class="edit-phone-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
                     </div>
                     <div>
-                        <strong>💼 Service:</strong> ${slot.service || 'N/A'}
+                        <strong>💼 Service:</strong> ${escapeHtml(slot.service) || 'N/A'}
                         ${slot.appointment_id ? `<button type="button" class="edit-service-btn" data-appointment-id="${slot.appointment_id}">✏️</button>` : ''}
                     </div>
                     <div>

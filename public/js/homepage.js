@@ -1,3 +1,15 @@
+// Google review author names/text are set by whoever leaves the review -
+// anyone can set their Google account display name to anything, so this is
+// just as attacker-controlled as a form field, and it renders for every
+// visitor to this page (not just an authenticated admin). Must be escaped
+// before going into innerHTML.
+function escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 // Reviews container
 document.addEventListener("DOMContentLoaded", function () {
     const reviewsContainer = document.querySelector(".reviews");
@@ -226,18 +238,18 @@ function generateStarsHomepage(rating) {
 }
 
 function createReviewCardHomepage(review) {
-    const authorName = review.author_name || 'Anonymous';
+    const authorName = escapeHtml(review.author_name || 'Anonymous');
     const rating = review.rating || 0;
-    const text = review.text || 'No review text provided.';
-    const photoUrl = review.profile_photo_url || null;
-    
-    // Truncate long reviews
+    const text = escapeHtml(review.text || 'No review text provided.');
+    const photoUrl = review.profile_photo_url ? escapeHtml(review.profile_photo_url) : null;
+
+    // Truncate long reviews (after escaping, so entities aren't cut in half)
     const truncatedText = text.length > 150 ? text.substring(0, 150) + '...' : text;
-    
+
     return `
         <div class="review-card">
             <div class="review-header">
-                ${photoUrl 
+                ${photoUrl
                     ? `<img src="${photoUrl}" alt="${authorName}" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">`
                     : `<div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #c2a76b, #8b7355); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">${authorName[0]}</div>`
                 }

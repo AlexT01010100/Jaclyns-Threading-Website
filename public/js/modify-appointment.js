@@ -36,6 +36,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Customer-submitted name/email/phone/service get rendered into this
+    // page's innerHTML below - without escaping, an appointment with a
+    // service name like "<img src=x onerror=...>" would execute here.
+    function escapeHtml(str) {
+        if (typeof str !== 'string') return str;
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     // The API returns time_slot as a 24-hour "HH:MM:SS" string (Postgres TIME column)
     function formatTimeTo12Hour(timeString) {
         const [hour, minute] = timeString.split(':').map(Number);
@@ -62,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <!-- Read-only fields -->
                 <div class="detail-group read-only">
                     <p><strong>🔖 Confirmation ID:</strong> ${appointment.confirmation_id || confirmationId}</p>
-                    <p><strong>💼 Service:</strong> ${capitalizedService}</p>
+                    <p><strong>💼 Service:</strong> ${escapeHtml(capitalizedService)}</p>
                     <p><strong>📅 Date:</strong> ${formattedDate}</p>
                     <p><strong>🕒 Time:</strong> ${formatTimeTo12Hour(appointment.time_slot)}</p>
                     <p><strong>📊 Status:</strong> <span class="status-${appointment.status}">${appointment.status.toUpperCase()}</span></p>
@@ -74,15 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h4>Edit Your Information:</h4>
                     <div class="form-group">
                         <label for="edit-name">👤 Name:</label>
-                        <input type="text" id="edit-name" value="${appointment.name}" required>
+                        <input type="text" id="edit-name" required>
                     </div>
                     <div class="form-group">
                         <label for="edit-email">📧 Email:</label>
-                        <input type="email" id="edit-email" value="${appointment.email}" required>
+                        <input type="email" id="edit-email" required>
                     </div>
                     <div class="form-group">
                         <label for="edit-phone">📱 Phone:</label>
-                        <input type="tel" id="edit-phone" value="${appointment.phone}" required>
+                        <input type="tel" id="edit-phone" required>
                     </div>
                 </div>
 
@@ -99,6 +109,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Re-attach event listeners after DOM update (only if not cancelled)
             if (!isCancelled) {
+                // Set via the .value property rather than interpolating into
+                // the value="" attribute above - property assignment isn't
+                // parsed as HTML, so it can't be broken out of regardless of
+                // what characters the name/email/phone contain.
+                document.getElementById('edit-name').value = appointment.name;
+                document.getElementById('edit-email').value = appointment.email;
+                document.getElementById('edit-phone').value = appointment.phone;
+
                 document.getElementById('update-button').addEventListener('click', async function () {
                     await updateAppointment(confirmationId);
                 });
