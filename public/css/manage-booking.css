@@ -1,3 +1,73 @@
+/* Account action buttons (Logout / Change Password / Change Username) and
+   the panels their forms open into. Centered row of buttons, centered panel
+   content - unlike .slot-form .btn, these apply outside that form. */
+.account-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.account-actions .btn,
+.account-panel .btn {
+    padding: 12px 22px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 82, 82, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c8ef5, #4a6fdc);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(74, 111, 220, 0.4);
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #28a745, #218838);
+    margin-top: 5px;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+}
+
+.account-panel {
+    text-align: center;
+}
+
+.account-panel .input-box {
+    align-items: center;
+    max-width: 360px;
+    margin: 0 auto 15px;
+}
+
+.account-panel .input-box input {
+    text-align: center;
+}
+
+.account-panel-message {
+    margin-top: 12px;
+    font-weight: 500;
+}
+
 /* Global styles */
 body {
     background-color: #373434;

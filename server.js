@@ -355,6 +355,54 @@ app.post('/admin/change-password', requireApiAuth, strictLimiter, async (req, re
     }
 });
 
+// Change the logged-in admin's own username - requires the current password
+// to confirm, same as changing the password does.
+app.post('/admin/change-username', requireApiAuth, strictLimiter, async (req, res) => {
+    const { currentPassword, newUsername } = req.body;
+
+    if (typeof currentPassword !== 'string' || typeof newUsername !== 'string' || !currentPassword || !newUsername.trim()) {
+        return res.status(400).json({ error: 'Current password and new username are required.' });
+    }
+
+    const trimmedUsername = newUsername.trim();
+    if (trimmedUsername.length < 3) {
+        return res.status(400).json({ error: 'New username must be at least 3 characters.' });
+    }
+
+    try {
+        const username = req.session.username;
+        const result = await pool.query('SELECT password_hash FROM admin_users WHERE username = $1', [username]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Admin user not found.' });
+        }
+
+        const currentMatches = await bcrypt.compare(currentPassword, result.rows[0].password_hash);
+        if (!currentMatches) {
+            return res.status(401).json({ error: 'Current password is incorrect.' });
+        }
+
+        await pool.query(
+            'UPDATE admin_users SET username = $1, updated_at = CURRENT_TIMESTAMP WHERE username = $2',
+            [trimmedUsername, username]
+        );
+
+        req.session.username = trimmedUsername;
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error after username change:', err);
+            }
+            res.json({ success: true, message: 'Username changed successfully.', username: trimmedUsername });
+        });
+    } catch (error) {
+        if (error.code === '23505') { // unique_violation
+            return res.status(409).json({ error: 'That username is already taken.' });
+        }
+        console.error('Error changing admin username:', error);
+        res.status(500).json({ error: 'Error changing username.' });
+    }
+});
+
 // Admin logout endpoint
 app.post('/admin/logout', (req, res) => {
     req.session.destroy((err) => {
