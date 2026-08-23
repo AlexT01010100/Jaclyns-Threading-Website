@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'Microblading ($380)', 'Machine Hair Strokes ($395)',
         'Lash Lift + Tint ($150)', 'Lash Tint ($25)',
         'Brow Lamination + Tint ($120)', 'Brow Tint ($18)',
-        'Microneedling ($250)', 'Microneedling + Nano Brows ($390)', 'Phibright Microneedling ($270)',
+        'Phi-Hygienic Facial ($130)',
         'Bioneedling ($220)'
     ];
 

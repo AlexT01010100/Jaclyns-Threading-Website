@@ -677,10 +677,8 @@ const serviceDurationSlots = {
     'brow lamination + tint ($120)': 2, // 1 hour
     'brow tint ($18)': 1, // 30 minutes
 
-    // Microneedling - 3 slots (1.5 hours)
-    'microneedling ($250)': 3,
-    'microneedling + nano brows ($390)': 4, // 2 hours
-    'phibright microneedling ($270)': 3,
+    // Phi-Hygienic Facial - 2 slots (1 hour)
+    'phi-hygienic facial ($130)': 2,
 
     // Bioneedling - 3 slots (1.5 hours)
     'bioneedling ($220)': 3

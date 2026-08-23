@@ -38,7 +38,10 @@
 .flip-card {
     background-color: transparent;
     perspective: 1000px;
-    flex: 1 1 calc(33.333% - 30px); /* 3 cards per row */
+    /* flex-grow: 0 - otherwise a lone card left on the last row (e.g. 7
+       cards wrapping into rows of 3/3/1) stretches to fill the whole row
+       width via flex-grow, making it look far bigger than the other cards */
+    flex: 0 1 calc(33.333% - 30px); /* 3 cards per row */
     height: 450px;
     margin-bottom: 20px;
     box-sizing: border-box;
@@ -105,6 +108,10 @@
     justify-content: center;
     align-items: center;
     background-color: #fff;
+}
+
+.flip-card-front.no-image .front-content {
+    height: 100%;
 }
 
 .front-content h2 {
@@ -180,7 +187,7 @@
 /* 2-card layout for medium screens */
 @media screen and (max-width: 1000px) {
     .flip-card {
-        flex: 1 1 calc(50% - 30px); /* 2 cards per row */
+        flex: 0 1 calc(50% - 30px); /* 2 cards per row */
     }
 }
 
