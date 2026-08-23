@@ -93,3 +93,44 @@
 #contact-footer-copyright-text {
     top: 9.5rem;
 }
+
+/* Cloudflare Turnstile widget - using data-size="normal" for the wide
+   rectangular shape (300x65px, fixed). Earlier attempts either forced the
+   iframe's own width via CSS (fights Cloudflare's resize logic, clips the
+   inner content) or used "flexible" sizing (same problem). This uses
+   data-size="normal" (fixed 300x65px) with transform: scale() to shrink it
+   visually - the internal content scales down with it instead of getting
+   cut off, since it's a pure repaint after Cloudflare's already laid the
+   iframe out at its normal size.
+   transform doesn't change how much space the element reserves in normal
+   layout, only how it's painted - so centering it and clipping with
+   overflow:hidden on a variable-width parent doesn't reliably land on the
+   scaled-down box. Instead .turnstile-wrapper is sized to the EXACT target
+   dimensions (300x65 scaled by 0.8 = 240x52) and clips to that with
+   overflow:hidden, while transform-origin: top left makes the scaled
+   content start flush with the wrapper's own top-left corner - no centering
+   math for the two to disagree on. */
+.turnstile-wrapper {
+    margin: 15px auto;
+    width: 300px;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 400px) {
+    .turnstile-wrapper {
+        width: 240px;
+        height: 52px;
+        overflow: hidden;
+        justify-content: flex-start; /* so the child's top-left corner lines
+            up with the wrapper's - if left centered, the still-300px-wide
+            child would be offset before the transform-origin:top left scale
+            even applies, throwing off the whole calculation */
+    }
+
+    .cf-turnstile {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+}
