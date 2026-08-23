@@ -119,9 +119,15 @@
 }
 
 @media screen and (max-width: 400px) {
+    /* This page stacks two padding layers around the form (.contact's own
+       1rem plus .contact form's 1.5rem = up to 80px total on narrow
+       screens), leaving less room than other pages with a single padding
+       layer - hence a smaller scale here than elsewhere. On a 320px phone
+       that's roughly 208px of actual available width; 180px leaves margin
+       for error instead of cutting it exactly at the calculated limit. */
     .turnstile-wrapper {
-        width: 240px;
-        height: 52px;
+        width: 180px;
+        height: 39px;
         overflow: hidden;
         justify-content: flex-start; /* so the child's top-left corner lines
             up with the wrapper's - if left centered, the still-300px-wide
@@ -130,7 +136,7 @@
     }
 
     .cf-turnstile {
-        transform: scale(0.8);
+        transform: scale(0.6);
         transform-origin: top left;
     }
 }

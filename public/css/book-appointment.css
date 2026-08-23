@@ -631,9 +631,13 @@ footer p {
 }
 
 @media screen and (max-width: 400px) {
+    /* .booking-wrapper (20px padding) AND .booking-container (another 20px)
+       both pad this content, not just the container alone - on a 320px
+       phone that's ~240px available, which the previous 240px wrapper hit
+       exactly with zero margin for error. Sized smaller here on purpose. */
     .turnstile-wrapper {
-        width: 240px;
-        height: 52px;
+        width: 210px;
+        height: 46px;
         overflow: hidden;
         justify-content: flex-start; /* so the child's top-left corner lines
             up with the wrapper's - if left centered, the still-300px-wide
@@ -642,7 +646,7 @@ footer p {
     }
 
     .cf-turnstile {
-        transform: scale(0.8);
+        transform: scale(0.7);
         transform-origin: top left;
     }
 }
